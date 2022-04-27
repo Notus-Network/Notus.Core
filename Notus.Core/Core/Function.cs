@@ -442,22 +442,20 @@ namespace Notus.Core
         {
             try
             {
-                System.Net.WebRequest webRequest = System.Net.WebRequest.Create(UrlAddress);
-                if (TimeOut > 0)
+                using (var client = new HttpClient())
                 {
-                    webRequest.Timeout = (UseTimeoutAsSecond == true ? (TimeOut * 1000) : TimeOut);
-                }
-                using (System.Net.WebResponse response = webRequest.GetResponse())
-                {
-                    using (System.IO.Stream content = response.GetResponseStream())
+                    if (TimeOut > 0)
                     {
-                        using (System.IO.StreamReader reader = new System.IO.StreamReader(content))
-                        {
-                            return reader.ReadToEnd();
-                        }
+                        client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
+                    }
+                    HttpResponseMessage response = client.GetAsync(UrlAddress).GetAwaiter().GetResult();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        HttpContent responseContent = response.Content;
+                        return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
                     }
                 }
-            }
+            } 
             catch (Exception err)
             {
                 Console.WriteLine(err.Message);
