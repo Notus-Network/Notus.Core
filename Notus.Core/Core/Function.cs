@@ -382,20 +382,7 @@ namespace Notus.Core
         {
             return (networkType == Notus.Core.Variable.NetworkType.Const_MainNetwork ? "main_" : "test_");
         }
-        /*
-        public static void NodeFolderControl()
-        {
-            if (Directory.Exists(Notus.Core.Variable.LocalDbStorageDirectoryRealName) == false)
-            {
-                Directory.CreateDirectory(Notus.Core.Variable.LocalDbStorageDirectoryRealName);
-            }
 
-            if (Directory.Exists(Notus.Core.Variable.BlockStorageDirectoryName) == false)
-            {
-                Directory.CreateDirectory(Notus.Core.Variable.BlockStorageDirectoryName);
-            }
-        }
-        */
         public static IEnumerable<string> SplitByLength(this string str, int maxLength)
         {
             for (int index = 0; index < str.Length; index += maxLength)
