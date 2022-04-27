@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net5.0</TargetFramework>
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <Version>3.0.6</Version>
+	  <Authors>Omer GOKSOY</Authors>
+	  <Company>Notus Network</Company>
+	  <Product>Notus.Core</Product>
+	  <Copyright>MIT</Copyright>
+	  <PackageLicenseExpression></PackageLicenseExpression>
+	  <PackageProjectUrl>https://notus.network/</PackageProjectUrl>
+	  <PackageId>Notus.Core</PackageId>
+	  <Description>This library contains the all Core functions,class and variable required for Notus.Network.</Description>
+	  <PackageIcon>Notus_icon_gradient_bg.png</PackageIcon>
+	  <PackageIconUrl />
+	  <NeutralLanguage>en</NeutralLanguage>
+	  <PackageLicenseFile>MIT-LICENSE.txt</PackageLicenseFile>
+	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	  <PackageReleaseNotes>First release</PackageReleaseNotes>  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\MIT-LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\Notus_icon_gradient_bg.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
