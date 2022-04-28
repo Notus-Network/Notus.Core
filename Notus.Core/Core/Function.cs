@@ -391,7 +391,7 @@ namespace Notus.Core
             }
         }
 
-        public static string FindAvailableNode(string UrlText)
+        public static async Task<string> FindAvailableNode(string UrlText)
         {
             string MainResultStr = string.Empty;
             bool exitInnerLoop = false;
@@ -401,10 +401,11 @@ namespace Notus.Core
                 {
                     try
                     {
-                        MainResultStr = GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], Notus.Core.Variable.PortNo_HttpListener) + UrlText, 10, true);
+                        MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], Notus.Core.Variable.PortNo_HttpListener) + UrlText, 10, true);
                     }
                     catch (Exception err)
                     {
+                        Console.WriteLine(err.Message);
                         SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
@@ -412,20 +413,20 @@ namespace Notus.Core
             }
             return MainResultStr;
         }
-        public static string PostRequest(string UrlAddress, Dictionary<string, string> PostData)
+        public static async Task<string> PostRequest(string UrlAddress, Dictionary<string, string> PostData)
         {
             using (var client = new HttpClient())
             {
-                HttpResponseMessage response = client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData)).GetAwaiter().GetResult();
+                HttpResponseMessage response = await client .PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
                 if (response.IsSuccessStatusCode)
                 {
                     HttpContent responseContent = response.Content;
-                    return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+                    return await responseContent .ReadAsStringAsync();
                 }
             }
             return string.Empty;
         }
-        public static string GetRequest(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        public static async Task<string> GetRequest(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
         {
             try
             {
@@ -435,11 +436,11 @@ namespace Notus.Core
                     {
                         client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
                     }
-                    HttpResponseMessage response = client.GetAsync(UrlAddress).GetAwaiter().GetResult();
+                    HttpResponseMessage response = await client.GetAsync(UrlAddress);
                     if (response.IsSuccessStatusCode)
                     {
                         HttpContent responseContent = response.Content;
-                        return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+                        return await responseContent.ReadAsStringAsync();
                     }
                 }
             } 
