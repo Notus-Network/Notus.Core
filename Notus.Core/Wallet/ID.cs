@@ -312,58 +312,6 @@ namespace Notus.Core.Wallet
             return privKey.toHex().ToLower();
         }
 
-        /*
-        public static string RawDataForSign(string Sender, string Receiver, string Volume)
-        {
-            return Sender + Notus.Core.Variable.CommonDelimeterChar +
-            Receiver + Notus.Core.Variable.CommonDelimeterChar +
-            Volume;
-        }
-        */
-        /*
-        public static string Bip39Keyword(int Bip39WordIndexNo)
-        {
-            if (List_Bip39_Loaded == false)
-            {
-                List_Bip39.Clear();
-                Assembly assembly = Assembly.GetExecutingAssembly();
-                string resourceName = "Notus.Wallet.ID.english.txt";
-
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        string result = reader.ReadToEnd();
-                        string[] resultArr = Regex.Split(result, "\r\n|\r|\n");
-                        for (int i = 0; i < resultArr.Length; i++)
-                        {
-                            resultArr[i] = resultArr[i].Trim();
-                            if (resultArr[i].Length > 0)
-                            {
-                                List_Bip39.Add(i, resultArr[i]);
-                            }
-                        }
-                        List_Bip39_Loaded = true;
-                    }
-                }
-            }
-
-            Bip39WordIndexNo = Math.Abs(Bip39WordIndexNo);
-            bool exitWhileLoop = false;
-            while (exitWhileLoop == false)
-            {
-                if (List_Bip39.ContainsKey(Bip39WordIndexNo))
-                {
-                    exitWhileLoop = true;
-                }
-                else
-                {
-                    Bip39WordIndexNo = Bip39WordIndexNo - List_Bip39.Count;
-                }
-            }
-            return List_Bip39[Bip39WordIndexNo];
-        }
-        */
         private class CurveFp
         {
             public BigInteger A { get; private set; }

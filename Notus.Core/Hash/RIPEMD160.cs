@@ -347,27 +347,17 @@ namespace Notus.HashLib
         public string ComputeHash(string input)
         {
             Initialize();
-            var iArr = Encoding.UTF8.GetBytes(input);
+            byte[] iArr = Encoding.UTF8.GetBytes(input);
             HashCore(iArr, 0, iArr.Length);
-            var hhh = HashFinal();
-            var sb2 = new StringBuilder(hhh.Length * 2);
-            foreach (byte b in hhh)
-            {
-                sb2.Append(b.ToString("x2"));
-            }
-            return sb2.ToString();
+            byte[] hhh = HashFinal();
+            return Notus.Core.Convert.Byte2Hex(hhh);
         }
         public string ComputeHashWithArray(byte[] iArr)
         {
             Initialize();
             HashCore(iArr, 0, iArr.Length);
-            var hhh = HashFinal();
-            var sb2 = new StringBuilder(hhh.Length * 2);
-            foreach (byte b in hhh)
-            {
-                sb2.Append(b.ToString("x2"));
-            }
-            return sb2.ToString();
+            byte[] hhh = HashFinal();
+            return Notus.Core.Convert.Byte2Hex(hhh);
         }
 
         public string Sign(string input)

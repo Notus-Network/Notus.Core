@@ -34,7 +34,6 @@ namespace Notus.Core
             
             return Notus.Core.Convert.Byte2Hex(resultArray);
         }
-
         public static string BaseAlphabetIteration(byte numericBase, string KeyForIteration)
         {
             return Iteration(numericBase, KeyForIteration);
@@ -84,15 +83,12 @@ namespace Notus.Core
 
             return string.Empty;
         }
-        
-
         public static string ReverseString(string inputString)
         {
             char[] charArray = inputString.ToCharArray();
             Array.Reverse(charArray);
             return new string(charArray);
         }
-
         private static string GenerateEncKey_subFunc(int startingPoint)
         {
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
@@ -219,7 +215,6 @@ namespace Notus.Core
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }
-        
         public static void PrintInfo(bool ShowOnScreen, string DetailsStr = "", bool PrintAsync = true)
         {
             if (ShowOnScreen == true)
@@ -377,12 +372,10 @@ namespace Notus.Core
                 }
             }
         }
-        
         public static string NetworkTypeStr(Notus.Core.Variable.NetworkType networkType)
         {
             return (networkType == Notus.Core.Variable.NetworkType.Const_MainNetwork ? "main_" : "test_");
         }
-
         public static IEnumerable<string> SplitByLength(this string str, int maxLength)
         {
             for (int index = 0; index < str.Length; index += maxLength)
@@ -390,7 +383,6 @@ namespace Notus.Core
                 yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
             }
         }
-
         public static async Task<string> FindAvailableNode(string UrlText)
         {
             string MainResultStr = string.Empty;
@@ -464,15 +456,6 @@ namespace Notus.Core
         }
         public static string SubGenerateBlockKey(string SeedForKey = "", string PreText = "")
         {
-            /*
-            DateTime.Now.ToString("ffffff") // saniye 2 
-            DateTime.Now.ToString("ss") // saniye 2 
-            DateTime.Now.ToString("mm") // saat 2 
-            DateTime.Now.ToString("HH") // saat 2 
-            DateTime.Now.ToString("dd") // gün 2 
-            DateTime.Now.ToString("MM") // ay 2 
-            DateTime.Now.ToString("yyyy") // yıl 4
-            */
             DateTime ExactTimeVal = DateTime.Now;
             string tmpTimeHexStr =
                 int.Parse(ExactTimeVal.ToString("yyyyMMdd")).ToString("x") +
@@ -511,7 +494,6 @@ namespace Notus.Core
                 new Notus.Hash().CommonHash("ripemd160", PreText).Substring(0, 10) +
                 RandomHashStr1.Substring(0, 31) + RandomHashStr2.Substring(0, 31);
         }
-
         public static string GenerateBlockKey()
         {
             return GenerateBlockKey(false, "", "");
@@ -537,7 +519,6 @@ namespace Notus.Core
             return Notus.Core.Convert.ToBase35(SubGenerateBlockKey(SeedForKey, ""));
             //DateTime.Now.ToString("yyyyMMddHHmmssffffff")
         }
-
         private static int CalculateBlockStorageNumber(string timeKey)
         {
             return int.Parse(timeKey.Substring(8, 6)) % Notus.Core.Variable.BlockStorageMonthlyGroupCount;
@@ -583,7 +564,6 @@ namespace Notus.Core
             }
             return timeStr;
         }
-
         public static string ConvertTagName(string TokenTagText)
         {
             return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(TokenTagText)).PadLeft(60, '0');
@@ -592,12 +572,6 @@ namespace Notus.Core
         {
             return System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(Block_Cipher_Data));
         }
-        /*
-        public static string RawCipherData2String(Notus.Variable.Block.BlockData blockData)
-        {
-            return RawCipherData2String(blockData.cipher.data);
-        }
-        */
         public static string BoolToStr(bool tmpBoolVal)
         {
             return (tmpBoolVal == true ? "1" : "0");

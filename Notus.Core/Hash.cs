@@ -105,14 +105,6 @@ namespace Notus
         
         public string CommonHashHex(string hashMethodName, string rawInput)
         {
-            /*
-            if (string.Equals("crc32", hashMethodName) )
-            {
-                Notus.Data.Checksum.CRC32 crcObj = new Notus.Data.Checksum.CRC32();
-                byte[] inputArr = Encoding.UTF8.GetBytes(rawInput);
-                return crcObj.Calculate(1,inputArr, inputArr.Length).ToString("x");
-            }
-            */
             if (string.Equals("sasha", hashMethodName) )
             {
                 Notus.HashLib.Sasha hashObjSasha = new Notus.HashLib.Sasha();
@@ -162,17 +154,6 @@ namespace Notus
 
         public byte[] CommonHashByte(string hashMethodName, string rawInput)
         {
-            /*
-            if (string.Equals("crc32", hashMethodName))
-            {
-                Notus.Data.Checksum.CRC32 crcObj = new Notus.Data.Checksum.CRC32();
-                byte[] inputArr = Encoding.UTF8.GetBytes(rawInput);
-                
-                return Notus.Core.Convert.Hex2Byte(
-                    crcObj.Calculate(1, inputArr, inputArr.Length).ToString("x")
-                );
-            }
-            */
             if (string.Equals("sasha", hashMethodName))
             {
                 Notus.HashLib.Sasha hashObjSasha = new Notus.HashLib.Sasha();

@@ -39,34 +39,8 @@ namespace Notus.HashLib
         {
             using (SHA1Managed sha1 = new SHA1Managed())
             {
-                byte[] hash = sha1.ComputeHash(input);
-                StringBuilder sb = new StringBuilder(hash.Length * 2);
-                foreach (byte b in hash)
-                {
-                    sb.Append(b.ToString("x2"));
-                }
-                return sb.ToString();
+                return Notus.Core.Convert.Byte2Hex(sha1.ComputeHash(input));
             }
-
-            /*
-            byte[] result = SHA1Algorithm(input);
-            Array.Reverse(result);
-            byte[] uResult = new byte[result.Length + 1];
-            result.CopyTo(uResult, 0);
-            uResult[^1] = 0;
-            BigInteger hash = new BigInteger(uResult);
-            string tmpResult = hash.ToString("x");
-            if (tmpResult.Length == 40)
-            {
-                return tmpResult;
-            }
-            if (tmpResult.Length > 40)
-            {
-                return tmpResult.Substring(0,40);
-
-            }
-            return tmpResult.PadLeft(40, '0');
-            */
         }
 
         public string Sign(string input)

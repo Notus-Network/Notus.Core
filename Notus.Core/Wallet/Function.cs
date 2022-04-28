@@ -195,12 +195,7 @@ namespace Notus.Core.Wallet
 
         public static string BinaryAscii_hexFromBinary(byte[] bytes)
         {
-            StringBuilder hex = new StringBuilder(bytes.Length * 2);
-            foreach (byte b in bytes)
-            {
-                hex.AppendFormat("{0:x2}", b);
-            }
-            return hex.ToString();
+            return Notus.Core.Convert.Byte2Hex(bytes);
         }
 
         public static byte[] BinaryAscii_binaryFromHex(string hex)
