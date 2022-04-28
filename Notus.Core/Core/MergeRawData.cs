@@ -2,7 +2,7 @@
 using System.Text.Json;
 namespace Notus.Core
 {
-    public class SignRawData
+    public class MergeRawData
     {
         public static string Transaction(string Sender, string Receiver, string Volume)
         {

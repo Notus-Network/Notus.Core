@@ -84,7 +84,7 @@ namespace Notus.Core.Wallet
                 return false;
             }
             
-            return Notus.Core.Wallet.ID.Verify(Notus.Core.SignRawData.Transaction(
+            return Notus.Core.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
                    PreTransfer.Sender,
                    PreTransfer.Receiver,
                    PreTransfer.Volume
@@ -124,7 +124,7 @@ namespace Notus.Core.Wallet
                     PreTransfer.CurveName
                 ),
                 Sign = Notus.Core.Wallet.ID.Sign(
-                    Notus.Core.SignRawData.Transaction(
+                    Notus.Core.MergeRawData.Transaction(
                         PreTransfer.Sender,
                         PreTransfer.Receiver,
                         PreTransfer.Volume
