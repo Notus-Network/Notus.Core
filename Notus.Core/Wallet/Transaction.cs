@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Notus.Core.Wallet
 {
@@ -12,7 +13,7 @@ namespace Notus.Core.Wallet
             return TransferId;
             //return string.Empty;
         }
-        public static Notus.Core.Variable.CryptoTransactionResult Send(Notus.Core.Variable.CryptoTransactionStruct PreTransfer)
+        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct PreTransfer)
         {
             try
             {
@@ -47,7 +48,7 @@ namespace Notus.Core.Wallet
                                 PreTransfer.PublicKey + "/" +
                                 PreTransfer.Sign + "/";
 
-                            string MainResultStr = Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);
+                            string MainResultStr = await Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);
                             Notus.Core.Variable.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Core.Variable.CryptoTransactionResult>(MainResultStr);
                             exitInnerLoop = true;
                             return tmpTransferResult;

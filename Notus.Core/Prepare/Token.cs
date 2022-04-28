@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Notus.Core.Prepare
 {
     public class Token
     {
-        public static Notus.Core.Variable.BlockResponseStruct Generate(
+        public static async Task<Notus.Core.Variable.BlockResponseStruct> Generate(
             string PublicKeyHex,
             string Sign,
             Notus.Core.Variable.TokenInfoStruct InfoData,
@@ -57,7 +58,7 @@ namespace Notus.Core.Prepare
                                 nodeIpAddress,
                                 Notus.Core.Variable.PortNo_HttpListener
                             ) + "token/generate/" + WalletKeyStr + "/";
-                        string MainResultStr = Notus.Core.Function.PostRequest(
+                        string MainResultStr = await Notus.Core.Function.PostRequest(
                             fullUrlAddress,
                             new Dictionary<string, string>
                             {
