@@ -50,6 +50,22 @@ namespace Notus.Core.Wallet
             }
             return Notus.Core.Variable.Bip39WordArray[Bip39WordIndexNo];
         }
+
+        public static bool Bip39KeywordDoesExist(string keyword, int indexNo = -1 )
+        {
+            if (indexNo != -1)
+            {
+                return string.Equals(keyword, Bip39Keyword(indexNo));
+            }
+            else
+            {
+                if (Array.IndexOf(Notus.Core.Variable.Bip39WordArray, keyword) != -1)
+                    return true;
+            }
+
+            return false;
+        }
+
         public static string EncodeBase58(BigInteger numberToShorten, int resultSize = 32)
         {
             // WARNING: Beware of bignumber implementations that clip leading 0x00 bytes, or prepend extra 0x00 
