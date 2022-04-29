@@ -125,6 +125,10 @@ namespace Notus.Core
             }
             return tmpResult;
         }
+        public static string GenerateEnryptKey()
+        {
+            return new Notus.Hash().CommonSign("sasha", GenerateText(29) + GenerateText(14, Notus.Core.Variable.DefaultHexAlphabetString));
+        }
         public static string GenerateSalt()
         {
             string newHexPattern = Iteration(16, GenerateEncKey_subFunc(10000000));
