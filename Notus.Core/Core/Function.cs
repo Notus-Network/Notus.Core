@@ -380,6 +380,19 @@ namespace Notus.Core
         {
             return (networkType == Notus.Core.Variable.NetworkType.MainNet ? "main_" : "test_");
         }
+        public static string NetworkTypeText(Notus.Core.Variable.NetworkType networkType)
+        {
+            if (networkType == Notus.Core.Variable.NetworkType.MainNet) {
+                return "main-net";
+            }
+            if (networkType == Notus.Core.Variable.NetworkType.TestNet) {
+                return "test-net";
+            }
+            if (networkType == Notus.Core.Variable.NetworkType.DevNet) {
+                return "dev-net";
+            }
+            return "unknown-net";
+        }
         public static IEnumerable<string> SplitByLength(this string str, int maxLength)
         {
             for (int index = 0; index < str.Length; index += maxLength)
