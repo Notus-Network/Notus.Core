@@ -378,7 +378,7 @@ namespace Notus.Core
         }
         public static string NetworkTypeStr(Notus.Core.Variable.NetworkType networkType)
         {
-            return (networkType == Notus.Core.Variable.NetworkType.Const_MainNetwork ? "main_" : "test_");
+            return (networkType == Notus.Core.Variable.NetworkType.MainNet ? "main_" : "test_");
         }
         public static IEnumerable<string> SplitByLength(this string str, int maxLength)
         {

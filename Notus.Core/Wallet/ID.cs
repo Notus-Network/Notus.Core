@@ -66,14 +66,14 @@ namespace Notus.Core.Wallet
             );
         }
 
-        public static string GetAddress_StandartWay(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.Const_MainNetwork, string CurveName = "secp256k1")
+        public static string GetAddress_StandartWay(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet, string CurveName = "secp256k1")
         {
             PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
             PublicKey yPubKey = yPrivKey.publicKey();
             BigInteger pkPointVal = yPubKey.point.x;
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
             string networkByteStr = "00";
-            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.Const_TestNetwork)
+            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
             {
                 networkByteStr = "04";
             }
@@ -92,13 +92,13 @@ namespace Notus.Core.Wallet
             return walletAddressStr;
         }
 
-        public static bool CheckAddress(string walletAddress, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.Const_MainNetwork)
+        public static bool CheckAddress(string walletAddress, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet)
         {
             if (walletAddress != null)
             {
                 if (walletAddress.Length == 38)
                 {
-                    if (WhichNetworkFor == Notus.Core.Variable.NetworkType.Const_TestNetwork)
+                    if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
                     {
                         if (walletAddress.Substring(0, Notus.Core.Variable.Prefix_TestNetwork.Length) == Notus.Core.Variable.Prefix_TestNetwork)
                         {
@@ -119,11 +119,11 @@ namespace Notus.Core.Wallet
         
         public static string GetAddressWithPublicKey(string privateKeyHex)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),Notus.Core.Variable.Default_EccCurveName, true ), Notus.Core.Variable.NetworkType.Const_MainNetwork, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),Notus.Core.Variable.Default_EccCurveName, true ), Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
         }
         public static string GetAddressWithPublicKey(string privateKeyHex, string CurveName)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),CurveName,true), Notus.Core.Variable.NetworkType.Const_MainNetwork,CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),CurveName,true), Notus.Core.Variable.NetworkType.MainNet,CurveName);
         }
         public static string GetAddressWithPublicKey(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor)
         {
@@ -136,11 +136,11 @@ namespace Notus.Core.Wallet
 
         public static string GetAddress(string privateKeyHex)
         {
-            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.Const_MainNetwork, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
         }
         public static string GetAddress(string privateKeyHex, string CurveName)
         {
-            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.Const_MainNetwork, CurveName);
+            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.MainNet, CurveName);
         }
         public static string GetAddress(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor)
         {
@@ -166,7 +166,7 @@ namespace Notus.Core.Wallet
 
             string keyPrefix = Notus.Core.Variable.Prefix_MainNetwork;
             string networkByteStr = "10";
-            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.Const_TestNetwork)
+            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
             {
                 keyPrefix = Notus.Core.Variable.Prefix_TestNetwork;
                 networkByteStr = "20";
@@ -243,11 +243,11 @@ namespace Notus.Core.Wallet
 
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair()
         {
-            return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, Notus.Core.Variable.NetworkType.Const_MainNetwork);
+            return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, Notus.Core.Variable.NetworkType.MainNet);
         }
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(string curveName)
         {
-            return GenerateKeyPair(curveName, Notus.Core.Variable.NetworkType.Const_MainNetwork);
+            return GenerateKeyPair(curveName, Notus.Core.Variable.NetworkType.MainNet);
         }
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(Notus.Core.Variable.NetworkType WhichNetworkFor)
         {

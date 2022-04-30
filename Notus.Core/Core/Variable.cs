@@ -41,8 +41,9 @@ namespace Notus.Core
 
         public enum NetworkType
         {
-            Const_MainNetwork = 10,
-            Const_TestNetwork = 20
+            MainNet = 10,
+            TestNet = 20,
+            DevNet = 30
         }
 
         public enum ShortAlgorithmResultType

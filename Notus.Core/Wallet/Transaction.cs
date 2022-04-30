@@ -35,7 +35,7 @@ namespace Notus.Core.Wallet
                         string nodeIpAddress = Notus.Core.Variable.ListMainNodeIp[a];
                         try
                         {
-                            bool RealNetwork = PreTransfer.Network == Notus.Core.Variable.NetworkType.Const_MainNetwork;
+                            bool RealNetwork = PreTransfer.Network == Notus.Core.Variable.NetworkType.MainNet;
                             string fullUrlAddress =
                                 Notus.Core.Function.MakeHttpListenerPath(
                                     nodeIpAddress,
