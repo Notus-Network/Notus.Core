@@ -585,10 +585,13 @@ namespace Notus.Core
         {
             return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(TokenTagText)).PadLeft(60, '0');
         }
-        public static string ConvertCurrencyName(string CurrencyName)
+        public static string CurrencyName2Hex(string CurrencyNameText)
         {
-            CurrencyName = CurrencyName.ToLower();
-            return new Notus.Hash().CommonHash("md5", CurrencyName) + new Notus.Hash().CommonHash("sha1", CurrencyName);
+            return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(CurrencyNameText.ToLower())).PadLeft(60, 'x');
+        }
+        public static string Hex2CurrencyName(string CurrencyNameHex)
+        {
+            return System.Text.Encoding.ASCII.GetString(Notus.Core.Convert.Hex2Byte(CurrencyNameHex.ToLower().Replace('x', ' ').Trim()));
         }
         public static string RawCipherData2String(string Block_Cipher_Data)
         {
