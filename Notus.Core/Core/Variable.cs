@@ -87,16 +87,15 @@ namespace Notus.Core
         }
         public class TokenInfoStruct
         {
-            public string Name { get; set; }    // token long name
-            public string Tag { get; set; }     // token short tag
-            public FileStorageStruct Logo { get; set; }    // token logo
+            public string Name { get; set; }                // token long name
+            public string Tag { get; set; }                 // token short tag
+            public FileStorageStruct Logo { get; set; }     // token logo
 
         }
         public class SupplyStruct
         {
-            public Int64 Supply { get; set; }   // integer value
-            public int Decimal { get; set; }    // decimal value
-
+            public Int64 Supply { get; set; }       // integer value
+            public int Decimal { get; set; }        // decimal value
             public bool Resupplyable { get; set; }  // token can be editable
         }
 
@@ -119,12 +118,12 @@ namespace Notus.Core
 
         public class In_Struct
         {
-            public BalanceStruct Sender { get; set; }             // sender wallet id
-            public BalanceStruct Receiver { get; set; }           // recevier wallet id
-            public string Volume { get; set; }          // how much coin
-            public string Fee { get; set; }             // transfer fee
-            public string PublicKey { get; set; }       // control public key
-            public string Sign { get; set; }            // control sign data
+            public BalanceStruct Sender { get; set; }       // sender wallet id
+            public BalanceStruct Receiver { get; set; }     // recevier wallet id
+            public string Volume { get; set; }              // how much coin
+            public string Fee { get; set; }                 // transfer fee
+            public string PublicKey { get; set; }           // control public key
+            public string Sign { get; set; }                // control sign data
         }
 
 
@@ -134,7 +133,7 @@ namespace Notus.Core
             public string TokenUid { get; set; }                // token generation uid
             public Int64 Supply { get; set; }                   // new integer value
             public int Decimal { get; set; }                    // new decimal value
-            public bool DistributeEqually { get; set; }         // Distbute Equally to token holders
+            public bool DistributeEqually { get; set; }         // when resupply token distbute equally to token holders ( protect token holders share )
             public bool Resupplyable { get; set; }              // token can be editable after that
         }
 
