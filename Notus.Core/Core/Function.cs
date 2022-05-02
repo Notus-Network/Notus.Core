@@ -285,7 +285,7 @@ namespace Notus.Core
                         Task.Run(() =>
                         {
                             ConsoleColor currentColor = Console.ForegroundColor;
-                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                            Console.ForegroundColor = ConsoleColor.Red;
                             Console.WriteLine(DateTime.Now.ToLongTimeString() + " -> " + DetailsStr);
                             Console.ForegroundColor = currentColor;
                         });
@@ -293,7 +293,7 @@ namespace Notus.Core
                     else
                     {
                         ConsoleColor currentColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(DateTime.Now.ToLongTimeString() + " -> " + DetailsStr);
                         Console.ForegroundColor = currentColor;
                     }
@@ -325,7 +325,7 @@ namespace Notus.Core
                         Task.Run(() =>
                         {
                             ConsoleColor currentColor = Console.ForegroundColor;
-                            Console.ForegroundColor = ConsoleColor.DarkYellow;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine(DateTime.Now.ToLongTimeString() + " -> " + DetailsStr);
                             Console.ForegroundColor = currentColor;
                         });
@@ -333,7 +333,7 @@ namespace Notus.Core
                     else
                     {
                         ConsoleColor currentColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(DateTime.Now.ToLongTimeString() + " -> " + DetailsStr);
                         Console.ForegroundColor = currentColor;
                     }
