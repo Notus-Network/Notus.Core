@@ -64,6 +64,14 @@ namespace Notus.Core
             public const int MissingArgument = 11;
         }
 
+        // currency list struct
+        public class CurrencyList
+        {
+            public bool ReserveCurrency { get; set; }   // token generation version
+            public string Tag { get; set; }             // short name
+            public string Name { get; set; }            // creator info
+            public FileStorageStruct Logo { get; set; } // token info
+        }
         // token generation struct
         public class BlockStruct_160
         {
@@ -103,7 +111,7 @@ namespace Notus.Core
         // block struct for type 141 -> token transaction block strcut
         public class BlockStruct_141
         {
-            public string Tag { get; set; }                             // token short tag
+            public string Currency { get; set; }                             // crypto short tag
             public List<In_Struct> In { get; set; }
             public Dictionary<string, string> Out { get; set; }
         }
