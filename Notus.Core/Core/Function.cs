@@ -596,11 +596,25 @@ namespace Notus.Core
         }
         public static string CurrencyName2Hex(string CurrencyNameText)
         {
-            return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(CurrencyNameText.ToLower())).PadLeft(60, 'x');
+            return 
+                System.Convert.ToHexString(
+                    System.Text.Encoding.ASCII.GetBytes(
+                        CurrencyNameText.ToLower()
+                    )
+                )
+                .ToLower()
+                .PadRight(60, 'x');
         }
         public static string Hex2CurrencyName(string CurrencyNameHex)
         {
-            return System.Text.Encoding.ASCII.GetString(Notus.Core.Convert.Hex2Byte(CurrencyNameHex.ToLower().Replace('x', ' ').Trim()));
+            return System.Text.Encoding.ASCII.GetString(
+                Notus.Core.Convert.Hex2Byte(
+                    CurrencyNameHex
+                    .ToLower()
+                    .Replace('x', ' ')
+                    .Trim()
+                )
+            );
         }
         public static string RawCipherData2String(string Block_Cipher_Data)
         {
