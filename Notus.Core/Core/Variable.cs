@@ -27,7 +27,9 @@ namespace Notus.Core
         };
         public static readonly string CommonDelimeterChar = ":";
         //tüm sunucu işlemlerinden Http server portu olarak bu kullanılacak
-        public static readonly int PortNo_BlockPoolListener = 5500;
+        public static readonly int PortNo_MainNet = 5000;
+        public static readonly int PortNo_TestNet = 5001;
+        public static readonly int PortNo_DevNet = 5002;
         public static readonly int PortNo_HttpListener = 5000;
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "94.101.87.42"

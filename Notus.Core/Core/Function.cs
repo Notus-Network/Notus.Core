@@ -400,7 +400,20 @@ namespace Notus.Core
                 yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
             }
         }
-        public static async Task<string> FindAvailableNode(string UrlText)
+        public static int GetNetworkPort(Notus.Core.Variable.NetworkType currentNetwork)
+        {
+            if (currentNetwork == Variable.NetworkType.TestNet)
+            {
+                return Notus.Core.Variable.PortNo_TestNet;
+            }
+            if (currentNetwork == Variable.NetworkType.DevNet)
+            {
+                return Notus.Core.Variable.PortNo_DevNet;
+            }
+
+            return Notus.Core.Variable.PortNo_MainNet;
+        }
+        public static async Task<string> FindAvailableNode(string UrlText, Notus.Core.Variable.NetworkType currentNetwork)
         {
             string MainResultStr = string.Empty;
             bool exitInnerLoop = false;
@@ -410,7 +423,7 @@ namespace Notus.Core
                 {
                     try
                     {
-                        MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], Notus.Core.Variable.PortNo_HttpListener) + UrlText, 10, true);
+                        MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork)) + UrlText, 10, true);
                     }
                     catch (Exception err)
                     {
