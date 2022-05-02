@@ -581,10 +581,6 @@ namespace Notus.Core
             }
             return timeStr;
         }
-        public static string ConvertTagName(string TokenTagText)
-        {
-            return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(TokenTagText)).PadLeft(60, '0');
-        }
         public static string CurrencyName2Hex(string CurrencyNameText)
         {
             return System.Convert.ToHexString(System.Text.Encoding.ASCII.GetBytes(CurrencyNameText.ToLower())).PadLeft(60, 'x');

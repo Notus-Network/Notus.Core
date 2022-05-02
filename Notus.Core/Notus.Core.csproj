@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>3.0.17</Version>
+	  <Version>3.0.18</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -17,7 +17,7 @@
 	  <NeutralLanguage>en</NeutralLanguage>
 	  <PackageLicenseFile>MIT-LICENSE.txt</PackageLicenseFile>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <PackageReleaseNotes>In this release, ConvertCurrencyName function have been removed, Hex2CurrencyName and CurrencyName2Hex functions have been added.</PackageReleaseNotes>  </PropertyGroup>
+	  <PackageReleaseNotes>In this release, ConvertTagName function have been removed.</PackageReleaseNotes>  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">
