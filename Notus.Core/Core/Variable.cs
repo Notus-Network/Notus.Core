@@ -170,6 +170,7 @@ namespace Notus.Core
         {
             public string Wallet { get; set; }         // account wallet id
             public string Balance { get; set; }        // account current balance
+            public string Currency { get; set; }       // account curreny
             public Int64 RowNo { get; set; }           // witness row no
             public string UID { get; set; }            // witness uid
         }
