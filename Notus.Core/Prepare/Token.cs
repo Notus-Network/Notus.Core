@@ -11,7 +11,8 @@ namespace Notus.Core.Prepare
             string PublicKeyHex,
             string Sign,
             Notus.Core.Variable.TokenInfoStruct InfoData,
-            Notus.Core.Variable.SupplyStruct TokenSupplyData
+            Notus.Core.Variable.SupplyStruct TokenSupplyData,
+            Notus.Core.Variable.NetworkType currentNetwork
         )
         {
             Notus.Core.Variable.BlockStruct_160 Obj_Token = new Notus.Core.Variable.BlockStruct_160()
@@ -56,7 +57,7 @@ namespace Notus.Core.Prepare
                         string fullUrlAddress =
                             Notus.Core.Function.MakeHttpListenerPath(
                                 nodeIpAddress,
-                                Notus.Core.Variable.PortNo_HttpListener
+                                Notus.Core.Function.GetNetworkPort(currentNetwork)
                             ) + "token/generate/" + WalletKeyStr + "/";
                         string MainResultStr = await Notus.Core.Function.PostRequest(
                             fullUrlAddress,

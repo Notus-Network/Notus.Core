@@ -13,7 +13,7 @@ namespace Notus.Core.Wallet
             return TransferId;
             //return string.Empty;
         }
-        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct PreTransfer)
+        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct PreTransfer, Notus.Core.Variable.NetworkType currentNetwork)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Notus.Core.Wallet
                             string fullUrlAddress =
                                 Notus.Core.Function.MakeHttpListenerPath(
                                     nodeIpAddress,
-                                    Notus.Core.Variable.PortNo_HttpListener
+                                    Notus.Core.Function.GetNetworkPort(currentNetwork)
                                 ) +
                                 "send/" +
                                 PreTransfer.Sender + "/" +
