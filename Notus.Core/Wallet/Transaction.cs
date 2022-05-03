@@ -87,7 +87,8 @@ namespace Notus.Core.Wallet
             return Notus.Core.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
                    PreTransfer.Sender,
                    PreTransfer.Receiver,
-                   PreTransfer.Volume
+                   PreTransfer.Volume,
+                   PreTransfer.Currency
                 ), PreTransfer.Sign,
                 PreTransfer.PublicKey,
                 PreTransfer.CurveName
