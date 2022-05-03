@@ -40,15 +40,15 @@ namespace Notus.Core.Wallet
                                 Notus.Core.Function.MakeHttpListenerPath(
                                     nodeIpAddress,
                                     Notus.Core.Function.GetNetworkPort(currentNetwork)
-                                ) +
-                                "send/" +
-                                PreTransfer.Sender + "/" +
-                                PreTransfer.Receiver + "/" +
-                                PreTransfer.Volume + "/" +
-                                PreTransfer.PublicKey + "/" +
-                                PreTransfer.Sign + "/";
+                                ) + "send/" ;
 
-                            string MainResultStr = await Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);
+                            //string MainResultStr = await Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);
+                            string MainResultStr = await Notus.Core.Function.PostRequest(fullUrlAddress, 
+                                new System.Collections.Generic.Dictionary<string, string>()
+                                {
+                                    { "data" , JsonSerializer.Serialize(PreTransfer) }
+                                }
+                            );
                             Notus.Core.Variable.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Core.Variable.CryptoTransactionResult>(MainResultStr);
                             exitInnerLoop = true;
                             return tmpTransferResult;
@@ -115,6 +115,7 @@ namespace Notus.Core.Wallet
 
             return new Notus.Core.Variable.CryptoTransactionStruct()
             {
+                Currency = PreTransfer.Currency,
                 ErrorNo = 0,
                 Sender = PreTransfer.Sender,
                 Receiver = PreTransfer.Receiver,
@@ -127,7 +128,8 @@ namespace Notus.Core.Wallet
                     Notus.Core.MergeRawData.Transaction(
                         PreTransfer.Sender,
                         PreTransfer.Receiver,
-                        PreTransfer.Volume
+                        PreTransfer.Volume,
+                        PreTransfer.Currency
                     ),
                     PreTransfer.PrivateKey,
                     PreTransfer.CurveName

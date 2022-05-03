@@ -4,11 +4,12 @@ namespace Notus.Core
 {
     public class MergeRawData
     {
-        public static string Transaction(string Sender, string Receiver, string Volume)
+        public static string Transaction(string Sender, string Receiver, string Volume,string Currency)
         {
             return Sender + Notus.Core.Variable.CommonDelimeterChar +
             Receiver + Notus.Core.Variable.CommonDelimeterChar +
-            Volume;
+            Volume + Notus.Core.Variable.CommonDelimeterChar +
+            Currency;
         }
 
         public static string TokenGenerate(
