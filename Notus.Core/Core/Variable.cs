@@ -193,6 +193,7 @@ namespace Notus.Core
         public class CryptoTransactionStruct
         {
             public int ErrorNo { get; set; }
+            public string Currency { get; set; }
             public string Sender { get; set; }
             public string Receiver { get; set; }
             public string Volume { get; set; }
