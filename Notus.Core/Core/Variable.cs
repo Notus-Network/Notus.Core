@@ -205,6 +205,7 @@ namespace Notus.Core
         public class CryptoTransactionStoreStruct
         {
             public int ErrorNo { get; set; }
+            public string Currency { get; set; }
             public WalletBalanceStruct Sender { get; set; }      // sender wallet id
             public WalletBalanceStruct Receiver { get; set; }    // receiver wallet id
             public WalletBalanceStruct Validator { get; set; }    // receiver wallet id
