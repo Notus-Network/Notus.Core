@@ -202,23 +202,7 @@ namespace Notus.Core
             public string CurveName { get; set; }
             public Notus.Core.Variable.NetworkType Network { get; set; }
         }
-        public class CryptoTransactionStoreStruct
-        {
-            public int ErrorNo { get; set; }
-            public string Currency { get; set; }
-            public WalletBalanceStruct Sender { get; set; }      // sender wallet id
-            public WalletBalanceStruct Receiver { get; set; }    // receiver wallet id
-            public WalletBalanceStruct Validator { get; set; }    // receiver wallet id
-                                                                  //public Int64 RowNo { get; set; }
-                                                                  //public string Source { get; set; }      // reference block ID
-                                                                  //public string Balance { get; set; }     // sender current balance
-            public string Fee { get; set; }           // transfer fee
-            public string Volume { get; set; }        // transfer volume
-            public string PublicKey { get; set; }
-            public string Sign { get; set; }
-            //public string CurveName { get; set; }
-            //public Notus.Variable.Variable.NetworkType Network { get; set; }
-        }
+
         public class CryptoTransactionDataStruct
         {
             public string Sender { get; set; }
