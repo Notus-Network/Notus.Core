@@ -238,7 +238,10 @@ namespace Notus.Core
             WalletDoesntExist = 11,
             InsufficientBalance = 12,
             PendingPreviousTransaction = 13,
-            AnErrorOccurred = 3
+            AnErrorOccurred = 99,
+            Completed = 22,
+            Rejected = 97,
+            Unknown = 78
         }
 
         public enum CryptoTransactionStatusCode
