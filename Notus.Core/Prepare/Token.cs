@@ -66,9 +66,6 @@ namespace Notus.Core.Prepare
                                 { "data" , JsonSerializer.Serialize(Obj_Token) }
                             }
                         );
-                        Console.WriteLine("Control-Point - Token.Generate");
-                        Console.WriteLine(MainResultStr);
-                        Console.WriteLine("Control-Point - Token.Generate");
                         Notus.Core.Variable.BlockResponseStruct tmpResponse = JsonSerializer.Deserialize<Notus.Core.Variable.BlockResponseStruct>(MainResultStr);
                         return tmpResponse;
                     }
