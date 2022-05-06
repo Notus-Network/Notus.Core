@@ -23,7 +23,7 @@ namespace Notus.Core.Wallet
                     return new Notus.Core.Variable.CryptoTransactionResult()
                     {
                         ID = string.Empty,
-                        Result = Notus.Core.Variable.CryptoTransactionResultCode.WrongSignature,
+                        Result = Notus.Core.Variable.BlockStatusCode.WrongSignature,
                     };
                 }
 
@@ -68,7 +68,7 @@ namespace Notus.Core.Wallet
             return new Notus.Core.Variable.CryptoTransactionResult()
             {
                 ID = string.Empty,
-                Result = Notus.Core.Variable.CryptoTransactionResultCode.AnErrorOccurred,
+                Result = Notus.Core.Variable.BlockStatusCode.AnErrorOccurred,
             };
         }
 

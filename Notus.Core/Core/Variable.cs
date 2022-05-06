@@ -173,7 +173,7 @@ namespace Notus.Core
         public class CryptoTransactionResult
         {
             public int ErrorNo { get; set; }
-            public Notus.Core.Variable.CryptoTransactionResultCode Result { get; set; }
+            public Notus.Core.Variable.BlockStatusCode Result { get; set; }
             public string ID { get; set; }
         }
 
@@ -226,7 +226,7 @@ namespace Notus.Core
             public Notus.Core.Variable.NetworkType Network { get; set; }
         }
 
-        public enum CryptoTransactionResultCode
+        public enum BlockStatusCode
         {
             AddedToQueue = 0,
             InAlreadyQueue = 1,
@@ -239,18 +239,12 @@ namespace Notus.Core
             InsufficientBalance = 12,
             PendingPreviousTransaction = 13,
             AnErrorOccurred = 99,
+            InQueue = 1,
             Completed = 22,
             Rejected = 97,
             Unknown = 78
         }
 
-        public enum CryptoTransactionStatusCode
-        {
-            InQueue = 1,
-            Completed = 2,
-            Rejected = 3,
-            Unknown = 4
-        }
         public enum WalletTypeCode
         {
             Sender = 1,
