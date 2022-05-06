@@ -109,7 +109,8 @@ namespace Notus.Core
             public bool Resupplyable { get; set; }  // token can be editable
         }
 
-
+		
+		/*
         // block struct for type 141 -> token transaction block strcut
         public class BlockStruct_141
         {
@@ -135,7 +136,7 @@ namespace Notus.Core
             public string PublicKey { get; set; }           // control public key
             public string Sign { get; set; }                // control sign data
         }
-
+		*/
 
         // block struct for type 142 -> increase in token supply block strcut
         public class BlockStruct_142
@@ -179,11 +180,12 @@ namespace Notus.Core
         public class WalletBalanceStruct
         {
             public string Wallet { get; set; }         // account wallet id
-            public string Balance { get; set; }        // account current balance
+            public Dictionary<string,string> Balance { get; set; }      // account current balance
             public string Currency { get; set; }       // account curreny
             public Int64 RowNo { get; set; }           // witness row no
             public string UID { get; set; }            // witness uid
         }
+
         public class WalletActivitiesStruct
         {
             public Int64 Order { get; set; }        // activities order no
