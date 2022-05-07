@@ -151,7 +151,7 @@ namespace Notus.Core
         public class WalletBalanceStruct
         {
             public string Wallet { get; set; }         // account wallet id
-            public Dictionary<string,string> Balance { get; set; }      // account current balance
+            public Dictionary<string, string> Balance { get; set; }      // account current balance
             public string Currency { get; set; }       // account curreny
             public Int64 RowNo { get; set; }           // witness row no
             public string UID { get; set; }            // witness uid
@@ -201,11 +201,16 @@ namespace Notus.Core
         {
             AddedToQueue = 0,
             InAlreadyQueue = 1,
+            
+            WrongParameter = 45,
             WrongPublicKey = 10,
             WrongSignature = 2,
             WrongVolume = 5,
+            WrongWallet = 67,
+
             WrongWallet_Sender = 6,
             WrongWallet_Receiver = 9,
+
             WalletDoesntExist = 11,
             InsufficientBalance = 12,
             PendingPreviousTransaction = 13,
