@@ -400,18 +400,34 @@ namespace Notus.Core
                 yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
             }
         }
-        public static int GetNetworkPort(Notus.Core.Variable.NetworkType currentNetwork)
+        public static int GetNetworkPort(Notus.Core.Variable.NetworkType currentNetwork, Notus.Core.Variable.NetworkLayer currentLayer= Variable.NetworkLayer.Layer1)
         {
-            if (currentNetwork == Variable.NetworkType.TestNet)
+            if(currentLayer== Variable.NetworkLayer.Layer1)
             {
-                return Notus.Core.Variable.PortNo_TestNet;
-            }
-            if (currentNetwork == Variable.NetworkType.DevNet)
-            {
-                return Notus.Core.Variable.PortNo_DevNet;
+                if (currentNetwork == Variable.NetworkType.TestNet)
+                {
+                    return Notus.Core.Variable.PortNo_TestNet_L1;
+                }
+                if (currentNetwork == Variable.NetworkType.DevNet)
+                {
+                    return Notus.Core.Variable.PortNo_DevNet_L1;
+                }
+                return Notus.Core.Variable.PortNo_MainNet_L1;
             }
 
-            return Notus.Core.Variable.PortNo_MainNet;
+            if(currentLayer== Variable.NetworkLayer.Layer2)
+            {
+                if (currentNetwork == Variable.NetworkType.TestNet)
+                {
+                    return Notus.Core.Variable.PortNo_TestNet_L2;
+                }
+                if (currentNetwork == Variable.NetworkType.DevNet)
+                {
+                    return Notus.Core.Variable.PortNo_DevNet_L2;
+                }
+                return Notus.Core.Variable.PortNo_MainNet_L2;
+            }
+            return 0;
         }
         public static async Task<string> FindAvailableNode(string UrlText, Notus.Core.Variable.NetworkType currentNetwork)
         {

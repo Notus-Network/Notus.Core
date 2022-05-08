@@ -26,11 +26,18 @@ namespace Notus.Core
         { '8', 0x8 },{ '9', 0x9 }
         };
         public static readonly string CommonDelimeterChar = ":";
-        //tüm sunucu işlemlerinden Http server portu olarak bu kullanılacak
-        public static readonly int PortNo_MainNet = 5000;
-        public static readonly int PortNo_TestNet = 5001;
-        public static readonly int PortNo_DevNet = 5002;
-        //public static readonly int PortNo_HttpListener = 5000;
+        
+        // layer 1 - main layer for crypto & token generate and transfer
+        public static readonly int PortNo_MainNet_L1 = 5000;
+        public static readonly int PortNo_TestNet_L1 = 5001;
+        public static readonly int PortNo_DevNet_L1 = 5002;
+
+        // layer 2 - sub layer for file storage
+        public static readonly int PortNo_MainNet_L2 = 5000;
+        public static readonly int PortNo_TestNet_L2 = 5001;
+        public static readonly int PortNo_DevNet_L2 = 5002;
+
+        
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "94.101.87.42"
         };
@@ -41,6 +48,16 @@ namespace Notus.Core
         public static readonly string Prefix_MainNetwork = "NR";
         public static readonly string Prefix_TestNetwork = "NT";
 
+
+        public enum NetworkLayer
+        {
+            Layer1 = 1,
+            Layer2 = 2,
+            Layer3 = 3,
+            Layer4 = 4,
+            Layer5 = 5,
+            Layer6 = 6
+        }
         public enum NetworkType
         {
             MainNet = 10,
