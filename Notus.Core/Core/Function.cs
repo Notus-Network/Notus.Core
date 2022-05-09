@@ -393,6 +393,28 @@ namespace Notus.Core
             }
             return "unknown-net";
         }
+        public static string NetworkLayerText(Notus.Core.Variable.NetworkLayer networkLayer)
+        {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer1) {
+                return "layer-1";
+            }
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer2) {
+                return "layer-2";
+            }
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer3) {
+                return "layer-3";
+            }
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer4) {
+                return "layer-4";
+            }
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer5) {
+                return "layer-5";
+            }
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer6) {
+                return "layer-6";
+            }
+            return "layer-unknown";
+        }
         public static IEnumerable<string> SplitByLength(this string str, int maxLength)
         {
             for (int index = 0; index < str.Length; index += maxLength)

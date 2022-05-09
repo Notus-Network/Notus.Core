@@ -26,7 +26,56 @@ namespace Notus.Core
         { '8', 0x8 },{ '9', 0x9 }
         };
         public static readonly string CommonDelimeterChar = ":";
-        
+
+        private static readonly int DefaultPortNo = 5000;
+
+        // layer 1 - main layer for crypto & token generate and transfer
+        public static readonly Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>> PortNo = new Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>>()
+        {
+            {
+                NetworkLayer.Layer1, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 0},
+                    { NetworkType.TestNet, DefaultPortNo + 1},
+                    { NetworkType.DevNet, DefaultPortNo + 2}
+                }
+            },
+            {
+                NetworkLayer.Layer2, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 100},
+                    { NetworkType.TestNet, DefaultPortNo + 101},
+                    { NetworkType.DevNet, DefaultPortNo + 102}
+                }
+            },
+            {
+                NetworkLayer.Layer3, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 200},
+                    { NetworkType.TestNet, DefaultPortNo + 201},
+                    { NetworkType.DevNet, DefaultPortNo + 202}
+                }
+            },
+            {
+                NetworkLayer.Layer4, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 300},
+                    { NetworkType.TestNet, DefaultPortNo + 301},
+                    { NetworkType.DevNet, DefaultPortNo + 302}
+                }
+            },
+            {
+                NetworkLayer.Layer5, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 400},
+                    { NetworkType.TestNet, DefaultPortNo + 401},
+                    { NetworkType.DevNet, DefaultPortNo + 402}
+                }
+            },
+            {
+                NetworkLayer.Layer6, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 500},
+                    { NetworkType.TestNet, DefaultPortNo + 501},
+                    { NetworkType.DevNet, DefaultPortNo + 502}
+                }
+            }
+        };
+
         // layer 1 - main layer for crypto & token generate and transfer
         public static readonly int PortNo_MainNet_L1 = 5000;
         public static readonly int PortNo_TestNet_L1 = 5001;
@@ -37,7 +86,7 @@ namespace Notus.Core
         public static readonly int PortNo_TestNet_L2 = 5001;
         public static readonly int PortNo_DevNet_L2 = 5002;
 
-        
+
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "94.101.87.42"
         };
@@ -51,12 +100,18 @@ namespace Notus.Core
 
         public enum NetworkLayer
         {
-            Layer1 = 1,
-            Layer2 = 2,
-            Layer3 = 3,
-            Layer4 = 4,
-            Layer5 = 5,
-            Layer6 = 6
+            // MainLayer = 1,     // crypto and token transfer & token generation
+            Layer1 = 1,     // crypto and token transfer & token generation
+
+            // StorageLayer = 2,     // file storage ( never delete )
+            Layer2 = 2,     // file storage ( never delete )
+
+            // MessageLayer = 3,     // message storage ( delete after 1 year )
+            Layer3 = 3,     // message storage ( delete after 1 year )
+
+            Layer4 = 4,     // not using
+            Layer5 = 5,     // not using
+            Layer6 = 6      // not using
         }
         public enum NetworkType
         {
@@ -218,7 +273,7 @@ namespace Notus.Core
         {
             AddedToQueue = 0,
             InAlreadyQueue = 1,
-            
+
             WrongParameter = 45,
             WrongPublicKey = 10,
             WrongSignature = 2,
