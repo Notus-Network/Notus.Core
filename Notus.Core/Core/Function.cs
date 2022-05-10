@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Notus.Core
@@ -31,7 +27,7 @@ namespace Notus.Core
             {
                 resultArray[x] = (byte)(xorValue ^ hexArray[x]);
             }
-            
+
             return Notus.Core.Convert.Byte2Hex(resultArray);
         }
         public static string BaseAlphabetIteration(byte numericBase, string KeyForIteration)
@@ -107,7 +103,7 @@ namespace Notus.Core
         public static string GenerateEncKey()
         {
             string newHexPattern = Iteration(16, GenerateEncKey_subFunc(10000000));
-            return 
+            return
                 ReplaceChar(GenerateEncKey_subFunc(15000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
                 ReplaceChar(GenerateEncKey_subFunc(20000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
                 ReplaceChar(GenerateEncKey_subFunc(25000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
@@ -119,7 +115,7 @@ namespace Notus.Core
         public static string RepeatString(int HowManyTimes, string TextForRepeat)
         {
             string tmpResult = string.Empty;
-            for(int i = 0; i < HowManyTimes; i++)
+            for (int i = 0; i < HowManyTimes; i++)
             {
                 tmpResult = tmpResult + TextForRepeat;
             }
@@ -132,7 +128,7 @@ namespace Notus.Core
         public static string GenerateSalt()
         {
             string newHexPattern = Iteration(16, GenerateEncKey_subFunc(10000000));
-            return 
+            return
                 ReplaceChar(GenerateEncKey_subFunc(15000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
                 ReplaceChar(GenerateEncKey_subFunc(20000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
                 ReplaceChar(GenerateEncKey_subFunc(25000000), Notus.Core.Variable.DefaultHexAlphabetString, newHexPattern) +
@@ -382,35 +378,44 @@ namespace Notus.Core
         }
         public static string NetworkTypeText(Notus.Core.Variable.NetworkType networkType)
         {
-            if (networkType == Notus.Core.Variable.NetworkType.MainNet) {
+            if (networkType == Notus.Core.Variable.NetworkType.MainNet)
+            {
                 return "main-net";
             }
-            if (networkType == Notus.Core.Variable.NetworkType.TestNet) {
+            if (networkType == Notus.Core.Variable.NetworkType.TestNet)
+            {
                 return "test-net";
             }
-            if (networkType == Notus.Core.Variable.NetworkType.DevNet) {
+            if (networkType == Notus.Core.Variable.NetworkType.DevNet)
+            {
                 return "dev-net";
             }
             return "unknown-net";
         }
         public static string NetworkLayerText(Notus.Core.Variable.NetworkLayer networkLayer)
         {
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer1) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer1)
+            {
                 return "layer-1";
             }
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer2) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer2)
+            {
                 return "layer-2";
             }
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer3) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer3)
+            {
                 return "layer-3";
             }
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer4) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer4)
+            {
                 return "layer-4";
             }
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer5) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer5)
+            {
                 return "layer-5";
             }
-            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer6) {
+            if (networkLayer == Notus.Core.Variable.NetworkLayer.Layer6)
+            {
                 return "layer-6";
             }
             return "layer-unknown";
@@ -422,36 +427,11 @@ namespace Notus.Core
                 yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
             }
         }
-        public static int GetNetworkPort(Notus.Core.Variable.NetworkType currentNetwork, Notus.Core.Variable.NetworkLayer currentLayer= Variable.NetworkLayer.Layer1)
+        public static int GetNetworkPort(Notus.Core.Variable.NetworkType currentNetwork, Notus.Core.Variable.NetworkLayer currentLayer)
         {
-            if(currentLayer== Variable.NetworkLayer.Layer1)
-            {
-                if (currentNetwork == Variable.NetworkType.TestNet)
-                {
-                    return Notus.Core.Variable.PortNo_TestNet_L1;
-                }
-                if (currentNetwork == Variable.NetworkType.DevNet)
-                {
-                    return Notus.Core.Variable.PortNo_DevNet_L1;
-                }
-                return Notus.Core.Variable.PortNo_MainNet_L1;
-            }
-
-            if(currentLayer== Variable.NetworkLayer.Layer2)
-            {
-                if (currentNetwork == Variable.NetworkType.TestNet)
-                {
-                    return Notus.Core.Variable.PortNo_TestNet_L2;
-                }
-                if (currentNetwork == Variable.NetworkType.DevNet)
-                {
-                    return Notus.Core.Variable.PortNo_DevNet_L2;
-                }
-                return Notus.Core.Variable.PortNo_MainNet_L2;
-            }
-            return 0;
+            return Notus.Core.Variable.PortNo[currentLayer][currentNetwork];
         }
-        public static async Task<string> FindAvailableNode(string UrlText, Notus.Core.Variable.NetworkType currentNetwork)
+        public static async Task<string> FindAvailableNode(string UrlText, Notus.Core.Variable.NetworkType currentNetwork, Notus.Core.Variable.NetworkLayer networkLayer)
         {
             string MainResultStr = string.Empty;
             bool exitInnerLoop = false;
@@ -461,7 +441,7 @@ namespace Notus.Core
                 {
                     try
                     {
-                        MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork)) + UrlText, 10, true);
+                        MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
                     }
                     catch (Exception err)
                     {
@@ -477,11 +457,11 @@ namespace Notus.Core
         {
             using (var client = new HttpClient())
             {
-                HttpResponseMessage response = await client .PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
+                HttpResponseMessage response = await client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
                 if (response.IsSuccessStatusCode)
                 {
                     HttpContent responseContent = response.Content;
-                    return await responseContent .ReadAsStringAsync();
+                    return await responseContent.ReadAsStringAsync();
                 }
             }
             return string.Empty;
@@ -503,7 +483,7 @@ namespace Notus.Core
                         return await responseContent.ReadAsStringAsync();
                     }
                 }
-            } 
+            }
             catch (Exception err)
             {
                 Console.WriteLine(err.Message);
@@ -634,7 +614,7 @@ namespace Notus.Core
         }
         public static string CurrencyName2Hex(string CurrencyNameText)
         {
-            return 
+            return
                 System.Convert.ToHexString(
                     System.Text.Encoding.ASCII.GetBytes(
                         CurrencyNameText.ToLower()

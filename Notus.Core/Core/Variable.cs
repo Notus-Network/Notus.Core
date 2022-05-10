@@ -73,6 +73,34 @@ namespace Notus.Core
                     { NetworkType.TestNet, DefaultPortNo + 501},
                     { NetworkType.DevNet, DefaultPortNo + 502}
                 }
+            },
+            {
+                NetworkLayer.Layer7, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 600},
+                    { NetworkType.TestNet, DefaultPortNo + 601},
+                    { NetworkType.DevNet, DefaultPortNo + 602}
+                }
+            },
+            {
+                NetworkLayer.Layer8, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 700},
+                    { NetworkType.TestNet, DefaultPortNo + 701},
+                    { NetworkType.DevNet, DefaultPortNo + 702}
+                }
+            },
+            {
+                NetworkLayer.Layer9, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 800},
+                    { NetworkType.TestNet, DefaultPortNo + 801},
+                    { NetworkType.DevNet, DefaultPortNo + 802}
+                }
+            },
+            {
+                NetworkLayer.Layer10, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 900},
+                    { NetworkType.TestNet, DefaultPortNo + 901},
+                    { NetworkType.DevNet, DefaultPortNo + 902}
+                }
             }
         };
 
@@ -109,9 +137,13 @@ namespace Notus.Core
             // MessageLayer = 3,     // message storage ( delete after 1 year )
             Layer3 = 3,     // message storage ( delete after 1 year )
 
-            Layer4 = 4,     // not using
-            Layer5 = 5,     // not using
-            Layer6 = 6      // not using
+            Layer4 = 4,    // not using
+            Layer5 = 5,    // not using
+            Layer6 = 6,    // not using
+            Layer7 = 7,    // not using
+            Layer8 = 8,    // not using
+            Layer9 = 9,    // not using
+            Layer10 = 10   // not using
         }
         public enum NetworkType
         {

@@ -39,7 +39,7 @@ namespace Notus.Core.Wallet
                             string fullUrlAddress =
                                 Notus.Core.Function.MakeHttpListenerPath(
                                     nodeIpAddress,
-                                    Notus.Core.Function.GetNetworkPort(currentNetwork)
+                                    Notus.Core.Function.GetNetworkPort(currentNetwork, Notus.Core.Variable.NetworkLayer.Layer1)
                                 ) + "send/" ;
 
                             //string MainResultStr = await Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);

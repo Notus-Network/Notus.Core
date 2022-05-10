@@ -53,11 +53,11 @@ namespace Notus.Core.Prepare
                     string nodeIpAddress = Notus.Core.Variable.ListMainNodeIp[a];
                     try
                     {
-                        
+
                         string fullUrlAddress =
                             Notus.Core.Function.MakeHttpListenerPath(
                                 nodeIpAddress,
-                                Notus.Core.Function.GetNetworkPort(currentNetwork)
+                                Notus.Core.Function.GetNetworkPort(currentNetwork, Notus.Core.Variable.NetworkLayer.Layer1)
                             ) + "token/generate/" + WalletKeyStr + "/";
                         string MainResultStr = await Notus.Core.Function.PostRequest(
                             fullUrlAddress,
