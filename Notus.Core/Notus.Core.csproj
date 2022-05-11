@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>3.0.39</Version>
+	  <Version>3.0.40</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -17,7 +17,7 @@
 	  <NeutralLanguage>en</NeutralLanguage>
 	  <PackageLicenseFile>MIT-LICENSE.txt</PackageLicenseFile>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <PackageReleaseNotes>In this release, GetNetworkPort function have been updated.</PackageReleaseNotes>  </PropertyGroup>
+	  <PackageReleaseNotes>In this release, FileTransferStruct and  FileChunkStruct structs have been added.</PackageReleaseNotes>  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">

@@ -125,6 +125,21 @@ namespace Notus.Core
         public static readonly string Prefix_MainNetwork = "NR";
         public static readonly string Prefix_TestNetwork = "NT";
 
+        public class FileTransferStruct
+        {
+            public string FileName { get; set; }
+            public long FileSize { get; set; } 
+            public string FileHash { get; set; }
+            public int ChunkSize { get; set; }
+            public int ChunkCount { get; set; }
+        }
+        public class FileChunkStruct
+        {
+            public string UID { get; set; }
+            public int Count { get; set; } 
+            public string Data { get; set; }
+        }
+
         public enum ProtectionLevel
         {
             Low = 0,
