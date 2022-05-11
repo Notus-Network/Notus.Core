@@ -445,7 +445,11 @@ namespace Notus.Core
         {
             return Notus.Core.Variable.PortNo[currentLayer][currentNetwork];
         }
-        public static async Task<string> FindAvailableNode(string UrlText, Notus.Core.Variable.NetworkType currentNetwork, Notus.Core.Variable.NetworkLayer networkLayer)
+        public static async Task<string> FindAvailableNode(
+            string UrlText, 
+            Notus.Core.Variable.NetworkType currentNetwork, 
+            Notus.Core.Variable.NetworkLayer networkLayer
+        )
         {
             string MainResultStr = string.Empty;
             bool exitInnerLoop = false;
@@ -456,6 +460,36 @@ namespace Notus.Core
                     try
                     {
                         MainResultStr = await GetRequest(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
+                    }
+                    catch (Exception err)
+                    {
+                        Console.WriteLine(err.Message);
+                        SleepWithoutBlocking(5, true);
+                    }
+                    exitInnerLoop = (MainResultStr.Length > 0);
+                }
+            }
+            return MainResultStr;
+        }
+        public static async Task<string> FindAvailableNode(
+            string UrlText,
+            Dictionary<string,string> PostData,
+            Notus.Core.Variable.NetworkType currentNetwork,
+            Notus.Core.Variable.NetworkLayer networkLayer
+        )
+        {
+            string MainResultStr = string.Empty;
+            bool exitInnerLoop = false;
+            while (exitInnerLoop == false)
+            {
+                for (int a = 0; a < Notus.Core.Variable.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                {
+                    try
+                    {
+                        MainResultStr = await PostRequest(
+                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
+                            PostData
+                        );
                     }
                     catch (Exception err)
                     {
