@@ -372,6 +372,20 @@ namespace Notus.Core
                 }
             }
         }
+
+        public static float[] ProtectionType(Notus.Core.Variable.ProtectionLevel protectionLevel, bool isLight = false)
+        {
+            // FontSize, XSpace, YSpace, Opacity
+            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.Low)
+                return new float[] { 8, 50, 50, isLight ? 120 : 100 };
+            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.Medium)
+                return new float[] { 12, 40, 40, isLight ? 120 : 100 };
+            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.High)
+                return new float[] { 14, 40, 40, isLight ? 120 : 100 };
+
+            return new float[] { 0, 0, 0, 0 };
+        }
+
         public static string NetworkTypeStr(Notus.Core.Variable.NetworkType networkType)
         {
             return (networkType == Notus.Core.Variable.NetworkType.MainNet ? "main_" : "test_");

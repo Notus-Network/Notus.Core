@@ -125,6 +125,12 @@ namespace Notus.Core
         public static readonly string Prefix_MainNetwork = "NR";
         public static readonly string Prefix_TestNetwork = "NT";
 
+        public enum ProtectionLevel
+        {
+            Low = 0,
+            Medium = 1,
+            High = 2
+        }
 
         public enum NetworkLayer
         {
