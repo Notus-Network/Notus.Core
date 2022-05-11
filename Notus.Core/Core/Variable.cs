@@ -252,6 +252,12 @@ namespace Notus.Core
             public string PublicKey { get; set; }
             public string WalletKey { get; set; }
         }
+        public class BlockResponse
+        {
+            public string UID { get; set; }
+            public Notus.Core.Variable.BlockStatusCode Result { get; set; }
+            public string Status { get; set; }
+        }
         public class BlockResponseStruct
         {
             public string UID { get; set; }
