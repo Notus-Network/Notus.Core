@@ -474,7 +474,7 @@ namespace Notus.Core
         }
         public static async Task<string> FindAvailableNode(
             string UrlText,
-            Dictionary<string,string> PostData,
+            Dictionary<string, string> PostData,
             Notus.Core.Variable.NetworkType currentNetwork,
             Notus.Core.Variable.NetworkLayer networkLayer
         )
@@ -488,7 +488,7 @@ namespace Notus.Core
                     try
                     {
                         MainResultStr = await PostRequest(
-                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], 
+                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a],
                             GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
                             PostData
                         );
@@ -503,21 +503,87 @@ namespace Notus.Core
             }
             return MainResultStr;
         }
+
+        public static string FindAvailableNodeSync(
+            string UrlText, 
+            Notus.Core.Variable.NetworkType currentNetwork, 
+            Notus.Core.Variable.NetworkLayer networkLayer
+        )
+        {
+            string MainResultStr = string.Empty;
+            bool exitInnerLoop = false;
+            while (exitInnerLoop == false)
+            {
+                for (int a = 0; a < Notus.Core.Variable.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                {
+                    try
+                    {
+                        MainResultStr = GetRequestSync(MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
+                    }
+                    catch (Exception err)
+                    {
+                        Console.WriteLine(err.Message);
+                        SleepWithoutBlocking(5, true);
+                    }
+                    exitInnerLoop = (MainResultStr.Length > 0);
+                }
+            }
+            return MainResultStr;
+        }
+        public static string FindAvailableNodeSync(
+            string UrlText,
+            Dictionary<string, string> PostData,
+            Notus.Core.Variable.NetworkType currentNetwork,
+            Notus.Core.Variable.NetworkLayer networkLayer
+        )
+        {
+            string MainResultStr = string.Empty;
+            bool exitInnerLoop = false;
+            while (exitInnerLoop == false)
+            {
+                for (int a = 0; a < Notus.Core.Variable.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                {
+                    try
+                    {
+                        MainResultStr = PostRequestSync(
+                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a],
+                            GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
+                            PostData
+                        );
+                    }
+                    catch (Exception err)
+                    {
+                        Console.WriteLine(err.Message);
+                        SleepWithoutBlocking(5, true);
+                    }
+                    exitInnerLoop = (MainResultStr.Length > 0);
+                }
+            }
+            return MainResultStr;
+        }
+
         public static async Task<string> PostRequest(string UrlAddress, Dictionary<string, string> PostData)
         {
             using (var client = new HttpClient())
             {
-                //Console.WriteLine(JsonSerializer.Serialize(new FormUrlEncodedContent(PostData)));
-                //FormUrlEncodedContent content = new FormUrlEncodedContent(PostData);
-                //Console.WriteLine(JsonSerializer.Serialize(content));
-
-                //HttpContent postContent = new HttpContent();
-
                 HttpResponseMessage response = await client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
                 if (response.IsSuccessStatusCode)
                 {
                     HttpContent responseContent = response.Content;
                     return await responseContent.ReadAsStringAsync();
+                }
+            }
+            return string.Empty;
+        }        
+        public static string PostRequestSync(string UrlAddress, Dictionary<string, string> PostData)
+        {
+            using (var client = new HttpClient())
+            {
+                HttpResponseMessage response = client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData)).GetAwaiter().GetResult();
+                if (response.IsSuccessStatusCode)
+                {
+                    HttpContent responseContent = response.Content;
+                    return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
                 }
             }
             return string.Empty;
@@ -537,6 +603,30 @@ namespace Notus.Core
                     {
                         HttpContent responseContent = response.Content;
                         return await responseContent.ReadAsStringAsync();
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.Message);
+            }
+            return string.Empty;
+        }
+        public static string GetRequestSync(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    if (TimeOut > 0)
+                    {
+                        client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
+                    }
+                    HttpResponseMessage response = client.GetAsync(UrlAddress).GetAwaiter().GetResult();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        HttpContent responseContent = response.Content;
+                        return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
                     }
                 }
             }
