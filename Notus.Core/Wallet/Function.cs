@@ -112,12 +112,10 @@ namespace Notus.Core.Wallet
         public static BigInteger Integer_modulo(BigInteger dividend, BigInteger divisor)
         {
             BigInteger remainder = BigInteger.Remainder(dividend, divisor);
-
             if (remainder < 0)
             {
                 return remainder + divisor;
             }
-
             return remainder;
         }
 
@@ -148,7 +146,6 @@ namespace Notus.Core.Wallet
             {
                 return minimum + randomValue;
             }
-
             return Integer_randomBetween(minimum, maximum);
 
         }
@@ -158,23 +155,17 @@ namespace Notus.Core.Wallet
             int bitsNeeded = 0;
             int bytesNeeded = 0;
             BigInteger mask = new BigInteger(1);
-
             while (range > 0)
             {
                 if (bitsNeeded % 8 == 0)
                 {
                     bytesNeeded += 1;
                 }
-
                 bitsNeeded++;
-
                 mask = (mask << 1) | 1;
-
                 range >>= 1;
             }
-
             return Tuple.Create(bytesNeeded, mask);
-
         }
 
         public static string File_read(string path)

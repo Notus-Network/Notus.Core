@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Notus.Core
@@ -487,7 +488,8 @@ namespace Notus.Core
                     try
                     {
                         MainResultStr = await PostRequest(
-                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
+                            MakeHttpListenerPath(Notus.Core.Variable.ListMainNodeIp[a], 
+                            GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
                             PostData
                         );
                     }
@@ -505,6 +507,12 @@ namespace Notus.Core
         {
             using (var client = new HttpClient())
             {
+                //Console.WriteLine(JsonSerializer.Serialize(new FormUrlEncodedContent(PostData)));
+                //FormUrlEncodedContent content = new FormUrlEncodedContent(PostData);
+                //Console.WriteLine(JsonSerializer.Serialize(content));
+
+                //HttpContent postContent = new HttpContent();
+
                 HttpResponseMessage response = await client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
                 if (response.IsSuccessStatusCode)
                 {
@@ -615,7 +623,7 @@ namespace Notus.Core
             return Notus.Core.Convert.ToBase35(SubGenerateBlockKey(SeedForKey, ""));
             //DateTime.Now.ToString("yyyyMMddHHmmssffffff")
         }
-        private static int CalculateBlockStorageNumber(string timeKey)
+        public static int CalculateStorageNumber(string timeKey)
         {
             return int.Parse(timeKey.Substring(8, 6)) % Notus.Core.Variable.BlockStorageMonthlyGroupCount;
         }
@@ -628,7 +636,7 @@ namespace Notus.Core
             else
             {
                 string TimeKey = GetTimeFromKey(BlockKey, ProcessKeyAsHex);
-                return TimeKey.Substring(0, 6) + "-" + CalculateBlockStorageNumber(TimeKey).ToString().PadLeft(2, '0');
+                return TimeKey.Substring(0, 6) + "-" + CalculateStorageNumber(TimeKey).ToString().PadLeft(2, '0');
             }
         }
         public static string GetTimeFromKey(string TimeKey, bool ProcessKeyAsHex = false)
