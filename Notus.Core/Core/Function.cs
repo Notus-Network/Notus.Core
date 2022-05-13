@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -374,19 +375,6 @@ namespace Notus.Core
             }
         }
 
-        public static float[] ProtectionType(Notus.Core.Variable.ProtectionLevel protectionLevel, bool isLight = false)
-        {
-            // FontSize, XSpace, YSpace, Opacity
-            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.Low)
-                return new float[] { 8, 50, 50, isLight ? 120 : 100 };
-            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.Medium)
-                return new float[] { 12, 40, 40, isLight ? 120 : 100 };
-            if (protectionLevel == Notus.Core.Variable.ProtectionLevel.High)
-                return new float[] { 14, 40, 40, isLight ? 120 : 100 };
-
-            return new float[] { 0, 0, 0, 0 };
-        }
-
         public static string NetworkTypeStr(Notus.Core.Variable.NetworkType networkType)
         {
             return (networkType == Notus.Core.Variable.NetworkType.MainNet ? "main_" : "test_");
@@ -577,14 +565,33 @@ namespace Notus.Core
         }        
         public static string PostRequestSync(string UrlAddress, Dictionary<string, string> PostData)
         {
-            using (var client = new HttpClient())
+            FormUrlEncodedContent formContent = new FormUrlEncodedContent(PostData);
+
+            //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 582");
+            //Console.WriteLine(JsonSerializer.Serialize(PostData));
+
+            //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 585");
+            //Console.WriteLine(JsonSerializer.Serialize(formContent));
+            try
             {
-                HttpResponseMessage response = client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData)).GetAwaiter().GetResult();
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    HttpContent responseContent = response.Content;
-                    return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                    HttpResponseMessage response = client.PostAsync(UrlAddress, formContent).GetAwaiter().GetResult();
+
+                    //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 587");
+                    //Console.WriteLine(JsonSerializer.Serialize(response));
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        HttpContent responseContent = response.Content;
+                        return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+                    }
                 }
+            }catch(Exception err)
+            {
+                Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 606");
+                Console.WriteLine(err.Message);
             }
             return string.Empty;
         }

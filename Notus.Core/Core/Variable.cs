@@ -140,13 +140,6 @@ namespace Notus.Core
             public string Data { get; set; }
         }
 
-        public enum ProtectionLevel
-        {
-            Low = 0,
-            Medium = 1,
-            High = 2
-        }
-
         public enum NetworkLayer
         {
             // MainLayer = 1,     // crypto and token transfer & token generation
@@ -346,6 +339,7 @@ namespace Notus.Core
             InsufficientBalance = 12,
             PendingPreviousTransaction = 13,
             AnErrorOccurred = 99,
+            Pending = 89,
             InQueue = 1,
             Completed = 22,
             Rejected = 97,
