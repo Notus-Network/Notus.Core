@@ -5,6 +5,7 @@ namespace Notus.Core
 {
     public static class Variable
     {
+        public static readonly string DefaultDateTimeFormatText = "yyyyMMddHHmmssfff";
         public static readonly string DefaultHexAlphabetString = "0123456789abcdef";
         public static readonly string DefaultBase32AlphabetString = "QAZ2WSX3EDC4RFV5TGB6YHN7UJM8K9LP";
 
@@ -132,12 +133,23 @@ namespace Notus.Core
             public string FileHash { get; set; }
             public int ChunkSize { get; set; }
             public int ChunkCount { get; set; }
+            public Notus.Core.Variable.ProtectionLevel Level { get; set; }
+            public bool WaterMarkIsLight { get; set; }
+            public string PublicKey { get; set; }
+            public string Sign { get; set; }
         }
         public class FileChunkStruct
         {
             public string UID { get; set; }
             public int Count { get; set; } 
             public string Data { get; set; }
+        }
+
+        public enum ProtectionLevel
+        {
+            Low = 0,
+            Medium = 1,
+            High = 2
         }
 
         public enum NetworkLayer
@@ -205,6 +217,12 @@ namespace Notus.Core
             public string UID { get; set; }     // token UID verisi
             public string PublicKey { get; set; }     // creator public key
             public string Sign { get; set; }  // struct sign
+        }
+        public class GenericSignStruct
+        {
+            public string Time { get; set; }     // time ID
+            public string PublicKey { get; set; }     // signer public key
+            public string Sign { get; set; }  // sign
         }
         public class FileStorageStruct
         {
