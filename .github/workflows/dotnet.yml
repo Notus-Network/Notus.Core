@@ -1,29 +1,44 @@
-name: .NET Core Build
+name: CI
+
 on:
+  create:
+    branches: 
+      - release/**
   push:
     branches:
-      - main # Default release branch
-    tags:
-      - '*'
-
+    - master
+  pull_request:
+    branches:
+    - master
+    
 jobs:
-  publish:
-    name: build, pack & publish
-    runs-on: ubuntu-latest
+  build:
+
     env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: true
-      DOTNET_NOLOGO: true
-      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      BUILD_CONFIG: 'Release'
+      SOLUTION: 'Notus.Core.sln'
+
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@main
+    - uses: actions/checkout@v2
 
-      - name: Install latest .NET SDK
-        uses: Elskom/setup-latest-dotnet@main
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
 
-      - name: Restore, Build, test, and pack
-        uses: Elskom/build-dotnet@main
-        with:
-          TEST: false
-          PACK: true
-          PUSH: true
+    - name: Restore dependencies
+      run: nuget restore $SOLUTION
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build --version 4.0.${{ github.run_number }} --configuration $BUILD_CONFIG
+      
+    - name: Pack Build
+      run: dotnet pack -c Release
+      
+    - name: Publish
+      run: nuget push **\*..nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
