@@ -37,5 +37,8 @@ jobs:
     - name: Build
       run: dotnet build --version 4.0.${{ github.run_number }}
       
+    - name: Pack Build
+      run: dotnet pack -c Release /p:Version:4.0.${{ github.run.number }}
+      
     - name: Publish
       run: nuget push **\*..nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
