@@ -16,7 +16,7 @@ jobs:
           dotnet-version: 5.0.x
       
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build
       
       - name: publish
         id: publish_nuget
