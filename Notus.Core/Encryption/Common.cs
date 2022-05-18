@@ -6,6 +6,15 @@ namespace Notus.Core.Encryption
 {
     public class Common
     {
+        public static (byte[],byte[]) ChaCha20SecretKeyAndIV(string HashData)
+        {
+            byte[] hexByte=Notus.Core.Convert.Hex2Byte(HashData);
+            byte[] key = new byte[32];
+            byte[] nonce = new byte[12];
+            Array.Copy(hexByte, 0, key, 0, key.Length);
+            Array.Copy(hexByte, 48, nonce, 0, nonce.Length);
+            return (key, nonce);
+        }
         public static byte[] EncryptWithChaCha20(string InputData, string SecretKey, string SecretNonce)
         {
             return EncryptWithChaCha20(Encoding.UTF8.GetBytes(InputData), Notus.Core.Convert.Hex2Byte(SecretKey), Notus.Core.Convert.Hex2Byte(SecretNonce));

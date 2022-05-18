@@ -134,6 +134,7 @@ namespace Notus.Core
             public int ChunkSize { get; set; }
             public int ChunkCount { get; set; }
             public Notus.Core.Variable.ProtectionLevel Level { get; set; }
+            public bool StoreEncrypted { get; set; }
             public bool WaterMarkIsLight { get; set; }
             public string PublicKey { get; set; }
             public string Sign { get; set; }
