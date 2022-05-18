@@ -15,19 +15,22 @@ jobs:
         with:
           dotnet-version: 3.1.200
       
+      - name: Build
+        run: dotnet build --no-restore
+      
       - name: publish
         id: publish_nuget
         uses: rohith/publish-nuget@v2
         with:
           PROJECT_FILE_PATH: Notus.Core/Notus.Core.csproj
-
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-
-          NUGET_SOURCE: https://api.nuget.org
           
           BUILD_CONFIGURATION: Release
           
           BUILD_PLATFORM: x64   
+
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+          NUGET_SOURCE: https://api.nuget.org
           
           # Regex pattern to extract version info in a capturing group
           VERSION_REGEX: <Version>(.*)<\/Version>
