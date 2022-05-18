@@ -2,15 +2,20 @@ name: publish to nuget
 on:
   push:
     branches:
-      - master # Default release branch, may also be named 'master' or 'develop'
+      - master
 jobs:
   publish:
     name: build, pack & publish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # Publish
-      - name: publish on version change
+      
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.200
+      
+      - name: publish
         id: publish_nuget
         uses: rohith/publish-nuget@v2
         with:
@@ -19,6 +24,10 @@ jobs:
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
           NUGET_SOURCE: https://api.nuget.org
+          
+          BUILD_CONFIGURATION: Release
+          
+          BUILD_PLATFORM: x64   
           
           # Regex pattern to extract version info in a capturing group
           VERSION_REGEX: <Version>(.*)<\/Version>
