@@ -35,8 +35,7 @@ jobs:
         dotnet-version: 5.0.x
 
     - name: Build
-      run: dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
+      run: dotnet build
       
     - name: Publish
-      if: startsWith(github.ref, 'refs/heads/release')
       run: nuget push **\*.${{ github.run_number }}.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
