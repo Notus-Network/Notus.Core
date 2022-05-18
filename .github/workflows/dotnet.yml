@@ -1,42 +1,50 @@
-name: publish to nuget
+name: CI
+
 on:
+  create:
+    branches: 
+      - release/**
   push:
     branches:
-      - master
+    - main
+  pull_request:
+    branches:
+    - main
+    
 jobs:
-  publish:
-    name: build, pack & publish
+  build:
+
+    env:
+      BUILD_CONFIG: 'Release'
+      SOLUTION: 'Notus.Core.sln'
+
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    
+    - name: Get Build Version
+      run: |
+        Import-Module .\build\GetBuildVersion.psm1
+        Write-Host $Env:GITHUB_REF
+        $version = GetBuildVersion -VersionString $Env:GITHUB_REF
+        echo "BUILD_VERSION=$version" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+      shell: pwsh
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: Restore dependencies
+      run: nuget restore $SOLUTION
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build $SOLUTION --configuration $BUILD_CONFIG -p:Version=$BUILD_VERSION --no-restore
       
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 5.0.x
-      
-      - name: Build
-        run: dotnet build
-      
-      - name: publish
-        id: publish_nuget
-        uses: rohith/publish-nuget@v2
-        with:
-          PROJECT_FILE_PATH: Notus.Core/Notus.Core.csproj
-          
-          BUILD_CONFIGURATION: Release
-          
-          BUILD_PLATFORM: x64   
-
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-
-          NUGET_SOURCE: https://api.nuget.org
-          
-          # Regex pattern to extract version info in a capturing group
-          VERSION_REGEX: <Version>(.*)<\/Version>
-
-          # Flag to toggle git tagging, enabled by default
-          TAG_COMMIT: true
-
-          # Format of the git tag, [*] gets replaced with actual version
-          TAG_FORMAT: v*
+    - name: Publish
+      if: startsWith(github.ref, 'refs/heads/release')
+      run: nuget push **\*.nupkg -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_API_KEY}}
