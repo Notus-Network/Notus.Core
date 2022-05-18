@@ -2,7 +2,7 @@ name: .NET Core Build
 on:
   push:
     branches:
-      - main # Default release branch
+      - master # Default release branch
     tags:
       - '*'
 
