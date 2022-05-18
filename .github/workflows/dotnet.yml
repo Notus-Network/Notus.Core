@@ -4,16 +4,6 @@ on:
     branches:
       - master # Default release branch, may also be named 'master' or 'develop'
 jobs:
-  test:
-    name: get new data
-    runs-on: ubuntu-latest
-    steps:
-      - name: Bump release version
-        id: bump_version
-        uses: christian-draeger/increment-semantic-version@1.0.2
-        with:
-          current-version: ${{ steps.previous-tag.outputs.tag }}
-          version-fragment: 'bug'
   publish:
     name: build, pack & publish
     runs-on: ubuntu-latest
@@ -25,10 +15,16 @@ jobs:
         uses: rohith/publish-nuget@v2
         with:
           PROJECT_FILE_PATH: Notus.Core/Notus.Core.csproj
-          
-          VERSION_STATIC: ${{ steps.bump_version.outputs.next-version }}
 
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
 
           NUGET_SOURCE: https://api.nuget.org
+          
+          # Regex pattern to extract version info in a capturing group
+          VERSION_REGEX: <Version>(.*)<\/Version>
 
+          # Flag to toggle git tagging, enabled by default
+          TAG_COMMIT: true
+
+          # Format of the git tag, [*] gets replaced with actual version
+          TAG_FORMAT: v*
