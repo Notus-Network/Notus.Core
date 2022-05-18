@@ -157,12 +157,13 @@ namespace Notus.Core
             // MainLayer = 1,     // crypto and token transfer & token generation
             Layer1 = 1,     // crypto and token transfer & token generation
 
-            // StorageLayer = 2,     // file storage ( never delete )
+            // StorageLayer = 2,     // encrypted file storage ( never delete )
             Layer2 = 2,     // file storage ( never delete )
 
-            // MessageLayer = 3,     // message storage ( delete after 1 year )
+            // StorageLayer = 3,     // accesible file storage ( never delete )
             Layer3 = 3,     // message storage ( delete after 1 year )
 
+            // MessageLayer = 4,     // message storage ( delete after 1 year )
             Layer4 = 4,    // not using
             Layer5 = 5,    // not using
             Layer6 = 6,    // not using
