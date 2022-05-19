@@ -37,6 +37,16 @@ namespace Notus.Core
                 uploadFile.PublicKey;
             return uploadFile;
         }
+        public static string StorageOnChain(Notus.Core.Variable.StorageOnChainStruct StorageData)
+        {
+
+            return 
+                StorageData.Name + Notus.Core.Variable.CommonDelimeterChar +
+                StorageData.Size.ToString() + Notus.Core.Variable.CommonDelimeterChar +
+                StorageData.Hash + Notus.Core.Variable.CommonDelimeterChar +
+                Notus.Core.Function.BoolToStr(StorageData.Encrypted) + Notus.Core.Variable.CommonDelimeterChar +
+                StorageData.PublicKey;
+        }
 
         public static string TokenGenerate(
             string PublicKey,
