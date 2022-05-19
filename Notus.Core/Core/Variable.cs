@@ -28,6 +28,7 @@ namespace Notus.Core
         };
         public static readonly string CommonDelimeterChar = ":";
 
+        public static readonly string GenesisBlockUid = "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         private static readonly int DefaultPortNo = 5000;
 
         // layer 1 - main layer for crypto & token generate and transfer
