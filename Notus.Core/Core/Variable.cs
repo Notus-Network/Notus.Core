@@ -237,7 +237,7 @@ namespace Notus.Core
         public class StorageOnChainStruct
         {
             public string Name { get; set; }          // file name
-            public uint Size { get; set; }             // file size
+            public long Size { get; set; }             // file size
             public string Hash { get; set; }          // file hash
             public bool Encrypted { get; set; }       // file url
             public string PublicKey{ get; set; }      // file owner public key
