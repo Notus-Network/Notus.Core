@@ -1,13 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (C) 2020-2022 Notus Network
+// 
+// Notus Network is free software distributed under the MIT software license, 
+// see the accompanying file LICENSE in the main directory of the
+// project or http://www.opensource.org/licenses/mit-license.php 
+// for more details.
+// 
+// Redistribution and use in source and binary forms with or without
+// modifications are permitted.
+
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+
 namespace Notus.Core
 {
+    /// <summary>
+    /// A helper class related to convert.
+    /// </summary>
     public static class Convert
     {
+        /// <summary>
+        /// Converts the specified <see cref="byte[]"/> to base32 <see cref="string"/>
+        /// </summary>
+        /// <param name="bytes">The byte array to convert</param>
+        /// <param name="DefinedValidCharList">Your Base32 sorted letters (optional)</param>
+        /// <returns>Returns <see cref="Notus.Core.Variable.CurrencyList"/>.</returns>
         public static string ToBase32(byte[] bytes, string DefinedValidCharList = "")
         {
             if (DefinedValidCharList.Length != 32)
