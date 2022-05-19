@@ -234,6 +234,15 @@ namespace Notus.Core
             public string Url { get; set; }         // file url
             public string Source { get; set; }      // file storage service name
         }
+        public class StorageOnChainStruct
+        {
+            public string Name { get; set; }          // file name
+            public uint Size { get; set; }             // file size
+            public string Hash { get; set; }          // file hash
+            public bool Encrypted { get; set; }       // file url
+            public string PublicKey{ get; set; }      // file owner public key
+            public string Sign { get; set; }          // sign data
+        }
         public class TokenInfoStruct
         {
             public string Name { get; set; }                // token long name
