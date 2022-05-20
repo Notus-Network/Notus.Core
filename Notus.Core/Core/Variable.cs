@@ -242,7 +242,8 @@ namespace Notus.Core
             public bool Encrypted { get; set; }       // file url
             public string PublicKey{ get; set; }      // file owner public key
             public string Sign { get; set; }          // sign data
-        }
+            public BalanceAfterBlockStruct Balance { get; set; }  // new balance
+    }
         public class TokenInfoStruct
         {
             public string Name { get; set; }                // token long name
@@ -307,6 +308,13 @@ namespace Notus.Core
             public string Wallet { get; set; }         // account wallet id
             public Dictionary<string, string> Balance { get; set; }      // account current balance
             public string Currency { get; set; }       // account curreny
+            public Int64 RowNo { get; set; }           // witness row no
+            public string UID { get; set; }            // witness uid
+        }
+        public class BalanceAfterBlockStruct
+        {
+            public string Wallet { get; set; }         // account wallet id
+            public Dictionary<string, string> Balance { get; set; }      // account current balance
             public Int64 RowNo { get; set; }           // witness row no
             public string UID { get; set; }            // witness uid
         }
