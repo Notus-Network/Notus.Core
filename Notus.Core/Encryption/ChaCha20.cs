@@ -2,8 +2,12 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace Notus.Core.Encryption
 {
+	/// <summary>
+	/// Helper methods for ChaCha20 Encryption.
+	/// </summary>
 	public sealed class ChaCha20 : IDisposable
 	{
 		public const int allowedKeyLength = 32;
@@ -78,6 +82,7 @@ namespace Notus.Core.Encryption
 			state[14] = Util.U8To32Little(nonce, 4);
 			state[15] = Util.U8To32Little(nonce, 8);
 		}
+
 		public void EncryptBytes(byte[] output, byte[] input, int numBytes)
 		{
 			this.WorkBytes(output, input, numBytes);
