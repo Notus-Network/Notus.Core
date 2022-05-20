@@ -1,26 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Notus.HashLib
 {
+    /// <summary>
+    /// Helper methods for SHA1 hashing.
+    /// </summary>
     public class SHA1
     {
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to SHA1 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="inputText">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns SHA1 Hash <see cref="string"/>.</returns>
         public string ComputeHash(string inputText)
         {
             return Calculate(inputText);
         }
+
+        /// <inheritdoc cref="ComputeHash(string)"/>
         public string Calculate(string inputText)
         {
             return Calculate(Encoding.UTF8.GetBytes(inputText));
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to SHA1 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="input"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns SHA1 Hash <see cref="string"/>.</returns>
         public string ComputeHash(byte[] input)
         {
             return Calculate(input);
         }
+
+        /// <summary>
+        /// Converts the specified Plain <see cref="string"/> to SHA1 Hash <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="inputText"><see cref="string"/> to convert.</param>
+        /// <returns>Returns SHA1 Hash <see cref="byte"/>[].</returns>
         public byte[] Compute(string inputText)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
@@ -28,6 +49,12 @@ namespace Notus.HashLib
                 return sha1.ComputeHash(Encoding.UTF8.GetBytes(inputText));
             }
         }
+
+        /// <summary>
+        /// Converts the specified Plain text's <see cref="byte"/>[] to SHA1 Hash <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="inputData"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns SHA1 Hash <see cref="byte"/>[].</returns>
         public byte[] Compute(byte[] inputData)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
@@ -35,6 +62,7 @@ namespace Notus.HashLib
                 return sha1.ComputeHash(inputData);
             }
         }
+        /// <inheritdoc cref="ComputeHash(byte[])"/>
         public string Calculate(byte[] input)
         {
             using (SHA1Managed sha1 = new SHA1Managed())
@@ -43,14 +71,32 @@ namespace Notus.HashLib
             }
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="string"/> to SHA1 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="input">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns SHA1 Signature <see cref="string"/>.</returns>
         public string Sign(string input)
         {
             return SignWithHashMethod("", input);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to SHA1 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns SHA1 Signature <see cref="string"/>.</returns>
         public string Sign(byte[] inputArr)
         {
             return SignWithHashMethod("", Encoding.UTF8.GetString(inputArr));
         }
+
+        /// <summary>
+        /// Converts the specified key <see cref="string"/> and specified <see cref="string"/> to SHA1 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="keyText"><see cref="string"/> MD5 Key</param>
+        /// <param name="input"><see cref="string"/> to convert.</param>
+        /// <returns>Returns SHA1 Signature <see cref="string"/>.</returns>
         public string SignWithHashMethod(string keyText, string input)
         {
             int keySize = 80;
