@@ -1,10 +1,23 @@
-﻿using System;
+﻿// Copyright (C) 2020-2022 Notus Network
+// 
+// Notus Network is free software distributed under the MIT software license, 
+// see the accompanying file LICENSE in the main directory of the
+// project or http://www.opensource.org/licenses/mit-license.php 
+// for more details.
+// 
+// Redistribution and use in source and binary forms with or without
+// modifications are permitted.
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 
 namespace Notus.Core.Wallet
 {
+    /// <summary>
+    /// A helper class related to wallet IDs
+    /// </summary>
     public class ID
     {
         public static bool Verify(string messageData, string signHex, string publicKeyHex)
