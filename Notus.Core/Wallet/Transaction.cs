@@ -1,23 +1,44 @@
-﻿using System;
+﻿// Copyright (C) 2020-2022 Notus Network
+// 
+// Notus Network is free software distributed under the MIT software license, 
+// see the accompanying file LICENSE in the main directory of the
+// project or http://www.opensource.org/licenses/mit-license.php 
+// for more details.
+// 
+// Redistribution and use in source and binary forms with or without
+// modifications are permitted.
+
+using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Notus.Core.Wallet
 {
+    /// <summary>
+    /// A helper class related to wallet transactions.
+    /// </summary>
     public class Transaction
     {
-        //bu fonksiyon ile gönderilen transferin durumu kontrol edilecek...
+        /// <summary>
+        /// TO DO.
+        /// </summary>
         public static string Status(string TransferId)
         {
             return TransferId;
-            //return string.Empty;
         }
-        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct PreTransfer, Notus.Core.Variable.NetworkType currentNetwork)
+
+        /// <summary>
+        /// Makes Transaction with given network and transaction struct via HTTP request. 
+        /// </summary>
+        /// <param name="preTransfer">Crypto Transaction informations.</param>
+        /// <param name="currentNetwork">Current Network for Request.</param>
+        /// <returns>Returns Result of the Transaction as <see cref="Notus.Core.Variable.CryptoTransactionResult"/>.</returns>
+        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct preTransfer, Notus.Core.Variable.NetworkType currentNetwork)
         {
             try
             {
-                bool tmpTransactionVerified = Verify(PreTransfer);
+                bool tmpTransactionVerified = Verify(preTransfer);
                 if (tmpTransactionVerified == false)
                 {
                     return new Notus.Core.Variable.CryptoTransactionResult()
@@ -35,18 +56,17 @@ namespace Notus.Core.Wallet
                         string nodeIpAddress = Notus.Core.Variable.ListMainNodeIp[a];
                         try
                         {
-                            bool RealNetwork = PreTransfer.Network == Notus.Core.Variable.NetworkType.MainNet;
+                            bool RealNetwork = preTransfer.Network == Notus.Core.Variable.NetworkType.MainNet;
                             string fullUrlAddress =
                                 Notus.Core.Function.MakeHttpListenerPath(
                                     nodeIpAddress,
                                     Notus.Core.Function.GetNetworkPort(currentNetwork, Notus.Core.Variable.NetworkLayer.Layer1)
                                 ) + "send/" ;
 
-                            //string MainResultStr = await Notus.Core.Function.GetRequest(fullUrlAddress, 10, true);
                             string MainResultStr = await Notus.Core.Function.PostRequest(fullUrlAddress, 
                                 new System.Collections.Generic.Dictionary<string, string>()
                                 {
-                                    { "data" , JsonSerializer.Serialize(PreTransfer) }
+                                    { "data" , JsonSerializer.Serialize(preTransfer) }
                                 }
                             );
                             Notus.Core.Variable.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Core.Variable.CryptoTransactionResult>(MainResultStr);
@@ -72,33 +92,43 @@ namespace Notus.Core.Wallet
             };
         }
 
-        public static bool Verify(Notus.Core.Variable.CryptoTransactionStruct PreTransfer)
+        /// <summary>
+        /// Validates sent transaction information.
+        /// </summary>
+        /// <param name="preTransfer">Crypto Transaction informations.</param>
+        /// <returns>Returns Result of the Verification.</returns>
+        public static bool Verify(Notus.Core.Variable.CryptoTransactionStruct preTransfer)
         {
-            if (Notus.Core.Wallet.ID.CheckAddress(PreTransfer.Sender, PreTransfer.Network) == false)
+            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
             {
                 return false;
             }
 
-            if (Notus.Core.Wallet.ID.CheckAddress(PreTransfer.Receiver, PreTransfer.Network) == false)
+            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
             {
                 return false;
             }
             
             return Notus.Core.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
-                   PreTransfer.Sender,
-                   PreTransfer.Receiver,
-                   PreTransfer.Volume,
-                   PreTransfer.Currency
-                ), PreTransfer.Sign,
-                PreTransfer.PublicKey,
-                PreTransfer.CurveName
+                   preTransfer.Sender,
+                   preTransfer.Receiver,
+                   preTransfer.Volume,
+                   preTransfer.Currency
+                ), preTransfer.Sign,
+                preTransfer.PublicKey,
+                preTransfer.CurveName
             );
         }
 
-        public static Notus.Core.Variable.CryptoTransactionStruct Sign(Notus.Core.Variable.CryptoTransactionBeforeStruct PreTransfer)
+        /// <summary>
+        /// Signs current transaction informations
+        /// </summary>
+        /// <param name="preTransfer">Crypto Transaction informations.</param>
+        /// <returns>Returns Signed Transaction Struct.</returns>
+        public static Notus.Core.Variable.CryptoTransactionStruct Sign(Notus.Core.Variable.CryptoTransactionBeforeStruct preTransfer)
         {
 
-            if (Notus.Core.Wallet.ID.CheckAddress(PreTransfer.Sender, PreTransfer.Network) == false)
+            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
             {
                 return new Notus.Core.Variable.CryptoTransactionStruct()
                 {
@@ -106,7 +136,7 @@ namespace Notus.Core.Wallet
                 };
             }
 
-            if (Notus.Core.Wallet.ID.CheckAddress(PreTransfer.Receiver, PreTransfer.Network) == false)
+            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
             {
                 return new Notus.Core.Variable.CryptoTransactionStruct()
                 {
@@ -116,27 +146,27 @@ namespace Notus.Core.Wallet
 
             return new Notus.Core.Variable.CryptoTransactionStruct()
             {
-                Currency = PreTransfer.Currency,
+                Currency = preTransfer.Currency,
                 ErrorNo = 0,
-                Sender = PreTransfer.Sender,
-                Receiver = PreTransfer.Receiver,
-                Volume = PreTransfer.Volume,
+                Sender = preTransfer.Sender,
+                Receiver = preTransfer.Receiver,
+                Volume = preTransfer.Volume,
                 PublicKey = Notus.Core.Wallet.ID.Generate(
-                    PreTransfer.PrivateKey,
-                    PreTransfer.CurveName
+                    preTransfer.PrivateKey,
+                    preTransfer.CurveName
                 ),
                 Sign = Notus.Core.Wallet.ID.Sign(
                     Notus.Core.MergeRawData.Transaction(
-                        PreTransfer.Sender,
-                        PreTransfer.Receiver,
-                        PreTransfer.Volume,
-                        PreTransfer.Currency
+                        preTransfer.Sender,
+                        preTransfer.Receiver,
+                        preTransfer.Volume,
+                        preTransfer.Currency
                     ),
-                    PreTransfer.PrivateKey,
-                    PreTransfer.CurveName
+                    preTransfer.PrivateKey,
+                    preTransfer.CurveName
                 ),
-                CurveName = PreTransfer.CurveName,
-                Network = PreTransfer.Network
+                CurveName = preTransfer.CurveName,
+                Network = preTransfer.Network
             };
         }
 

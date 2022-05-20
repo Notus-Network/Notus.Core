@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Notus.HashLib
 {
+    /// <summary>
+    /// Helper methods for RIPEMD160 hashing.
+    /// </summary>
     public class RIPEMD160
     {
         static private UInt32 ReadUInt32(byte[] buffer, long offset)
@@ -344,6 +347,11 @@ namespace Notus.HashLib
         int UnhashedBufferLength = 0;
         long HashedLength = 0;
 
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to RIPEMD-160 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="input">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns RIPEMD-160 Hash <see cref="string"/>.</returns>
         public string ComputeHash(string input)
         {
             Initialize();
@@ -352,6 +360,12 @@ namespace Notus.HashLib
             byte[] hhh = HashFinal();
             return Notus.Core.Convert.Byte2Hex(hhh);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to RIPEMD-160 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="iArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns RIPEMD-160 Hash <see cref="string"/>.</returns>
         public string ComputeHashWithArray(byte[] iArr)
         {
             Initialize();
@@ -360,14 +374,32 @@ namespace Notus.HashLib
             return Notus.Core.Convert.Byte2Hex(hhh);
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="string"/> to RIPEMD-160 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="input">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns RIPEMD-160 Signature <see cref="string"/>.</returns>
         public string Sign(string input)
         {
             return SignWithHashMethod("", input);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to RIPEMD-160 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns RIPEMD-160 Signature <see cref="string"/>.</returns>
         public string Sign(byte[] inputArr)
         {
             return SignWithHashMethod("", Encoding.UTF8.GetString(inputArr));
         }
+
+        /// <summary>
+        /// Converts the specified key <see cref="string"/> and specified <see cref="string"/> to RIPEMD-160 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="keyText"><see cref="string"/> MD5 Key</param>
+        /// <param name="input"><see cref="string"/> to convert.</param>
+        /// <returns>Returns RIPEMD-160 Signature <see cref="string"/>.</returns>
         public string SignWithHashMethod(string keyText, string input)
         {
             int keySize = 80;

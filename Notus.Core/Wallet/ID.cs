@@ -1,27 +1,56 @@
-﻿using System;
+﻿// Copyright (C) 2020-2022 Notus Network
+// 
+// Notus Network is free software distributed under the MIT software license, 
+// see the accompanying file LICENSE in the main directory of the
+// project or http://www.opensource.org/licenses/mit-license.php 
+// for more details.
+// 
+// Redistribution and use in source and binary forms with or without
+// modifications are permitted.
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 
 namespace Notus.Core.Wallet
 {
+    /// <summary>
+    /// A helper class related to wallet IDs
+    /// </summary>
     public class ID
     {
-        public static bool Verify(string messageData, string signHex, string publicKeyHex)
+        /// <summary>
+        /// Verifies data and returns verify status
+        /// </summary>
+        /// <param name="messageData">Message that will verify</param>
+        /// <param name="signHex">Sign Hex <see cref="string"/></param>
+        /// <param name="publicKey">Public Key Hex <see cref="string"/></param>
+        /// <returns>Returns Result of the Verification.</returns>
+        public static bool Verify(string messageData, string signHex, string publicKey)
         {
-            return Verify_SubFunction(messageData, signHex, publicKeyHex, Notus.Core.Variable.Default_EccCurveName);
+            return Verify_SubFunction(messageData, signHex, publicKey, Notus.Core.Variable.Default_EccCurveName);
         }
-        public static bool Verify(string messageData, string signHex, string publicKeyHex, string curveName)
+
+        /// <summary>
+        /// Verifies data and returns verify status with given Curve Name
+        /// </summary>
+        /// <param name="messageData">Message that will verify</param>
+        /// <param name="signHex">Sign Hex <see cref="string"/></param>
+        /// <param name="publicKey">Public Key Hex <see cref="string"/></param>
+        /// <param name="curveName">Curve Type <see cref="string"/></param>
+        /// <returns>Returns Result of the Verification.</returns>
+        public static bool Verify(string messageData, string signHex, string publicKey, string curveName)
         {
-            return Verify_SubFunction(messageData, signHex, publicKeyHex, curveName);
+            return Verify_SubFunction(messageData, signHex, publicKey, curveName);
         }
-        private static bool Verify_SubFunction(string messageData, string signHex, string publicKeyHex, string curveName)
+        private static bool Verify_SubFunction(string messageData, string signHex, string publicKey, string curveName)
         {
             bool verifyResult = false;
             try
             {
                 PublicKey yPubKey = PublicKey.fromString(
-                    Notus.Core.Convert.Hex2Byte(publicKeyHex),
+                    Notus.Core.Convert.Hex2Byte(publicKey),
                     curveName,
                     true
                 );
@@ -37,26 +66,40 @@ namespace Notus.Core.Wallet
             }
             return verifyResult;
         }
-        
-        public static string Sign(string messageData, string privateKeyHex)
+
+        /// <summary>
+        /// Signs data and with Private Key <see cref="string"/>
+        /// </summary>
+        /// <param name="messageData">Message that will verify</param>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <returns>Returns Result of the Signing as <see cref="string"/>.</returns>
+        public static string Sign(string messageData, string privateKey)
         {
-            return Sign_SubFunction(messageData, privateKeyHex, Notus.Core.Variable.Default_EccCurveName);
+            return Sign_SubFunction(messageData, privateKey, Notus.Core.Variable.Default_EccCurveName);
         }
-        public static string Sign(string messageData, string privateKeyHex, string curveName)
+
+        /// <summary>
+        /// Signs data and with Private Key <see cref="string"/> with given Curve Name
+        /// </summary>
+        /// <param name="messageData">Message that will verify</param>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="curveName">Curve Type <see cref="string"/></param>
+        /// <returns>Returns Result of the Signing as <see cref="string"/>.</returns>
+        public static string Sign(string messageData, string privateKey, string curveName)
         {
-            return Sign_SubFunction(messageData, privateKeyHex, curveName);
+            return Sign_SubFunction(messageData, privateKey, curveName);
         }
-        private static string Sign_SubFunction(string messageData, string privateKeyHex, string curveName)
+        private static string Sign_SubFunction(string messageData, string privateKey, string curveName)
         {
             PrivateKey yPrivKey;
             if (curveName == "secp256k1")
             {
                 
-                yPrivKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+                yPrivKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             }
             else
             {
-                yPrivKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+                yPrivKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             }
             Signature signObj = Ecdsa.sign(messageData, yPrivKey);
             return Notus.Core.Convert.Byte2Hex(
@@ -66,9 +109,16 @@ namespace Notus.Core.Wallet
             );
         }
 
-        public static string GetAddress_StandartWay(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet, string CurveName = "secp256k1")
+        /// <summary>
+        /// Returns the wallet address created with the entered Private Key
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request (optional).</param>
+        /// <param name="CurveName">Current curve (optional).</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddress_StandartWay(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet, string CurveName = "secp256k1")
         {
-            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             PublicKey yPubKey = yPrivKey.publicKey();
             BigInteger pkPointVal = yPubKey.point.x;
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
@@ -92,6 +142,12 @@ namespace Notus.Core.Wallet
             return walletAddressStr;
         }
 
+        /// <summary>
+        /// Checks if wallet adress is correct or not.
+        /// </summary>
+        /// <param name="walletAddress">Wallet Address <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request (optional).</param>
+        /// <returns>Returns true if wallet address is correct. Returns false if wallet address is incorrect.</returns>
         public static bool CheckAddress(string walletAddress, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet)
         {
             if (walletAddress != null)
@@ -116,43 +172,98 @@ namespace Notus.Core.Wallet
             }
             return false;
         }
-        
-        public static string GetAddressWithPublicKey(string privateKeyHex)
+
+        /// <summary>
+        /// Returns wallet key via given public key.
+        /// </summary>
+        /// <param name="publicKey">Public Key <see cref="string"/></param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddressWithPublicKey(string publicKey)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),Notus.Core.Variable.Default_EccCurveName, true ), Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
-        }
-        public static string GetAddressWithPublicKey(string privateKeyHex, string CurveName)
-        {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex),CurveName,true), Notus.Core.Variable.NetworkType.MainNet,CurveName);
-        }
-        public static string GetAddressWithPublicKey(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor)
-        {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex), Notus.Core.Variable.Default_EccCurveName, true), WhichNetworkFor,Notus.Core.Variable.Default_EccCurveName);
-        }
-        public static string GetAddressWithPublicKey(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
-        {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(privateKeyHex), CurveName, true), WhichNetworkFor,CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey),Notus.Core.Variable.Default_EccCurveName, true ), Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
         }
 
-        public static string GetAddress(string privateKeyHex)
+        /// <summary>
+        /// Returns wallet key via given public key.
+        /// </summary>
+        /// <param name="publicKey">Public Key <see cref="string"/></param>
+        /// <param name="CurveName">Current curve.</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddressWithPublicKey(string publicKey, string CurveName)
         {
-            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey),CurveName,true), Notus.Core.Variable.NetworkType.MainNet,CurveName);
         }
-        public static string GetAddress(string privateKeyHex, string CurveName)
+
+        /// <summary>
+        /// Returns wallet key via given public key.
+        /// </summary>
+        /// <param name="publicKey">Public Key <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddressWithPublicKey(string publicKey, Notus.Core.Variable.NetworkType WhichNetworkFor)
         {
-            return GetAddress_SubFunction(privateKeyHex, Notus.Core.Variable.NetworkType.MainNet, CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey), Notus.Core.Variable.Default_EccCurveName, true), WhichNetworkFor,Notus.Core.Variable.Default_EccCurveName);
         }
-        public static string GetAddress(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor)
+
+        /// <summary>
+        /// Returns wallet key via given public key.
+        /// </summary>
+        /// <param name="publicKey">Public Key <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <param name="CurveName">Current curve.</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddressWithPublicKey(string publicKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
         {
-            return GetAddress_SubFunction(privateKeyHex, WhichNetworkFor, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor,CurveName);
         }
-        public static string GetAddress(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
+
+        /// <summary>
+        /// Returns public key via given private key.
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <returns>Returns Public Address</returns>
+        public static string GetAddress(string privateKey)
         {
-            return GetAddress_SubFunction(privateKeyHex, WhichNetworkFor, CurveName);
+            return GetAddress_SubFunction(privateKey, Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
         }
-        private static string GetAddress_SubFunction(string privateKeyHex, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+
+        /// <summary>
+        /// Returns wallet address via given private key.
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="CurveName">Current curve,</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddress(string privateKey, string CurveName)
         {
-            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+            return GetAddress_SubFunction(privateKey, Notus.Core.Variable.NetworkType.MainNet, CurveName);
+        }
+
+        /// <summary>
+        /// Returns wallet address via given private key.
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddress(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor)
+        {
+            return GetAddress_SubFunction(privateKey, WhichNetworkFor, Notus.Core.Variable.Default_EccCurveName);
+        }
+
+        /// <summary>
+        /// Returns wallet address via given private key.
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <param name="CurveName">Current curve.</param>
+        /// <returns>Returns Wallet Address</returns>
+        public static string GetAddress(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
+        {
+            return GetAddress_SubFunction(privateKey, WhichNetworkFor, CurveName);
+        }
+
+        private static string GetAddress_SubFunction(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+        {
+            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             PublicKey yPubKey = yPrivKey.publicKey();
             return GetAddress_SubFunction_FromPublicKey(yPubKey, WhichNetworkFor, CurveName);
         }
@@ -192,12 +303,20 @@ namespace Notus.Core.Wallet
             string walletAddressStr = Notus.Core.Wallet.Function.EncodeBase58(number, 36);
             return keyPrefix + walletAddressStr;
         }
+
+        /// <summary>
+        /// Returns private key via given word list <see cref="string"/>[]
+        /// </summary>
+        /// <param name="WordList">Word List to create private key</param>
+        /// <returns>Returns Private Key</returns>
         public static string PrivateKeyFromWordList(string[] WordList)
         {
             BigInteger PrivateKeySeedNumber = PrivateKeyFromPassPhrase(WordList);
             string privateHexStr = New(Notus.Core.Variable.Default_EccCurveName, PrivateKeySeedNumber);
             return privateHexStr;
         }
+
+        /// <inheritdoc cref="PrivateKeyFromWordList(string[])"/>
         public static BigInteger PrivateKeyFromPassPhrase(string[] WordList)
         {
             if (WordList.Length != 16) { return 0; }
@@ -241,18 +360,41 @@ namespace Notus.Core.Wallet
             return BigInteger.Parse("0" + hexResultStr, NumberStyles.AllowHexSpecifier);
         }
 
+        /// <summary>
+        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/>
+        /// </summary>
+        /// <returns>Returns Wallet Key Pair</returns>
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair()
         {
             return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, Notus.Core.Variable.NetworkType.MainNet);
         }
+
+        /// <summary>
+        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given curve name.
+        /// </summary>
+        /// <param name="curveName">Current curve.</param>
+        /// <returns>Returns Wallet Key Pair</returns>
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(string curveName)
         {
             return GenerateKeyPair(curveName, Notus.Core.Variable.NetworkType.MainNet);
         }
+
+        /// <summary>
+        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given network.
+        /// </summary>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <returns>Returns Wallet Key Pair</returns>
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(Notus.Core.Variable.NetworkType WhichNetworkFor)
         {
             return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, WhichNetworkFor);
         }
+
+        /// <summary>
+        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given curve name and network.
+        /// </summary>
+        /// <param name="curveName">Current curve.</param>
+        /// <param name="WhichNetworkFor">Current Network for Request.</param>
+        /// <returns>Returns Wallet Key Pair</returns>
         public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(string curveName, Notus.Core.Variable.NetworkType WhichNetworkFor)
         {
             if (curveName == "")
@@ -272,32 +414,33 @@ namespace Notus.Core.Wallet
             };
         }
 
-        public static string Generate(string[] words, string curveName = Notus.Core.Variable.Default_EccCurveName)
-        {
-            if (words.Length > 0)
-            {
-
-            }
-            return "";
-        }
-        // generate ECC public key from private key
-        public static string Generate(string privateKeyHex, string curveName = Notus.Core.Variable.Default_EccCurveName)
+        /// <summary>
+        /// Returns public key via given private key.
+        /// </summary>
+        /// <param name="privateKey">Private Key <see cref="string"/></param>
+        /// <param name="curveName">Current curve.</param>
+        /// <returns>Returns Public Key</returns>
+        public static string Generate(string privateKey, string curveName = Notus.Core.Variable.Default_EccCurveName)
         {
             PrivateKey privKey;
             if (curveName.ToLower() == "secp256k1")
             {
-                privKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+                privKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             }
             else
             {
-                privKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKeyHex));
+                privKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
             }
-            //string privateKeyStr = privKey.toHex().ToLower();
             PublicKey yPubKey = privKey.publicKey();
             return Notus.Core.Convert.Byte2Hex(yPubKey.toString(false)).ToLower();
         }
 
-        // generate new ECC private key
+        /// <summary>
+        /// Generates a new Private Key via given curve name and seed
+        /// </summary>
+        /// <param name="curveName">Current curve.</param>
+        /// <param name="PrivateKeySeedValue">Seed to be used</param>
+        /// <returns>Returns Private Key</returns>
         public static string New(string curveName = Notus.Core.Variable.Default_EccCurveName, BigInteger? PrivateKeySeedValue = null)
         {
             PrivateKey privKey;
@@ -674,7 +817,6 @@ namespace Notus.Core.Wallet
                 return hashObj.CommonHash("sasha", message).Substring(0, 64);
             }
         }
-
         private static class EcdsaMath
         {
 
@@ -977,7 +1119,6 @@ namespace Notus.Core.Wallet
             }
 
         }
-
         private class CurvePointStruct
         {
 
@@ -994,7 +1135,6 @@ namespace Notus.Core.Wallet
                 this.z = zeroZ;
             }
         }
-
         private class PrivateKey
         {
 
@@ -1133,7 +1273,5 @@ namespace Notus.Core.Wallet
                 return new PrivateKey(curve, Notus.Core.Wallet.Function.BinaryAscii_numberFromString(str));
             }
         }
-
-
     }
 }

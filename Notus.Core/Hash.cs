@@ -1,19 +1,44 @@
-﻿using System;
+﻿// Copyright (C) 2020-2022 Notus Network
+// 
+// Notus Network is free software distributed under the MIT software license, 
+// see the accompanying file LICENSE in the main directory of the
+// project or http://www.opensource.org/licenses/mit-license.php 
+// for more details.
+// 
+// Redistribution and use in source and binary forms with or without
+// modifications are permitted.
+
 using System.Linq;
 using System.Text;
+
 namespace Notus
 {
+    /// <summary>
+    /// Main method and constructor for hashing
+    /// </summary>
     public class Hash
     {
+        /// <summary>
+        /// Algorithm Result Types
+        /// </summary>
         public enum ShortAlgorithmResultType
         {
+            ///<summary>Mixes Iteration</summary>
             Mix = 2,
+            ///<summary>One by One Iteration</summary>
             OneByOne = 4
         }
 
-        public string Short(byte[] rawInput, byte howManyByte = 8, Notus.Core.Variable.ShortAlgorithmResultType resultTye = Notus.Core.Variable.ShortAlgorithmResultType.OneByOne)
+        /// <summary>
+        /// Shrinks given <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="rawInput"><see cref="byte"/>[] to shrink.</param>
+        /// <param name="howManyByte">Result Byte Length (optional).</param>
+        /// <param name="resultType">Iteration Mode (optional).</param>
+        /// <returns>Returns hash with shrink <see cref="string"/></returns>
+        public string Short(byte[] rawInput, byte howManyByte = 8, Notus.Core.Variable.ShortAlgorithmResultType resultType = Notus.Core.Variable.ShortAlgorithmResultType.OneByOne)
         {
-            if (resultTye== Notus.Core.Variable.ShortAlgorithmResultType.Mix)
+            if (resultType== Notus.Core.Variable.ShortAlgorithmResultType.Mix)
             {
                 string resultStr = "";
                 string[] md5Result = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("md5", rawInput), howManyByte), 1).ToArray();
@@ -50,6 +75,12 @@ namespace Notus
             }
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] with specificed hash method <see cref="string"/>
+        /// </summary>
+        /// <param name="hashMethodName,">Hash Method to use.</param>
+        /// <param name="rawInput"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns hash <see cref="string"/> with given hash type</returns>
         public string CommonHash(string hashMethodName, byte[] rawInput)
         {
             if (string.Equals("sasha", hashMethodName))
@@ -98,12 +129,14 @@ namespace Notus
             }
             return string.Empty;
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="string"/> with specificed hash method <see cref="string"/>
+        /// </summary>
+        /// <param name="hashMethodName,">Hash Method to use.</param>
+        /// <param name="rawInput"><see cref="string"/> to convert.</param>
+        /// <returns>Returns hash <see cref="string"/> with given hash type</returns>
         public string CommonHash(string hashMethodName, string rawInput)
-        {
-            return CommonHashHex(hashMethodName, rawInput);
-        }
-        
-        public string CommonHashHex(string hashMethodName, string rawInput)
         {
             if (string.Equals("sasha", hashMethodName) )
             {
@@ -152,6 +185,12 @@ namespace Notus
             return string.Empty;
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="string"/> with specificed hash method <see cref="string"/>
+        /// </summary>
+        /// <param name="hashMethodName,">Hash Method to use.</param>
+        /// <param name="rawInput"><see cref="string"/> to convert.</param>
+        /// <returns>Returns hash <see cref="byte"/>[] with given hash type</returns>
         public byte[] CommonHashByte(string hashMethodName, string rawInput)
         {
             if (string.Equals("sasha", hashMethodName))
@@ -203,6 +242,12 @@ namespace Notus
             return new byte[] { };
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="string"/> with specificed hash method <see cref="string"/>
+        /// </summary>
+        /// <param name="hashMethodName,">Hash Method to use.</param>
+        /// <param name="rawInput"><see cref="string"/> to convert.</param>
+        /// <returns>Returns signature <see cref="string"/> with given hash type</returns>
         public string CommonSign(string hashMethodName, string rawInput)
         {
             if (string.Equals("sasha", hashMethodName) )

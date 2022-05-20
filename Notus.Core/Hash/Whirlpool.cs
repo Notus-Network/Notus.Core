@@ -3,6 +3,9 @@ using System.Text;
 
 namespace Notus.HashLib
 {
+    /// <summary>
+    /// Helper methods for Whirlpool hashing.
+    /// </summary>
     public class Whirlpool
     {
         const int R = 10;
@@ -406,14 +409,32 @@ namespace Notus.HashLib
                 this.hash[x] ^= state[x] ^ block[x];
         }
 
+        /// <summary>
+        /// Converts the specified <see cref="string"/> to Whirlpool Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="input">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns Whirlpool Signature <see cref="string"/>.</returns>
         public string Sign(string input)
         {
             return SignWithHashMethod("", input);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to Whirlpool Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns Whirlpool Signature <see cref="string"/>.</returns>
         public string Sign(byte[] inputArr)
         {
             return SignWithHashMethod("", Encoding.UTF8.GetString(inputArr));
         }
+
+        /// <summary>
+        /// Converts the specified key <see cref="string"/> and specified <see cref="string"/> to Whirlpool Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="keyText"><see cref="string"/> MD5 Key</param>
+        /// <param name="input"><see cref="string"/> to convert.</param>
+        /// <returns>Returns Whirlpool Signature <see cref="string"/>.</returns>
         public string SignWithHashMethod(string keyText, string input)
         {
             int keySize = 256;
@@ -447,6 +468,11 @@ namespace Notus.HashLib
                 ).ToLower();
         }
 
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to Whirlpool Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="inputStr">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns Whirlpool Hash <see cref="string"/>.</returns>
         public string ComputeHash(string inputStr)
         {
             return Notus.Core.Convert.Byte2Hex(
@@ -457,6 +483,12 @@ namespace Notus.HashLib
                 )
             );
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to Whirlpool Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns Whirlpool Hash <see cref="string"/>.</returns>
         public byte[] ComputeHash(byte[] inputArr)
         {
             NESSIE_Init();

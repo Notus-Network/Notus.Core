@@ -1,11 +1,7 @@
 ﻿using System;
 
-/*
+// https://github.com/allantargino/Feistel-Cipher/blob/master/FeistelCipher/Program.cs
 
-örnek program linki
-https://github.com/allantargino/Feistel-Cipher/blob/master/FeistelCipher/Program.cs
-
-*/
 namespace Notus.Core.Encryption
 {
     public class Feistel

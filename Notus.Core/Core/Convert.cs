@@ -22,11 +22,11 @@ namespace Notus.Core
     public static class Convert
     {
         /// <summary>
-        /// Converts the specified <see cref="byte[]"/> to base32 <see cref="string"/>
+        /// Converts the specified <see cref="byte"/>[] to Base32 <see cref="string"/>
         /// </summary>
-        /// <param name="bytes">The byte array to convert</param>
-        /// <param name="DefinedValidCharList">Your Base32 sorted letters (optional)</param>
-        /// <returns>Returns <see cref="Notus.Core.Variable.CurrencyList"/>.</returns>
+        /// <param name="bytes"><see cref="byte"/>[] to convert</param>
+        /// <param name="DefinedValidCharList">Selected Base32 sorted letters (optional)</param>
+        /// <returns>Returns Base32 <see cref="string"/></returns>
         public static string ToBase32(byte[] bytes, string DefinedValidCharList = "")
         {
             if (DefinedValidCharList.Length != 32)
@@ -66,6 +66,13 @@ namespace Notus.Core
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Converts the specified Base32 <see cref="string"/> to <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="str">Base32 <see cref="string"/> to convert</param>
+        /// <param name="DefinedValidCharList">Your Base32 sorted letters (optional)</param>
+        /// <returns>Returns <see cref="byte"/>[]</returns>
         public static byte[] FromBase32(string str, string DefinedValidCharList = "")
         {
             if (DefinedValidCharList.Length != 32)
@@ -105,16 +112,32 @@ namespace Notus.Core
             return bytes;
         }
 
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to Base64 <see cref="string"/>
+        /// </summary>
+        /// <param name="plainText">Plain <see cref="string"/> to convert</param>
+        /// <returns>Returns Base64 <see cref="string"/></returns>
         public static string ToBase64(string plainText)
         {
             return System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(plainText));
         }
+
+        /// <summary>
+        /// Converts the specified Base64 <see cref="string"/> to plain <see cref="string"/>
+        /// </summary>
+        /// <param name="base64EncodedData">Base64 <see cref="string"/> to convert</param>
+        /// <returns>Returns plain <see cref="string"/></returns>
         public static string FromBase64(string base64EncodedData)
         {
             return System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(base64EncodedData));
         }
 
-
+        /// <summary>
+        /// Converts the plain <see cref="string"/> to Base64 <see cref="string"/> with selected alphabet
+        /// </summary>
+        /// <param name="sourceStr">Plain <see cref="string"/> to convert</param>
+        /// <param name="newAlphabet">Selected Base64 sorted letters</param>
+        /// <returns>Returns Base64 <see cref="string"/></returns>
         public static string ConvertNewAlphabet(string sourceStr, string newAlphabet)
         {
             char[] sourceArray = sourceStr.ToCharArray();
@@ -134,6 +157,13 @@ namespace Notus.Core
             }
             return new string(sourceArray);
         }
+
+        /// <summary>
+        /// Converts the converted(with selected alphabet) Base64 <see cref="string"/> to Normal Base64 <see cref="string"/>
+        /// </summary>
+        /// <param name="sourceStr">Conveted Base64 <see cref="string"/> to convert</param>
+        /// <param name="oldAlphabet">Selected Base64 sorted letters</param>
+        /// <returns>Returns Normal Base64 <see cref="string"/></returns>
         public static string ConvertOriginalAlphabet(string sourceStr, string oldAlphabet)
         {
             char[] sourceArray = sourceStr.ToCharArray();
@@ -154,7 +184,11 @@ namespace Notus.Core
             return new string(sourceArray);
         }
 
-
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to Base35 <see cref="string"/>
+        /// </summary>
+        /// <param name="incomeHex">Plain <see cref="string"/> to convert</param>
+        /// <returns>Returns Base35 <see cref="string"/></returns>
         public static string ToBase35(string incomeHex)
         {
             string resultStr = "";
@@ -176,6 +210,12 @@ namespace Notus.Core
             }
             return resultStr;
         }
+
+        /// <summary>
+        /// Converts the specified Base35 <see cref="string"/> to plain <see cref="string"/>
+        /// </summary>
+        /// <param name="incomeBase">Base35 <see cref="string"/> to convert</param>
+        /// <returns>Returns plain <see cref="string"/></returns>
         public static string FromBase35(string incomeBase)
         {
             string[] strArray = Notus.Core.Function.SplitByLength(incomeBase, 8).ToArray();
@@ -196,6 +236,84 @@ namespace Notus.Core
             return hexStr;
         }
 
+        /// <summary>
+        /// Converts <see cref="byte"/>[] to plain <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArray"><see cref="byte"/>[] to convert</param>
+        /// <returns>Returns plain <see cref="string"/></returns>
+        public static string Byte2String(byte[] inputArray)
+        {
+            return System.Text.Encoding.UTF8.GetString(inputArray);
+        }
+
+        /// <summary>
+        /// Converts plain <see cref="string"/> to <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="inputText"><see cref="string"/> to convert</param>
+        /// <returns>Returns <see cref="byte"/>[]</returns>
+        public static byte[] String2Byte(string inputText)
+        {
+            return Encoding.UTF8.GetBytes(inputText);
+        }
+
+        /// <summary>
+        /// Converts <see cref="BigInteger"/> number to hex <see cref="string"/>
+        /// </summary>
+        /// <param name="BigNumber"><see cref="BigInteger"/> to convert</param>
+        /// <returns>Returns hex <see cref="string"/></returns>
+        public static string BigInteger2Hex(BigInteger BigNumber)
+        {
+            return BigNumber.ToString("x");
+        }
+
+        /// <summary>
+        /// Converts hex <see cref="string"/> to <see cref="BigInteger"/> number
+        /// </summary>
+        /// <param name="HexStr">Hex <see cref="string"/> to convert</param>
+        /// <returns>Returns <see cref="BigInteger"/> number</returns>
+        public static BigInteger Hex2BigInteger(string HexStr)
+        {
+            if (((HexStr.Length % 2) == 1) || HexStr[0] != '0')
+            {
+                HexStr = "0" + HexStr; // if the hex string doesnt start with 0, the parse will assume its negative
+            }
+            return BigInteger.Parse(
+                HexStr,
+                NumberStyles.HexNumber
+            );
+        }
+
+        /// <summary>
+        /// Converts <see cref="byte"/>[] to hex <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArray"><see cref="byte"/>[] to convert</param>
+        /// <returns>Returns hex <see cref="string"/></returns>
+        public static string Byte2Hex(byte[] inputArray)
+        {
+            StringBuilder sb = new StringBuilder(inputArray.Length * 2);
+            foreach (byte b in inputArray)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Converts hex <see cref="string"/> to <see cref="byte"/>[]
+        /// </summary>
+        /// <param name="HexStr">Hex <see cref="string"/> to convert</param>
+        /// <returns>Returns <see cref="byte"/>[]</returns>
+        public static byte[] Hex2Byte(string HexStr)
+        {
+            string[] HexArray = Notus.Core.Function.SplitByLength(HexStr, 2).ToArray();
+            byte[] YedArray = new byte[HexArray.Length];
+            for (int a = 0; a < HexArray.Length; a++)
+            {
+                YedArray[a] = Byte.Parse(HexArray[a], System.Globalization.NumberStyles.HexNumber);
+            }
+            return YedArray;
+        }
+
         private static string EncodeBase_subFunc(Int64 incomeIntVal)
         {
             int base_count = Notus.Core.Variable.DefaultBase35AlphabetString.Length;
@@ -214,6 +332,7 @@ namespace Notus.Core
             }
             return encoded;
         }
+
         private static Int64 Decode_subRoutine(string incomeText)
         {
             incomeText = incomeText.Replace("0", "");
@@ -226,51 +345,5 @@ namespace Notus.Core
             }
             return decoded;
         }
-        public static string Byte2String(byte[] inputArray)
-        {
-            return System.Text.Encoding.UTF8.GetString(inputArray);
-        }
-        public static byte[] String2Byte(string inputText)
-        {
-            return Encoding.UTF8.GetBytes(inputText);
-        }
-
-
-        public static string BigInteger2Hex(BigInteger BigNumber)
-        {
-            return BigNumber.ToString("x");
-        }
-        public static BigInteger Hex2BigInteger(string HexStr)
-        {
-            if (((HexStr.Length % 2) == 1) || HexStr[0] != '0')
-            {
-                HexStr = "0" + HexStr; // if the hex string doesnt start with 0, the parse will assume its negative
-            }
-            return BigInteger.Parse(
-                HexStr,
-                NumberStyles.HexNumber
-            );
-        }
-        public static string Byte2Hex(byte[] inputArray)
-        {
-            StringBuilder sb = new StringBuilder(inputArray.Length * 2);
-            foreach (byte b in inputArray)
-            {
-                sb.Append(b.ToString("x2"));
-            }
-            return sb.ToString();
-        }
-        public static byte[] Hex2Byte(string HexStr)
-        {
-            //SplitByLength(HexStr, 2);
-            string[] HexArray = Notus.Core.Function.SplitByLength(HexStr, 2).ToArray();
-            byte[] YedArray = new byte[HexArray.Length];
-            for (int a = 0; a < HexArray.Length; a++)
-            {
-                YedArray[a] = Byte.Parse(HexArray[a], System.Globalization.NumberStyles.HexNumber);
-            }
-            return YedArray;
-        }
-
     }
 }

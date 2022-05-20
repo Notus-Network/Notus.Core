@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Notus.HashLib
 {
+    /// <summary>
+    /// Helper methods for MD5 hashing.
+    /// </summary>
     public class MD5
     {
         int[] s = new int[64] {
@@ -37,19 +40,33 @@ namespace Notus.HashLib
             return (x << c) | (x >> (32 - c));
         }
 
+        /// <summary>
+        /// Converts the specified plain <see cref="string"/> to MD5 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="inputText">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns MD5 Hash <see cref="string"/>.</returns>
         public string ComputeHash(string inputText)
         {
             return Calculate(inputText);
         }
+
+        /// <inheritdoc cref="ComputeHash(string)"/>
         public string Calculate(string inputText)
         {
             return Calculate(Encoding.UTF8.GetBytes(inputText));
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to MD5 Hash <see cref="string"/>
+        /// </summary>
+        /// <param name="input"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns MD5 Hash <see cref="string"/>.</returns>
         public string ComputeHash(byte[] input)
         {
             return Calculate(input);
         }
 
+        /// <inheritdoc cref="ComputeHash(byte[])"/>
         public string Calculate(byte[] input)
         {
             uint a0 = 0x67452301;
@@ -109,14 +126,33 @@ namespace Notus.HashLib
 
             return GetByteString(a0) + GetByteString(b0) + GetByteString(c0) + GetByteString(d0);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="string"/> to MD5 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="input">Plain <see cref="string"/> to convert.</param>
+        /// <returns>Returns MD5 Signature <see cref="string"/>.</returns>
         public string Sign(string input)
         {
             return SignWithHashMethod("", input);
         }
+
+        /// <summary>
+        /// Converts the specified <see cref="byte"/>[] to MD5 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="inputArr"><see cref="byte"/>[] to convert.</param>
+        /// <returns>Returns MD5 Signature <see cref="string"/>.</returns>
         public string Sign(byte[] inputArr)
         {
             return SignWithHashMethod("", Encoding.UTF8.GetString(inputArr));
         }
+
+        /// <summary>
+        /// Converts the specified key <see cref="string"/> and specified <see cref="string"/> to MD5 Signature <see cref="string"/>
+        /// </summary>
+        /// <param name="keyText"><see cref="string"/> MD5 Key</param>
+        /// <param name="input"><see cref="string"/> to convert.</param>
+        /// <returns>Returns MD5 Signature <see cref="string"/>.</returns>
         public string SignWithHashMethod(string keyText, string input)
         {
             int keySize = 64;
