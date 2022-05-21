@@ -317,6 +317,7 @@ namespace Notus.Core
             public Dictionary<string, string> Balance { get; set; }      // account current balance
             public Int64 RowNo { get; set; }           // witness row no
             public string UID { get; set; }            // witness uid
+            public string Fee { get; set; }             // witness row no
         }
 
         public class WalletActivitiesStruct

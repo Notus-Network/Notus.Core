@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net5.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>3.0.70</Version>
+	  <Version>3.0.71</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -17,7 +17,7 @@
 	  <NeutralLanguage>en</NeutralLanguage>
 	  <PackageLicenseFile>MIT-LICENSE.txt</PackageLicenseFile>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <PackageReleaseNotes>In this release, StorageOnChainStruct struct have been updated.</PackageReleaseNotes>  </PropertyGroup>
+	  <PackageReleaseNotes>In this release, BalanceAfterBlockStruct struct have been updated.</PackageReleaseNotes>  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">
