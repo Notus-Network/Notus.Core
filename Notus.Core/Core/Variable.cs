@@ -129,6 +129,7 @@ namespace Notus.Core
 
         public class FileTransferStruct
         {
+            public int BlockType { get; set; } 
             public string FileName { get; set; }
             public long FileSize { get; set; } 
             public string FileHash { get; set; }
