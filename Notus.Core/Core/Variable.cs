@@ -30,6 +30,7 @@ namespace Notus.Core
 
         public static readonly string GenesisBlockUid = "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         private static readonly int DefaultPortNo = 5000;
+        public static readonly int DefaultChunkSize = 2048;
 
         // layer 1 - main layer for crypto & token generate and transfer
         public static readonly Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>> PortNo = new Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>>()

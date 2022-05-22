@@ -27,6 +27,7 @@ namespace Notus.Core
         {
 
             uploadFile.Sign =
+                uploadFile.BlockType.ToString() + Notus.Core.Variable.CommonDelimeterChar +
                 uploadFile.FileName + Notus.Core.Variable.CommonDelimeterChar +
                 uploadFile.FileSize.ToString() + Notus.Core.Variable.CommonDelimeterChar +
                 uploadFile.FileHash + Notus.Core.Variable.CommonDelimeterChar +
