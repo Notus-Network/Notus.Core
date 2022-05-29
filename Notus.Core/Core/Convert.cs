@@ -237,6 +237,97 @@ namespace Notus.Core
         }
 
         /// <summary>
+        /// Converts the specified Base58 <see cref="string"/> to plain <see cref="BigInteger"/>
+        /// </summary>
+        /// <param name="incomeWalletId">Base58 <see cref="string"/> to convert</param>
+        /// <returns>Returns plain <see cref="BigInteger"/></returns>
+        public static BigInteger FromBase58(string incomeWalletId)
+        {
+            // this function fork from
+            // https://gist.github.com/micli/c242edd2a81a8f0d9f7953842bcc24f1
+            char[] _alphabet = Notus.Core.Variable.DefaultBase58AlphabetString.ToCharArray();
+            int[] _indexes = new int[128];
+
+            for (int i = 0; i < _indexes.Length; i++)
+            {
+                _indexes[i] = -1;
+            }
+            for (int i = 0; i < _alphabet.Length; i++)
+            {
+                _indexes[_alphabet[i]] = i;
+            }
+
+            if (0 == incomeWalletId.Length)
+            {
+                return new BigInteger(new byte[0]);
+            }
+            byte[] input58 = new byte[incomeWalletId.Length];
+            // Transform the String to a base58 byte sequence
+            for (int i = 0; i < incomeWalletId.Length; i++)
+            {
+                char c = incomeWalletId[i];
+
+                int digit58 = -1;
+                if (c >= 0 && c < 128)
+                {
+                    digit58 = _indexes[c];
+                }
+                if (digit58 < 0)
+                {
+                    // throw new ArgumentException("Illegal character " + c + " at " + i);
+                }
+                else
+                {
+                    input58[i] = (byte)digit58;
+                }
+            }
+            // Count leading zeroes
+            int zeroCount = 0;
+            while (zeroCount < input58.Length && input58[zeroCount] == 0)
+            {
+                zeroCount++;
+            }
+            // The encoding
+            byte[] temp = new byte[incomeWalletId.Length];
+            int j = temp.Length;
+
+            int startAt = zeroCount;
+            while (startAt < input58.Length)
+            {
+                byte[] innerNumber58 = input58;
+                int innerRemainder = 0;
+                for (int innerC3 = startAt; innerC3 < innerNumber58.Length; innerC3++)
+                {
+                    int innerTemp2 = innerRemainder * 58 + ((int)innerNumber58[innerC3] & 0xFF);
+                    innerNumber58[innerC3] = (byte)(innerTemp2 / 256);
+                    innerRemainder = innerTemp2 % 256;
+                }
+
+                if (input58[startAt] == 0)
+                {
+                    ++startAt;
+                }
+                temp[--j] = (byte)innerRemainder;
+            }
+            // Do no add extra leading zeroes, move j to first non null byte.
+            while (j < temp.Length && temp[j] == 0)
+            {
+                j++;
+            }
+
+            int innerFrom = j - zeroCount;
+            int innerTo = temp.Length;
+            byte[] innerRange = new byte[(innerTo - innerFrom) + 1];
+            for (int innerC2 = 0; innerC2 < innerTo - innerFrom; innerC2++)
+            {
+                innerRange[innerC2] = temp[innerFrom + innerC2];
+            }
+            innerRange[innerTo - innerFrom] = 0;
+
+            return new BigInteger(innerRange);
+        }
+
+        /// <summary>
         /// Converts <see cref="byte"/>[] to plain <see cref="string"/>
         /// </summary>
         /// <param name="inputArray"><see cref="byte"/>[] to convert</param>

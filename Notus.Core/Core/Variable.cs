@@ -130,9 +130,9 @@ namespace Notus.Core
 
         public class FileTransferStruct
         {
-            public int BlockType { get; set; } 
+            public int BlockType { get; set; }
             public string FileName { get; set; }
-            public long FileSize { get; set; } 
+            public long FileSize { get; set; }
             public string FileHash { get; set; }
             public int ChunkSize { get; set; }
             public int ChunkCount { get; set; }
@@ -145,7 +145,7 @@ namespace Notus.Core
         public class FileChunkStruct
         {
             public string UID { get; set; }
-            public int Count { get; set; } 
+            public int Count { get; set; }
             public string Data { get; set; }
         }
 
@@ -242,10 +242,10 @@ namespace Notus.Core
             public long Size { get; set; }             // file size
             public string Hash { get; set; }          // file hash
             public bool Encrypted { get; set; }       // file url
-            public string PublicKey{ get; set; }      // file owner public key
+            public string PublicKey { get; set; }      // file owner public key
             public string Sign { get; set; }          // sign data
             public BalanceAfterBlockStruct Balance { get; set; }  // new balance
-    }
+        }
         public class TokenInfoStruct
         {
             public string Name { get; set; }                // token long name
@@ -366,7 +366,7 @@ namespace Notus.Core
         {
             AddedToQueue = 0,
             InAlreadyQueue = 1,
-
+            InProgress = 57,
             WrongParameter = 45,
             WrongPublicKey = 10,
             WrongSignature = 2,
