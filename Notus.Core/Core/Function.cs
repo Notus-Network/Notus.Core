@@ -565,10 +565,15 @@ namespace Notus.Core
             return MainResultStr;
         }
 
-        public static async Task<string> PostRequest(string UrlAddress, Dictionary<string, string> PostData)
+        public static async Task<string> PostRequest(string UrlAddress, Dictionary<string, string> PostData, int TimeOut = 0, bool UseTimeoutAsSecond = true)
         {
-            using (var client = new HttpClient())
+            using (HttpClient client = new HttpClient())
             {
+                if (TimeOut > 0)
+                {
+                    client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
+                }
+
                 HttpResponseMessage response = await client.PostAsync(UrlAddress, new FormUrlEncodedContent(PostData));
                 if (response.IsSuccessStatusCode)
                 {
@@ -578,24 +583,18 @@ namespace Notus.Core
             }
             return string.Empty;
         }        
-        public static string PostRequestSync(string UrlAddress, Dictionary<string, string> PostData)
+        public static string PostRequestSync(string UrlAddress, Dictionary<string, string> PostData, int TimeOut = 0, bool UseTimeoutAsSecond = true)
         {
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(PostData);
-
-            //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 582");
-            //Console.WriteLine(JsonSerializer.Serialize(PostData));
-
-            //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 585");
-            //Console.WriteLine(JsonSerializer.Serialize(formContent));
             try
             {
-                using (var client = new HttpClient())
+                using (HttpClient client = new HttpClient())
                 {
-
+                    if (TimeOut > 0)
+                    {
+                        client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
+                    }
                     HttpResponseMessage response = client.PostAsync(UrlAddress, formContent).GetAwaiter().GetResult();
-
-                    //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 587");
-                    //Console.WriteLine(JsonSerializer.Serialize(response));
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -638,7 +637,7 @@ namespace Notus.Core
         {
             try
             {
-                using (var client = new HttpClient())
+                using (HttpClient client = new HttpClient())
                 {
                     if (TimeOut > 0)
                     {
