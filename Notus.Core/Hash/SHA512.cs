@@ -23,7 +23,7 @@ namespace Notus.HashLib
         {
             using (System.Security.Cryptography.SHA512 shaM = new SHA512Managed())
             {
-                return Notus.Core.Convert.Byte2Hex(
+                return Notus.Convert.Byte2Hex(
                     shaM.ComputeHash(
                         inputData
                     )
@@ -40,7 +40,7 @@ namespace Notus.HashLib
         {
             using (System.Security.Cryptography.SHA512 shaM = new SHA512Managed())
             {
-                return Notus.Core.Convert.Byte2Hex(
+                return Notus.Convert.Byte2Hex(
                     shaM.ComputeHash(
                         Encoding.UTF8.GetBytes(
                             rawData
@@ -86,13 +86,13 @@ namespace Notus.HashLib
             }
 
             byte[] iPadDizi = Encoding.ASCII.GetBytes(
-                Notus.Core.Function.AddRightPad("", b, "6")
+                Notus.Toolbox.Text.AddRightPad("", b, "6")
             );
             byte[] oPadDizi = Encoding.ASCII.GetBytes(
-                Notus.Core.Function.AddRightPad("", b, System.Convert.ToChar(92).ToString())
+                Notus.Toolbox.Text.AddRightPad("", b, System.Convert.ToChar(92).ToString())
             );
             byte[] keyDizi = Encoding.ASCII.GetBytes(
-                Notus.Core.Function.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString())
+                Notus.Toolbox.Text.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString())
             );
 
             string k_ipad = "";

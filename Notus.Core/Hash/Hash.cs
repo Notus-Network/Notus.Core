@@ -36,18 +36,18 @@ namespace Notus
         /// <param name="howManyByte">Result Byte Length (optional).</param>
         /// <param name="resultType">Iteration Mode (optional).</param>
         /// <returns>Returns hash with shrink <see cref="string"/></returns>
-        public string Short(byte[] rawInput, byte howManyByte = 8, Notus.Core.Variable.ShortAlgorithmResultType resultType = Notus.Core.Variable.ShortAlgorithmResultType.OneByOne)
+        public string Short(byte[] rawInput, byte howManyByte = 8, Notus.Variable.Enum.ShortAlgorithmResultType resultType = Notus.Variable.Enum.ShortAlgorithmResultType.OneByOne)
         {
-            if (resultType== Notus.Core.Variable.ShortAlgorithmResultType.Mix)
+            if (resultType== Notus.Variable.Enum.ShortAlgorithmResultType.Mix)
             {
                 string resultStr = "";
-                string[] md5Result = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("md5", rawInput), howManyByte), 1).ToArray();
-                string[] whirlpoolResult = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("whirlpool", rawInput), howManyByte), 1).ToArray();
-                string[] sha1Result = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("sha1", rawInput), howManyByte), 1).ToArray();
-                string[] sha256Result = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("sha256", rawInput), howManyByte), 1).ToArray();
-                string[] sha512Result = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("sha512", rawInput), howManyByte), 1).ToArray();
-                string[] blake2bResult = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("blake2b", rawInput), howManyByte), 1).ToArray();
-                string[] ripemd160bResult = Notus.Core.Function.SplitByLength(Notus.Core.Function.ShrinkHex(CommonHash("ripemd160", rawInput), howManyByte), 1).ToArray();
+                string[] md5Result = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("md5", rawInput), howManyByte), 1).ToArray();
+                string[] whirlpoolResult = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("whirlpool", rawInput), howManyByte), 1).ToArray();
+                string[] sha1Result = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("sha1", rawInput), howManyByte), 1).ToArray();
+                string[] sha256Result = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("sha256", rawInput), howManyByte), 1).ToArray();
+                string[] sha512Result = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("sha512", rawInput), howManyByte), 1).ToArray();
+                string[] blake2bResult = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("blake2b", rawInput), howManyByte), 1).ToArray();
+                string[] ripemd160bResult = Notus.Toolbox.Text.SplitByLength(Notus.Toolbox.Text.ShrinkHex(CommonHash("ripemd160", rawInput), howManyByte), 1).ToArray();
 
                 for (int a = 0; a < howManyByte * 2; a++)
                 {
@@ -65,13 +65,13 @@ namespace Notus
             }
             else
             {
-                return Notus.Core.Function.ShrinkHex(CommonHash("md5", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("whirlpool", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("sha1", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("sha256", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("sha512", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("blake2b", rawInput), howManyByte) +
-                    Notus.Core.Function.ShrinkHex(CommonHash("ripemd160", rawInput), howManyByte);
+                return Notus.Toolbox.Text.ShrinkHex(CommonHash("md5", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("whirlpool", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("sha1", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("sha256", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("sha512", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("blake2b", rawInput), howManyByte) +
+                    Notus.Toolbox.Text.ShrinkHex(CommonHash("ripemd160", rawInput), howManyByte);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Notus
             if (string.Equals("whirlpool", hashMethodName))
             {
                 Notus.HashLib.Whirlpool hashObjMd5 = new Notus.HashLib.Whirlpool();
-                return Notus.Core.Convert.Byte2Hex(
+                return Notus.Convert.Byte2Hex(
                     hashObjMd5.ComputeHash(rawInput)
                 );
             }
@@ -118,7 +118,7 @@ namespace Notus
             if (string.Equals("blake2b", hashMethodName))
             {
                 Notus.HashLib.BLAKE2B hashObj2b = new Notus.HashLib.BLAKE2B();
-                return Notus.Core.Convert.Byte2Hex(
+                return Notus.Convert.Byte2Hex(
                     hashObj2b.ComputeHash(rawInput)
                 );
             }
@@ -171,7 +171,7 @@ namespace Notus
             if (string.Equals("blake2b", hashMethodName) )
             {
                 Notus.HashLib.BLAKE2B hashObj2b = new Notus.HashLib.BLAKE2B();
-                return Notus.Core.Convert.Byte2Hex(
+                return Notus.Convert.Byte2Hex(
                     hashObj2b.ComputeHash(
                         Encoding.UTF8.GetBytes(rawInput)
                     )
@@ -196,34 +196,34 @@ namespace Notus
             if (string.Equals("sasha", hashMethodName))
             {
                 Notus.HashLib.Sasha hashObjSasha = new Notus.HashLib.Sasha();
-                return Notus.Core.Convert.Hex2Byte(
+                return Notus.Convert.Hex2Byte(
                     hashObjSasha.ComputeHash(rawInput, true)
                 );
             }
             if (string.Equals("whirlpool", hashMethodName))
             {
                 Notus.HashLib.Whirlpool hashObjMd5 = new Notus.HashLib.Whirlpool();
-                return Notus.Core.Convert.Hex2Byte(hashObjMd5.ComputeHash(rawInput));
+                return Notus.Convert.Hex2Byte(hashObjMd5.ComputeHash(rawInput));
             }
             if (string.Equals("md5", hashMethodName))
             {
                 Notus.HashLib.MD5 hashObjMd5 = new Notus.HashLib.MD5();
-                return Notus.Core.Convert.Hex2Byte(hashObjMd5.Calculate(Encoding.UTF8.GetBytes(rawInput)));
+                return Notus.Convert.Hex2Byte(hashObjMd5.Calculate(Encoding.UTF8.GetBytes(rawInput)));
             }
             if (string.Equals("sha1", hashMethodName))
             {
                 Notus.HashLib.SHA1 hashObj = new Notus.HashLib.SHA1();
-                return Notus.Core.Convert.Hex2Byte(hashObj.Calculate(Encoding.UTF8.GetBytes(rawInput)));
+                return Notus.Convert.Hex2Byte(hashObj.Calculate(Encoding.UTF8.GetBytes(rawInput)));
             }
             if (string.Equals("sha512", hashMethodName))
             {
                 Notus.HashLib.SHA512 hashObj = new Notus.HashLib.SHA512();
-                return Notus.Core.Convert.Hex2Byte(hashObj.ComputeHash(rawInput));
+                return Notus.Convert.Hex2Byte(hashObj.ComputeHash(rawInput));
             }
             if (string.Equals("sha256", hashMethodName))
             {
                 Notus.HashLib.SHA256 hashObj = new Notus.HashLib.SHA256();
-                return Notus.Core.Convert.Hex2Byte(hashObj.Calculate(rawInput));
+                return Notus.Convert.Hex2Byte(hashObj.Calculate(rawInput));
             }
             if (string.Equals("blake2b", hashMethodName))
             {
@@ -235,7 +235,7 @@ namespace Notus
             if (string.Equals("ripemd160", hashMethodName))
             {
                 Notus.HashLib.RIPEMD160 hashObj160 = new Notus.HashLib.RIPEMD160();
-                return Notus.Core.Convert.Hex2Byte(
+                return Notus.Convert.Hex2Byte(
                     hashObj160.ComputeHashWithArray(Encoding.UTF8.GetBytes(rawInput))
                 );
             }

@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Notus.Core.Prepare
+namespace Notus.Prepare
 {
     public class Token
     {
-        public static async Task<Notus.Core.Variable.BlockResponseStruct> Generate(
+        public static async Task<Notus.Variable.Struct.BlockResponseStruct> Generate(
             string PublicKeyHex,
             string Sign,
-            Notus.Core.Variable.TokenInfoStruct InfoData,
-            Notus.Core.Variable.SupplyStruct TokenSupplyData,
-            Notus.Core.Variable.NetworkType currentNetwork
+            Notus.Variable.Struct.TokenInfoStruct InfoData,
+            Notus.Variable.Struct.SupplyStruct TokenSupplyData,
+            Notus.Variable.Enum.NetworkType currentNetwork,
+            string whichNodeIpAddress = ""
         )
         {
-            Notus.Core.Variable.BlockStruct_160 Obj_Token = new Notus.Core.Variable.BlockStruct_160()
+            Notus.Variable.Struct.BlockStruct_160 Obj_Token = new Notus.Variable.Struct.BlockStruct_160()
             {
                 Version = 1000,
-                Info = new Notus.Core.Variable.TokenInfoStruct()
+                Info = new Notus.Variable.Struct.TokenInfoStruct()
                 {
                     Name = InfoData.Name,
                     Tag = InfoData.Tag,
-                    Logo = new Notus.Core.Variable.FileStorageStruct()
+                    Logo = new Notus.Variable.Struct.FileStorageStruct()
                     {
                         Base64 = InfoData.Logo.Base64,
                         Source = InfoData.Logo.Source,
@@ -30,13 +31,13 @@ namespace Notus.Core.Prepare
                         Used = InfoData.Logo.Used
                     }
                 },
-                Creation = new Notus.Core.Variable.CreationStruct()
+                Creation = new Notus.Variable.Struct.CreationStruct()
                 {
-                    UID = Notus.Core.Function.GenerateBlockKey(true),
+                    UID = Notus.Block.Key.Generate(true),
                     PublicKey = PublicKeyHex,
                     Sign = Sign
                 },
-                Reserve = new Notus.Core.Variable.SupplyStruct()
+                Reserve = new Notus.Variable.Struct.SupplyStruct()
                 {
                     Decimal = TokenSupplyData.Decimal,
                     Resupplyable = TokenSupplyData.Resupplyable,
@@ -45,47 +46,51 @@ namespace Notus.Core.Prepare
             };
 
             bool exitInnerLoop = false;
-            string WalletKeyStr = Notus.Core.Wallet.ID.GetAddressWithPublicKey(PublicKeyHex);
+            string WalletKeyStr = Notus.Wallet.ID.GetAddressWithPublicKey(PublicKeyHex);
             while (exitInnerLoop == false)
             {
-                for (int a = 0; a < Notus.Core.Variable.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                 {
-                    string nodeIpAddress = Notus.Core.Variable.ListMainNodeIp[a];
+                    string nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
+                    if (whichNodeIpAddress != "")
+                    {
+                        nodeIpAddress = whichNodeIpAddress;
+                    }
                     try
                     {
 
                         string fullUrlAddress =
-                            Notus.Core.Function.MakeHttpListenerPath(
+                            Notus.Network.Node.MakeHttpListenerPath(
                                 nodeIpAddress,
-                                Notus.Core.Function.GetNetworkPort(currentNetwork, Notus.Core.Variable.NetworkLayer.Layer1)
+                                Notus.Network.Node.GetNetworkPort(currentNetwork, Notus.Variable.Enum.NetworkLayer.Layer1)
                             ) + "token/generate/" + WalletKeyStr + "/";
-                        string MainResultStr = await Notus.Core.Function.PostRequest(
+                        string MainResultStr = await Notus.Communication.Request.Post(
                             fullUrlAddress,
                             new Dictionary<string, string>
                             {
                                 { "data" , JsonSerializer.Serialize(Obj_Token) }
                             }
                         );
-                        Notus.Core.Variable.BlockResponseStruct tmpResponse = JsonSerializer.Deserialize<Notus.Core.Variable.BlockResponseStruct>(MainResultStr);
+                        Notus.Variable.Struct.BlockResponseStruct tmpResponse = JsonSerializer.Deserialize<Notus.Variable.Struct.BlockResponseStruct>(MainResultStr);
                         return tmpResponse;
                     }
                     catch (Exception err)
                     {
-                        Notus.Core.Function.Print(true, "Error Text [8ae5cf]: " + err.Message);
-                        return new Notus.Core.Variable.BlockResponseStruct()
+                        Notus.Toolbox.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                        return new Notus.Variable.Struct.BlockResponseStruct()
                         {
                             UID = "",
-                            Code = Notus.Core.Variable.ErrorNoList.UnknownError,
+                            Code = Notus.Variable.Constant.ErrorNoList.UnknownError,
                             Status = "UnknownError"
                         };
                     }
                 }
             }
 
-            return new Notus.Core.Variable.BlockResponseStruct()
+            return new Notus.Variable.Struct.BlockResponseStruct()
             {
                 UID = "",
-                Code = Notus.Core.Variable.ErrorNoList.UnknownError,
+                Code = Notus.Variable.Constant.ErrorNoList.UnknownError,
                 Status = "UnknownError"
             };
         }

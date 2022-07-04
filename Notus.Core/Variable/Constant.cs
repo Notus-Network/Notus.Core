@@ -1,10 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Notus.Core
+namespace Notus.Variable
 {
-    public static class Variable
+    public static class Constant
     {
+        /*
+        public class NonceType
+        {
+            public int Method { get; set; }
+            public int Type { get; set; }
+            public int Difficulty { get; set; }
+        }
+        */
+        public static readonly string MainCoinTagName = "NOTUS";
         public static readonly string DefaultDateTimeFormatText = "yyyyMMddHHmmssfff";
         public static readonly string DefaultHexAlphabetString = "0123456789abcdef";
         public static readonly string DefaultBase32AlphabetString = "QAZ2WSX3EDC4RFV5TGB6YHN7UJM8K9LP";
@@ -33,76 +41,76 @@ namespace Notus.Core
         public static readonly int DefaultChunkSize = 2048;
 
         // layer 1 - main layer for crypto & token generate and transfer
-        public static readonly Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>> PortNo = new Dictionary<Notus.Core.Variable.NetworkLayer, Dictionary<Notus.Core.Variable.NetworkType, int>>()
+        public static readonly Dictionary<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>> PortNo = new Dictionary<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>>()
         {
             {
-                NetworkLayer.Layer1, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 0},
-                    { NetworkType.TestNet, DefaultPortNo + 1},
-                    { NetworkType.DevNet, DefaultPortNo + 2}
+                Notus.Variable.Enum.NetworkLayer.Layer1, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 0},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 1},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 2}
                 }
             },
             {
-                NetworkLayer.Layer2, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 100},
-                    { NetworkType.TestNet, DefaultPortNo + 101},
-                    { NetworkType.DevNet, DefaultPortNo + 102}
+                Notus.Variable.Enum.NetworkLayer.Layer2, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 100},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 101},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 102}
                 }
             },
             {
-                NetworkLayer.Layer3, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 200},
-                    { NetworkType.TestNet, DefaultPortNo + 201},
-                    { NetworkType.DevNet, DefaultPortNo + 202}
+                Notus.Variable.Enum.NetworkLayer.Layer3, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 200},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 201},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 202}
                 }
             },
             {
-                NetworkLayer.Layer4, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 300},
-                    { NetworkType.TestNet, DefaultPortNo + 301},
-                    { NetworkType.DevNet, DefaultPortNo + 302}
+                Notus.Variable.Enum.NetworkLayer.Layer4, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 300},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 301},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 302}
                 }
             },
             {
-                NetworkLayer.Layer5, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 400},
-                    { NetworkType.TestNet, DefaultPortNo + 401},
-                    { NetworkType.DevNet, DefaultPortNo + 402}
+                Notus.Variable.Enum.NetworkLayer.Layer5, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 400},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 401},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 402}
                 }
             },
             {
-                NetworkLayer.Layer6, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 500},
-                    { NetworkType.TestNet, DefaultPortNo + 501},
-                    { NetworkType.DevNet, DefaultPortNo + 502}
+                Notus.Variable.Enum.NetworkLayer.Layer6, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 500},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 501},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 502}
                 }
             },
             {
-                NetworkLayer.Layer7, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 600},
-                    { NetworkType.TestNet, DefaultPortNo + 601},
-                    { NetworkType.DevNet, DefaultPortNo + 602}
+                Notus.Variable.Enum.NetworkLayer.Layer7, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 600},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 601},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 602}
                 }
             },
             {
-                NetworkLayer.Layer8, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 700},
-                    { NetworkType.TestNet, DefaultPortNo + 701},
-                    { NetworkType.DevNet, DefaultPortNo + 702}
+                Notus.Variable.Enum.NetworkLayer.Layer8, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 700},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 701},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 702}
                 }
             },
             {
-                NetworkLayer.Layer9, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 800},
-                    { NetworkType.TestNet, DefaultPortNo + 801},
-                    { NetworkType.DevNet, DefaultPortNo + 802}
+                Notus.Variable.Enum.NetworkLayer.Layer9, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 800},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 801},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 802}
                 }
             },
             {
-                NetworkLayer.Layer10, new Dictionary<Notus.Core.Variable.NetworkType,int>(){
-                    { NetworkType.MainNet, DefaultPortNo + 900},
-                    { NetworkType.TestNet, DefaultPortNo + 901},
-                    { NetworkType.DevNet, DefaultPortNo + 902}
+                Notus.Variable.Enum.NetworkLayer.Layer10, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
+                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 900},
+                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 901},
+                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 902}
                 }
             }
         };
@@ -128,66 +136,97 @@ namespace Notus.Core
         public static readonly string Prefix_MainNetwork = "NR";
         public static readonly string Prefix_TestNetwork = "NT";
 
-        public class FileTransferStruct
+
+        public static readonly string SocketMessageEndingText = "<EOF>";
+        public static readonly string NonceDelimeterChar = ":";
+        public static readonly bool SubFromBiggestNumber = false;
+
+        public readonly static Dictionary<string, string> AlphabetForAccountType = new Dictionary<string, string>()
         {
-            public int BlockType { get; set; }
-            public string FileName { get; set; }
-            public long FileSize { get; set; }
-            public string FileHash { get; set; }
-            public int ChunkSize { get; set; }
-            public int ChunkCount { get; set; }
-            public Notus.Core.Variable.ProtectionLevel Level { get; set; }
-            public bool StoreEncrypted { get; set; }
-            public bool WaterMarkIsLight { get; set; }
-            public string PublicKey { get; set; }
-            public string Sign { get; set; }
-        }
-        public class FileChunkStruct
+            { "m", "865b1oxj34cf2k7nhlqtwysrzmigapud9ve" },
+            { "i", "b7n3lqt2azvs6xdmchfkojir4pue95wyg18" },
+            { "p", "u45il9f2bpvc8s1eorxjndwmthakg3qyz76" },
+            { "s", "5lsv3hknew49btqj17fr6ycxpa8doi2mzug" },
+            { "c", "m51z3lkjhnabyew48dprs2oi6vcf9gutqx7" },
+            { "g", "5ro6ynea4bzx7d9ipuhkfc2w1qg8svlmjt3" },
+            { "a", "imdzafk4w8oqbx671utjysph9lec2vnrg35" },
+            { "u", "hmtz2fp3ykdie17o4v96ubnsg5xwcajrq8l" }
+        };
+
+
+        // public readonly static string MemoryPool_BlockListDirectoryName = "lists";
+        public readonly static int MemoryPool_BlockListCount = 100000;
+
+        public readonly static Dictionary<string, string> MemoryPoolName = new Dictionary<string, string>()
         {
-            public string UID { get; set; }
-            public int Count { get; set; }
-            public string Data { get; set; }
+            //{ "MainNetworkSettings", "mns" },
+            //{ "MainBlockSettings", "mbs" },
+            { "CommonData", "data" },
+            { "MasterList", "master_list" },
+
+            { "MainNodeWalletConfig", "node_config" },
+            { "BlockPoolList", "pool_list" },
+            { "PreviousBlockList", "prev_list" },
+
+            //{ "BlockStorageList", "block_list" },
+            { "MempoolListBeforeBlockStorage", "block_file" },
+
+            { "NetworkNodeList", "node_list" }
+        };
+
+        public readonly static Dictionary<int, int> NonceHashLength = new Dictionary<int, int>()
+        {
+            { 1, 32 },      // md5
+            { 2, 40 },      // sha1
+            { 100, 240 }    // sasha
+        };
+
+
+
+        // which hash algorithm
+        public readonly static int Default_BlockNonceMethod = 1;
+        public readonly static Dictionary<int, int> BlockNonceMethod = new Dictionary<int, int>()
+        {
+            { 360, 100 }
+        };
+
+        // how calculate nonce number
+        // 1-Slide, 2-Bounce
+        public readonly static int Default_BlockNonceType = 1;
+        public readonly static Dictionary<int, int> BlockNonceType = new Dictionary<int, int>()
+        {
+            { 360, 1 }
+        };
+
+        // block difficulty level
+        public readonly static int Default_BlockDifficulty = 1;
+        public readonly static Dictionary<int, int> BlockDifficulty = new Dictionary<int, int>()
+        {
+            { 360, 1 }
+        };
+
+        public readonly static List<int> BalanceBlockTypeList = new List<int>()
+        {
+            360, 120
+        };
+
+
+        public static readonly int JoinNetworkEndOfTheCounter = 3;
+
+        public static readonly string Seed_ForMainNet_BlockKeyGenerate = "NotusMainNetSeedText";
+
+
+        public class StorageFolderName
+        {
+            public const string Block = "blocks";
+            public const string Balance = "balance";
+            public const string Node = "node";
+            public const string Common = "common";
+            public const string File = "file";
+            public const string Storage = "storage";
         }
 
-        public enum ProtectionLevel
-        {
-            Low = 0,
-            Medium = 1,
-            High = 2
-        }
 
-        public enum NetworkLayer
-        {
-            // MainLayer = 1,     // crypto and token transfer & token generation
-            Layer1 = 1,     // crypto and token transfer & token generation
-
-            // StorageLayer = 2,     // encrypted file storage ( never delete )
-            Layer2 = 2,     // file storage ( never delete )
-
-            // StorageLayer = 3,     // accesible file storage ( never delete )
-            Layer3 = 3,     // message storage ( delete after 1 year )
-
-            // MessageLayer = 4,     // message storage ( delete after 1 year )
-            Layer4 = 4,    // not using
-            Layer5 = 5,    // not using
-            Layer6 = 6,    // not using
-            Layer7 = 7,    // not using
-            Layer8 = 8,    // not using
-            Layer9 = 9,    // not using
-            Layer10 = 10   // not using
-        }
-        public enum NetworkType
-        {
-            MainNet = 10,
-            TestNet = 20,
-            DevNet = 30
-        }
-
-        public enum ShortAlgorithmResultType
-        {
-            Mix = 2,
-            OneByOne = 4
-        }
         public class ErrorNoList
         {
             public const int Success = 0;
@@ -201,213 +240,35 @@ namespace Notus.Core
             public const int MissingArgument = 11;
         }
 
-        // currency list struct
-        public class CurrencyList
+        public class ContentTypes
         {
-            public bool ReserveCurrency { get; set; }   // token generation version
-            public string Tag { get; set; }             // short name
-            public string Name { get; set; }            // creator info
-            public FileStorageStruct Logo { get; set; } // token info
-        }
-        // token generation struct
-        public class BlockStruct_160
-        {
-            public int Version { get; set; }               // token generation version
-            public CreationStruct Creation { get; set; }   // creator info
-            public TokenInfoStruct Info { get; set; }      // token info
-            public SupplyStruct Reserve { get; set; }      // how much token
-        }
-        public class CreationStruct
-        {
-            public string UID { get; set; }     // token UID verisi
-            public string PublicKey { get; set; }     // creator public key
-            public string Sign { get; set; }  // struct sign
-        }
-        public class GenericSignStruct
-        {
-            public string Time { get; set; }     // time ID
-            public string PublicKey { get; set; }     // signer public key
-            public string Sign { get; set; }  // sign
-        }
-        public class FileStorageStruct
-        {
-            public bool Used { get; set; }          // if struct is been using
-            public string Base64 { get; set; }      // if file storage on chain, its own image data
-            public string Url { get; set; }         // file url
-            public string Source { get; set; }      // file storage service name
-        }
-        public class StorageOnChainStruct
-        {
-            public string Name { get; set; }          // file name
-            public long Size { get; set; }             // file size
-            public string Hash { get; set; }          // file hash
-            public bool Encrypted { get; set; }       // file url
-            public string PublicKey { get; set; }      // file owner public key
-            public string Sign { get; set; }          // sign data
-            public BalanceAfterBlockStruct Balance { get; set; }  // new balance
-        }
-        public class TokenInfoStruct
-        {
-            public string Name { get; set; }                // token long name
-            public string Tag { get; set; }                 // token short tag
-            public FileStorageStruct Logo { get; set; }     // token logo
-
-        }
-        public class SupplyStruct
-        {
-            public Int64 Supply { get; set; }       // integer value
-            public int Decimal { get; set; }        // decimal value
-            public bool Resupplyable { get; set; }  // token can be editable
+            // Text
+            public const string Plain = "text/plain";
+            public const string Html = "text/html";
+            public const string Xml = "text/xml";
+            public const string RichText = "text/richtext";
+            // Image
+            public const string Gif = "image/gif";
+            public const string Tiff = "image/tiff";
+            public const string Jpeg = "image/jpeg";
+            // Application
+            public const string Soap = "application/soap+xml";
+            public const string Octet = "application/octet-stream";
+            public const string Pdf = "application/pdf";
+            public const string Zip = "application/zip";
+            public const string Json = "application/json";
+            public const string ApplicationXml = "application/xml";
         }
 
-        // block struct for type 142 -> increase in token supply block strcut
-        public class BlockStruct_142
-        {
-            public string TokenUid { get; set; }                // token generation uid
-            public Int64 Supply { get; set; }                   // new integer value
-            public int Decimal { get; set; }                    // new decimal value
-            public bool DistributeEqually { get; set; }         // when resupply token distbute equally to token holders ( protect token holders share )
-            public bool Resupplyable { get; set; }              // token can be editable after that
-        }
 
-        public class EccKeyPair
+        public class MempoolNameList
         {
-            public string CurveName { get; set; }
-            public string[] Words { get; set; }
-            public string PrivateKey { get; set; }
-            public string PublicKey { get; set; }
-            public string WalletKey { get; set; }
+            public const string TokenStructList = "token_detail";
+            public const string TokenTagList = "token_tag_list";
+            public const string TokenTagListForLock = "lock_token_tag_name";
         }
-        public class BlockResponse
-        {
-            public string UID { get; set; }
-            public Notus.Core.Variable.BlockStatusCode Result { get; set; }
-            public string Status { get; set; }
-        }
-        public class BlockResponseStruct
-        {
-            public string UID { get; set; }
-            public int Code { get; set; }
-            public string Status { get; set; }
-        }
-        public class WalletBalanceResponseStruct
-        {
-            public int ErrorNo { get; set; }
-            public bool Exist { get; set; }
-            public Int64 RowNo { get; set; }
-            public string Source { get; set; }
-            public string Balance { get; set; }
-        }
-        public class CryptoTransactionResult
-        {
-            public int ErrorNo { get; set; }
-            public Notus.Core.Variable.BlockStatusCode Result { get; set; }
-            public string ID { get; set; }
-        }
-
-        public class WalletBalanceStruct
-        {
-            public string Wallet { get; set; }         // account wallet id
-            public Dictionary<string, string> Balance { get; set; }      // account current balance
-            public string Currency { get; set; }       // account curreny
-            public Int64 RowNo { get; set; }           // witness row no
-            public string UID { get; set; }            // witness uid
-        }
-        public class BalanceAfterBlockStruct
-        {
-            public string Wallet { get; set; }         // account wallet id
-            public Dictionary<string, string> Balance { get; set; }      // account current balance
-            public Int64 RowNo { get; set; }           // witness row no
-            public string UID { get; set; }            // witness uid
-            public string Fee { get; set; }             // witness row no
-        }
-
-        public class WalletActivitiesStruct
-        {
-            public Int64 Order { get; set; }        // activities order no
-            public int Type { get; set; }           // block type
-            public string UID { get; set; }         // block uid
-        }
-        public class CryptoTransactionStruct
-        {
-            public int ErrorNo { get; set; }
-            public string Currency { get; set; }
-            public string Sender { get; set; }
-            public string Receiver { get; set; }
-            public string Volume { get; set; }
-            public string PublicKey { get; set; }
-            public string Sign { get; set; }
-            public string CurveName { get; set; }
-            public Notus.Core.Variable.NetworkType Network { get; set; }
-        }
-
-        public class CryptoTransactionDataStruct
-        {
-            public string Sender { get; set; }
-            public string Receiver { get; set; }
-            public string Volume { get; set; }
-            public string PublicKey { get; set; }
-            public string Sign { get; set; }
-            public string CurveName { get; set; }
-        }
-
-        public class CryptoTransactionBeforeStruct
-        {
-            public string Currency { get; set; }
-            public string Sender { get; set; }
-            public string Receiver { get; set; }
-            public string Volume { get; set; }
-            public string PrivateKey { get; set; }
-            public string CurveName { get; set; }
-            public Notus.Core.Variable.NetworkType Network { get; set; }
-        }
-
-        public enum BlockStatusCode
-        {
-            AddedToQueue = 0,
-            InAlreadyQueue = 1,
-            InProgress = 57,
-            WrongParameter = 45,
-            WrongPublicKey = 10,
-            WrongSignature = 2,
-            WrongVolume = 5,
-            WrongWallet = 67,
-
-            WrongWallet_Sender = 6,
-            WrongWallet_Receiver = 9,
-
-            WalletDoesntExist = 11,
-            InsufficientBalance = 12,
-            PendingPreviousTransaction = 13,
-            AnErrorOccurred = 99,
-            Pending = 89,
-            InQueue = 1,
-            Completed = 22,
-            Rejected = 97,
-            Unknown = 78
-        }
-
-        public enum WalletTypeCode
-        {
-            Sender = 1,
-            Receiver = 2,
-            Validator = 3
-        }
-
-        public enum Fee
-        {
-            CryptoTransfer = 2,             /* para transfer işlemi için genel işlem için */
-            CryptoTransfer_Fast = 1,        /* para transfer işlemi için */
-            CryptoTransfer_NoName = 3,      /* para transfer işlemi için */
-            CryptoTransfer_ByPieces = 4,    /* para transfer işlemi için */
-
-            TokenGeneration = 5,            /* token oluşturma işlemi için */
-            TokenUpdate = 6,                /* token supplye veya diğer güncellemeler için işlem tutarı*/
-
-            DataStorage = 7                 /* blok içeriğinde kaydedilen verinin her byte'ı için  */
-
-        }
+    
+        
 
     }
 }
-

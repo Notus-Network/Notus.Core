@@ -441,12 +441,12 @@ namespace Notus.HashLib
             int b = keySize;
             if (keyText.Length > b)
             {
-                keyText = Notus.Core.Convert.Byte2Hex(ComputeHash(Encoding.UTF8.GetBytes(keyText))).ToLower();
+                keyText = Notus.Convert.Byte2Hex(ComputeHash(Encoding.UTF8.GetBytes(keyText))).ToLower();
             }
 
-            byte[] iPadDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad("", b, "6"));
-            byte[] oPadDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad("", b, System.Convert.ToChar(92).ToString()));
-            byte[] keyDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString()));
+            byte[] iPadDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad("", b, "6"));
+            byte[] oPadDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad("", b, System.Convert.ToChar(92).ToString()));
+            byte[] keyDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString()));
 
             string k_ipad = "";
             string k_opad = "";
@@ -456,11 +456,11 @@ namespace Notus.HashLib
                 k_opad = k_opad + ((char)(keyDizi[a] ^ oPadDizi[a])).ToString();
             }
             return
-                Notus.Core.Convert.Byte2Hex(
+                Notus.Convert.Byte2Hex(
                     ComputeHash(
                         Encoding.UTF8.GetBytes(
                             k_opad +
-                            Notus.Core.Convert.Byte2Hex(
+                            Notus.Convert.Byte2Hex(
                                 ComputeHash(Encoding.UTF8.GetBytes(k_ipad + input))
                             ).ToLower()
                         )
@@ -475,7 +475,7 @@ namespace Notus.HashLib
         /// <returns>Returns Whirlpool Hash <see cref="string"/>.</returns>
         public string ComputeHash(string inputStr)
         {
-            return Notus.Core.Convert.Byte2Hex(
+            return Notus.Convert.Byte2Hex(
                 ComputeHash(
                     Encoding.UTF8.GetBytes(
                         inputStr

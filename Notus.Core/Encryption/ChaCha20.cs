@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Notus.Core.Encryption
+namespace Notus.Encryption
 {
 	/// <summary>
 	/// Helper methods for ChaCha20 Encryption.

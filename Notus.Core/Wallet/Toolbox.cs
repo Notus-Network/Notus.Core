@@ -6,14 +6,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace Notus.Core.Wallet
+namespace Notus.Wallet
 {
-    public static class Function
+    public static class Toolbox
     {
         public static string[] SeedPhraseList()
         {
-            string[] wordList = new string[Notus.Core.Variable.Default_WordListArrayCount];
-            for (int i = 0; i < Notus.Core.Variable.Default_WordListArrayCount; i++)
+            string[] wordList = new string[Notus.Variable.Constant.Default_WordListArrayCount];
+            for (int i = 0; i < Notus.Variable.Constant.Default_WordListArrayCount; i++)
             {
                 wordList[i] = Bip39Keyword(
                     int.Parse(
@@ -39,16 +39,16 @@ namespace Notus.Core.Wallet
             bool exitWhileLoop = false;
             while (exitWhileLoop == false)
             {
-                if (Notus.Core.Variable.Bip39WordArray.Length > Bip39WordIndexNo)
+                if (Notus.Variable.Constant.Bip39WordArray.Length > Bip39WordIndexNo)
                 {
                     exitWhileLoop = true;
                 }
                 else
                 {
-                    Bip39WordIndexNo = Bip39WordIndexNo - Notus.Core.Variable.Bip39WordArray.Length;
+                    Bip39WordIndexNo = Bip39WordIndexNo - Notus.Variable.Constant.Bip39WordArray.Length;
                 }
             }
-            return Notus.Core.Variable.Bip39WordArray[Bip39WordIndexNo];
+            return Notus.Variable.Constant.Bip39WordArray[Bip39WordIndexNo];
         }
 
         public static bool Bip39KeywordDoesExist(string keyword, int indexNo = -1 )
@@ -59,7 +59,7 @@ namespace Notus.Core.Wallet
             }
             else
             {
-                if (Array.IndexOf(Notus.Core.Variable.Bip39WordArray, keyword) != -1)
+                if (Array.IndexOf(Notus.Variable.Constant.Bip39WordArray, keyword) != -1)
                     return true;
             }
 
@@ -81,7 +81,7 @@ namespace Notus.Core.Wallet
 
             char[] result = new char[resultSize];
 
-            Int32 iAlphabetLength = Notus.Core.Variable.DefaultBase58AlphabetString.Length;
+            Int32 iAlphabetLength = Notus.Variable.Constant.DefaultBase58AlphabetString.Length;
             BigInteger iAlphabetLength2 = BigInteger.Parse(iAlphabetLength.ToString());
 
             int i = 0;
@@ -89,7 +89,7 @@ namespace Notus.Core.Wallet
             {
                 BigInteger lNumberRemainder = BigInteger.Remainder(numberToShorten, iAlphabetLength2);
                 numberToShorten = numberToShorten / iAlphabetLength;
-                result[result.Length - 1 - i] = Notus.Core.Variable.DefaultBase58AlphabetString[(int)lNumberRemainder];
+                result[result.Length - 1 - i] = Notus.Variable.Constant.DefaultBase58AlphabetString[(int)lNumberRemainder];
                 i++;
             }
 
@@ -201,7 +201,7 @@ namespace Notus.Core.Wallet
 
         public static string BinaryAscii_hexFromBinary(byte[] bytes)
         {
-            return Notus.Core.Convert.Byte2Hex(bytes);
+            return Notus.Convert.Byte2Hex(bytes);
         }
 
         public static byte[] BinaryAscii_binaryFromHex(string hex)

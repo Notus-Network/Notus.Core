@@ -14,7 +14,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 
-namespace Notus.Core
+namespace Notus
 {
     /// <summary>
     /// A helper class related to convert.
@@ -31,7 +31,7 @@ namespace Notus.Core
         {
             if (DefinedValidCharList.Length != 32)
             {
-                DefinedValidCharList = Notus.Core.Variable.DefaultBase32AlphabetString;
+                DefinedValidCharList = Notus.Variable.Constant.DefaultBase32AlphabetString;
             }
             StringBuilder sb = new StringBuilder();
             byte index;
@@ -77,7 +77,7 @@ namespace Notus.Core
         {
             if (DefinedValidCharList.Length != 32)
             {
-                DefinedValidCharList = Notus.Core.Variable.DefaultBase32AlphabetString;
+                DefinedValidCharList = Notus.Variable.Constant.DefaultBase32AlphabetString;
             }
 
             int numBytes = str.Length * 5 / 8;
@@ -148,7 +148,7 @@ namespace Notus.Core
                 bool exitLoop = false;
                 for (int b = 0; b < 64 && exitLoop == false; b++)
                 {
-                    if (sourceArray[a] == Notus.Core.Variable.DefaultBase64AlphabetCharArray[b])
+                    if (sourceArray[a] == Notus.Variable.Constant.DefaultBase64AlphabetCharArray[b])
                     {
                         sourceArray[a] = newAlphabetArray[b];
                         exitLoop = true;
@@ -176,7 +176,7 @@ namespace Notus.Core
                 {
                     if (sourceArray[a] == newAlphabetArray[b])
                     {
-                        sourceArray[a] = Notus.Core.Variable.DefaultBase64AlphabetCharArray[b];
+                        sourceArray[a] = Notus.Variable.Constant.DefaultBase64AlphabetCharArray[b];
                         exitLoop = true;
                     }
                 }
@@ -193,7 +193,7 @@ namespace Notus.Core
         {
             string resultStr = "";
             
-            string[] strArray = Notus.Core.Function.SplitByLength(incomeHex, 10).ToArray();
+            string[] strArray = Notus.Toolbox.Text.SplitByLength(incomeHex, 10).ToArray();
             for (int a = 0; a < strArray.Length; a++)
             {
                 string incomeStr = EncodeBase_subFunc(
@@ -218,7 +218,7 @@ namespace Notus.Core
         /// <returns>Returns plain <see cref="string"/></returns>
         public static string FromBase35(string incomeBase)
         {
-            string[] strArray = Notus.Core.Function.SplitByLength(incomeBase, 8).ToArray();
+            string[] strArray = Notus.Toolbox.Text.SplitByLength(incomeBase, 8).ToArray();
             string hexStr = "";
             for (int a = 0; a < strArray.Length; a++)
             {
@@ -245,7 +245,7 @@ namespace Notus.Core
         {
             // this function fork from
             // https://gist.github.com/micli/c242edd2a81a8f0d9f7953842bcc24f1
-            char[] _alphabet = Notus.Core.Variable.DefaultBase58AlphabetString.ToCharArray();
+            char[] _alphabet = Notus.Variable.Constant.DefaultBase58AlphabetString.ToCharArray();
             int[] _indexes = new int[128];
 
             for (int i = 0; i < _indexes.Length; i++)
@@ -396,7 +396,7 @@ namespace Notus.Core
         /// <returns>Returns <see cref="byte"/>[]</returns>
         public static byte[] Hex2Byte(string HexStr)
         {
-            string[] HexArray = Notus.Core.Function.SplitByLength(HexStr, 2).ToArray();
+            string[] HexArray = Notus.Toolbox.Text.SplitByLength(HexStr, 2).ToArray();
             byte[] YedArray = new byte[HexArray.Length];
             for (int a = 0; a < HexArray.Length; a++)
             {
@@ -407,19 +407,19 @@ namespace Notus.Core
 
         private static string EncodeBase_subFunc(Int64 incomeIntVal)
         {
-            int base_count = Notus.Core.Variable.DefaultBase35AlphabetString.Length;
+            int base_count = Notus.Variable.Constant.DefaultBase35AlphabetString.Length;
             string encoded = "";
             while (incomeIntVal >= base_count)
             {
                 Int64 div = incomeIntVal / base_count;
                 int mod = (int)(incomeIntVal - (base_count * div));
-                encoded = Notus.Core.Variable.DefaultBase35AlphabetString[mod] + encoded;
+                encoded = Notus.Variable.Constant.DefaultBase35AlphabetString[mod] + encoded;
                 incomeIntVal = div;
             }
 
             if (incomeIntVal > 0)
             {
-                return Notus.Core.Variable.DefaultBase35AlphabetString[(int)incomeIntVal] + encoded;
+                return Notus.Variable.Constant.DefaultBase35AlphabetString[(int)incomeIntVal] + encoded;
             }
             return encoded;
         }
@@ -431,8 +431,8 @@ namespace Notus.Core
             Int64 multi = 1;
             for (int i = incomeText.Length - 1; i >= 0; i--)
             {
-                decoded += multi * Notus.Core.Variable.DefaultBase35AlphabetString.IndexOf(incomeText[i]);
-                multi *= Notus.Core.Variable.DefaultBase35AlphabetString.Length;
+                decoded += multi * Notus.Variable.Constant.DefaultBase35AlphabetString.IndexOf(incomeText[i]);
+                multi *= Notus.Variable.Constant.DefaultBase35AlphabetString.Length;
             }
             return decoded;
         }

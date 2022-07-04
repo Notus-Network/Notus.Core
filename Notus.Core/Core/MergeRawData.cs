@@ -4,72 +4,73 @@ namespace Notus.Core
 {
     public class MergeRawData
     {
-        public static Notus.Core.Variable.GenericSignStruct GenericSign(string PrivateKey)
+        public static Notus.Variable.Struct.GenericSignStruct GenericSign(string PrivateKey)
         {
-            string PublicKeyStr = Notus.Core.Wallet.ID.Generate(PrivateKey);
-            string TimeStr = DateTime.Now.ToString(Notus.Core.Variable.DefaultDateTimeFormatText);
-            return new Variable.GenericSignStruct()
+            string PublicKeyStr = Notus.Wallet.ID.Generate(PrivateKey);
+            string TimeStr = DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
+            return new Notus.Variable.Struct.GenericSignStruct()
             {
                 PublicKey = PublicKeyStr,
                 Time = TimeStr,
-                Sign = Notus.Core.Wallet.ID.Sign(PublicKeyStr + TimeStr, PrivateKey)
+                Sign = Notus.Wallet.ID.Sign(PublicKeyStr + TimeStr, PrivateKey)
             };
         }
-        public static string Transaction(string Sender, string Receiver, string Volume, string Currency)
+        public static string Transaction(string Sender, string Receiver, string Volume, string UnlockTime, string Currency)
         {
-            return Sender + Notus.Core.Variable.CommonDelimeterChar +
-            Receiver + Notus.Core.Variable.CommonDelimeterChar +
-            Volume + Notus.Core.Variable.CommonDelimeterChar +
+            return Sender + Notus.Variable.Constant.CommonDelimeterChar +
+            Receiver + Notus.Variable.Constant.CommonDelimeterChar +
+            Volume + Notus.Variable.Constant.CommonDelimeterChar +
+            UnlockTime + Notus.Variable.Constant.CommonDelimeterChar +
             Currency;
         }
 
-        public static Notus.Core.Variable.FileTransferStruct FileUpload(Notus.Core.Variable.FileTransferStruct uploadFile)
+        public static Notus.Variable.Struct.FileTransferStruct FileUpload(Notus.Variable.Struct.FileTransferStruct uploadFile)
         {
 
             uploadFile.Sign =
-                uploadFile.BlockType.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.FileName + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.FileSize.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.FileHash + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.ChunkSize.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.ChunkCount.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                uploadFile.Level.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                Notus.Core.Function.BoolToStr(uploadFile.WaterMarkIsLight) + Notus.Core.Variable.CommonDelimeterChar +
+                uploadFile.BlockType.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.FileName + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.FileSize.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.FileHash + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.ChunkSize.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.ChunkCount.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                uploadFile.Level.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                Notus.Toolbox.Text.BoolToStr(uploadFile.WaterMarkIsLight) + Notus.Variable.Constant.CommonDelimeterChar +
                 uploadFile.PublicKey;
             return uploadFile;
         }
-        public static string StorageOnChain(Notus.Core.Variable.StorageOnChainStruct StorageData)
+        public static string StorageOnChain(Notus.Variable.Struct.StorageOnChainStruct StorageData)
         {
 
             return 
-                StorageData.Name + Notus.Core.Variable.CommonDelimeterChar +
-                StorageData.Size.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                StorageData.Hash + Notus.Core.Variable.CommonDelimeterChar +
-                Notus.Core.Function.BoolToStr(StorageData.Encrypted) + Notus.Core.Variable.CommonDelimeterChar +
+                StorageData.Name + Notus.Variable.Constant.CommonDelimeterChar +
+                StorageData.Size.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                StorageData.Hash + Notus.Variable.Constant.CommonDelimeterChar +
+                Notus.Toolbox.Text.BoolToStr(StorageData.Encrypted) + Notus.Variable.Constant.CommonDelimeterChar +
                 StorageData.PublicKey;
         }
 
         public static string TokenGenerate(
             string PublicKey,
-            Notus.Core.Variable.TokenInfoStruct InfoData,
-            Notus.Core.Variable.SupplyStruct TokenSupplyData
+            Notus.Variable.Struct.TokenInfoStruct InfoData,
+            Notus.Variable.Struct.SupplyStruct TokenSupplyData
         )
         {
-            //Notus.Core.Variable.
+            //Notus.Variable.Struct.
             return
-                PublicKey + Notus.Core.Variable.CommonDelimeterChar +
+                PublicKey + Notus.Variable.Constant.CommonDelimeterChar +
 
-                InfoData.Name + Notus.Core.Variable.CommonDelimeterChar +
-                InfoData.Tag + Notus.Core.Variable.CommonDelimeterChar +
+                InfoData.Name + Notus.Variable.Constant.CommonDelimeterChar +
+                InfoData.Tag + Notus.Variable.Constant.CommonDelimeterChar +
 
-                    Notus.Core.Function.BoolToStr(InfoData.Logo.Used) + Notus.Core.Variable.CommonDelimeterChar +
-                    InfoData.Logo.Base64 + Notus.Core.Variable.CommonDelimeterChar +
-                    InfoData.Logo.Url + Notus.Core.Variable.CommonDelimeterChar +
-                    InfoData.Logo.Source + Notus.Core.Variable.CommonDelimeterChar +
+                    Notus.Toolbox.Text.BoolToStr(InfoData.Logo.Used) + Notus.Variable.Constant.CommonDelimeterChar +
+                    InfoData.Logo.Base64 + Notus.Variable.Constant.CommonDelimeterChar +
+                    InfoData.Logo.Url + Notus.Variable.Constant.CommonDelimeterChar +
+                    InfoData.Logo.Source + Notus.Variable.Constant.CommonDelimeterChar +
 
-                TokenSupplyData.Supply.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                TokenSupplyData.Decimal.ToString() + Notus.Core.Variable.CommonDelimeterChar +
-                Notus.Core.Function.BoolToStr(TokenSupplyData.Resupplyable);
+                TokenSupplyData.Supply.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                TokenSupplyData.Decimal.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
+                Notus.Toolbox.Text.BoolToStr(TokenSupplyData.Resupplyable);
         }
     }
 }

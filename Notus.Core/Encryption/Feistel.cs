@@ -2,7 +2,7 @@
 
 // https://github.com/allantargino/Feistel-Cipher/blob/master/FeistelCipher/Program.cs
 
-namespace Notus.Core.Encryption
+namespace Notus.Encryption
 {
     public class Feistel
     {

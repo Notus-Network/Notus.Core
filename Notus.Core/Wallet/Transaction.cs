@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Notus.Core.Wallet
+namespace Notus.Wallet
 {
     /// <summary>
     /// A helper class related to wallet transactions.
@@ -21,11 +21,33 @@ namespace Notus.Core.Wallet
     public class Transaction
     {
         /// <summary>
-        /// TO DO.
+        /// DONE
         /// </summary>
-        public static string Status(string TransferId)
+        public static Notus.Variable.Enum.BlockStatusCode Status(string TransferId, Notus.Variable.Enum.NetworkType WhichNetwork = Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Enum.NetworkLayer WhichLayer = Notus.Variable.Enum.NetworkLayer.Layer1)
         {
-            return TransferId;
+            using(
+                Notus.Mempool ObjMp_CryptoTranStatus= new Notus.Mempool(
+                    Notus.Toolbox.IO.GetFolderName(
+                        WhichNetwork, WhichLayer, Notus.Variable.Constant.StorageFolderName.Common 
+                    ) + "crypto_transfer_status")
+            )
+            {
+                string tmpDataResultStr = ObjMp_CryptoTranStatus.Get(TransferId, string.Empty);
+                if (tmpDataResultStr.Length > 5)
+                {
+                    try
+                    {
+                        Notus.Variable.Struct.CryptoTransferStatus Obj_CryptTrnStatus = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransferStatus>(tmpDataResultStr);
+                        return Obj_CryptTrnStatus.Code;
+                    }
+                    catch (Exception err)
+                    {
+                        //Console.WriteLine("Error Text [ba09c83fe] : " + err.Message);
+                        return Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred;
+                    }
+                }
+            }
+            return Notus.Variable.Enum.BlockStatusCode.Unknown;
         }
 
         /// <summary>
@@ -33,62 +55,83 @@ namespace Notus.Core.Wallet
         /// </summary>
         /// <param name="preTransfer">Crypto Transaction informations.</param>
         /// <param name="currentNetwork">Current Network for Request.</param>
-        /// <returns>Returns Result of the Transaction as <see cref="Notus.Core.Variable.CryptoTransactionResult"/>.</returns>
-        public static async Task<Notus.Core.Variable.CryptoTransactionResult> Send(Notus.Core.Variable.CryptoTransactionStruct preTransfer, Notus.Core.Variable.NetworkType currentNetwork)
+        /// <param name="whichNodeIpAddress">Node IP Address for Request.</param>
+        /// <returns>Returns Result of the Transaction as <see cref="Notus.Variable.Struct.CryptoTransactionResult"/>.</returns>
+        public static async Task<Notus.Variable.Struct.CryptoTransactionResult> Send(
+            Notus.Variable.Struct.CryptoTransactionStruct preTransfer,
+            Notus.Variable.Enum.NetworkType currentNetwork,
+            string whichNodeIpAddress = ""
+        )
         {
             try
             {
                 bool tmpTransactionVerified = Verify(preTransfer);
                 if (tmpTransactionVerified == false)
                 {
-                    return new Notus.Core.Variable.CryptoTransactionResult()
+                    return new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ID = string.Empty,
-                        Result = Notus.Core.Variable.BlockStatusCode.WrongSignature,
+                        Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature,
                     };
                 }
 
                 bool exitInnerLoop = false;
                 while (exitInnerLoop == false)
                 {
-                    for (int a = 0; a < Notus.Core.Variable.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                     {
-                        string nodeIpAddress = Notus.Core.Variable.ListMainNodeIp[a];
+                        string nodeIpAddress = "";
+                        if (whichNodeIpAddress == "")
+                        {
+                            nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
+                        }
+                        else
+                        {
+                            nodeIpAddress = whichNodeIpAddress;
+                        }
                         try
                         {
-                            bool RealNetwork = preTransfer.Network == Notus.Core.Variable.NetworkType.MainNet;
+                            bool RealNetwork = preTransfer.Network == Notus.Variable.Enum.NetworkType.MainNet;
                             string fullUrlAddress =
-                                Notus.Core.Function.MakeHttpListenerPath(
+                                Notus.Network.Node.MakeHttpListenerPath(
                                     nodeIpAddress,
-                                    Notus.Core.Function.GetNetworkPort(currentNetwork, Notus.Core.Variable.NetworkLayer.Layer1)
-                                ) + "send/" ;
+                                    Notus.Network.Node.GetNetworkPort(currentNetwork, Notus.Variable.Enum.NetworkLayer.Layer1)
+                                ) + "send/";
 
-                            string MainResultStr = await Notus.Core.Function.PostRequest(fullUrlAddress, 
+                            string MainResultStr = await Notus.Communication.Request.Post(fullUrlAddress,
                                 new System.Collections.Generic.Dictionary<string, string>()
                                 {
                                     { "data" , JsonSerializer.Serialize(preTransfer) }
                                 }
                             );
-                            Notus.Core.Variable.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Core.Variable.CryptoTransactionResult>(MainResultStr);
+                            Notus.Variable.Struct.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(MainResultStr);
                             exitInnerLoop = true;
                             return tmpTransferResult;
                         }
                         catch (Exception err)
                         {
-                            Notus.Core.Function.Print(true, "Error Text [8ae5cf]: " + err.Message);
+                            Notus.Toolbox.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                             Thread.Sleep(1000);
+                        }
+                        if (whichNodeIpAddress != "")
+                        {
+                            return new Notus.Variable.Struct.CryptoTransactionResult()
+                            {
+                                ID = string.Empty,
+                                Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
+                            };
                         }
                     }
                 }
             }
             catch (Exception err)
             {
-                Notus.Core.Function.Print(true, "Error Text [3aebc9]: " + err.Message);
+                Notus.Toolbox.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
             }
-            return new Notus.Core.Variable.CryptoTransactionResult()
+            return new Notus.Variable.Struct.CryptoTransactionResult()
             {
                 ID = string.Empty,
-                Result = Notus.Core.Variable.BlockStatusCode.AnErrorOccurred,
+                Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
             };
         }
 
@@ -97,22 +140,23 @@ namespace Notus.Core.Wallet
         /// </summary>
         /// <param name="preTransfer">Crypto Transaction informations.</param>
         /// <returns>Returns Result of the Verification.</returns>
-        public static bool Verify(Notus.Core.Variable.CryptoTransactionStruct preTransfer)
+        public static bool Verify(Notus.Variable.Struct.CryptoTransactionStruct preTransfer)
         {
-            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
             {
                 return false;
             }
 
-            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
             {
                 return false;
             }
-            
-            return Notus.Core.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
+
+            return Notus.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
                    preTransfer.Sender,
                    preTransfer.Receiver,
                    preTransfer.Volume,
+                   preTransfer.UnlockTime.ToString(),
                    preTransfer.Currency
                 ), preTransfer.Sign,
                 preTransfer.PublicKey,
@@ -125,41 +169,43 @@ namespace Notus.Core.Wallet
         /// </summary>
         /// <param name="preTransfer">Crypto Transaction informations.</param>
         /// <returns>Returns Signed Transaction Struct.</returns>
-        public static Notus.Core.Variable.CryptoTransactionStruct Sign(Notus.Core.Variable.CryptoTransactionBeforeStruct preTransfer)
+        public static Notus.Variable.Struct.CryptoTransactionStruct Sign(Notus.Variable.Struct.CryptoTransactionBeforeStruct preTransfer)
         {
 
-            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
             {
-                return new Notus.Core.Variable.CryptoTransactionStruct()
+                return new Notus.Variable.Struct.CryptoTransactionStruct()
                 {
                     ErrorNo = 2
                 };
             }
 
-            if (Notus.Core.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
             {
-                return new Notus.Core.Variable.CryptoTransactionStruct()
+                return new Notus.Variable.Struct.CryptoTransactionStruct()
                 {
                     ErrorNo = 6
                 };
             }
 
-            return new Notus.Core.Variable.CryptoTransactionStruct()
+            return new Notus.Variable.Struct.CryptoTransactionStruct()
             {
                 Currency = preTransfer.Currency,
                 ErrorNo = 0,
+                UnlockTime = preTransfer.UnlockTime,
                 Sender = preTransfer.Sender,
                 Receiver = preTransfer.Receiver,
                 Volume = preTransfer.Volume,
-                PublicKey = Notus.Core.Wallet.ID.Generate(
+                PublicKey = Notus.Wallet.ID.Generate(
                     preTransfer.PrivateKey,
                     preTransfer.CurveName
                 ),
-                Sign = Notus.Core.Wallet.ID.Sign(
+                Sign = Notus.Wallet.ID.Sign(
                     Notus.Core.MergeRawData.Transaction(
                         preTransfer.Sender,
                         preTransfer.Receiver,
                         preTransfer.Volume,
+                        preTransfer.UnlockTime.ToString(),
                         preTransfer.Currency
                     ),
                     preTransfer.PrivateKey,

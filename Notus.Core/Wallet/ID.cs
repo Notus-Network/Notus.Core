@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 
-namespace Notus.Core.Wallet
+namespace Notus.Wallet
 {
     /// <summary>
     /// A helper class related to wallet IDs
@@ -29,7 +29,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Result of the Verification.</returns>
         public static bool Verify(string messageData, string signHex, string publicKey)
         {
-            return Verify_SubFunction(messageData, signHex, publicKey, Notus.Core.Variable.Default_EccCurveName);
+            return Verify_SubFunction(messageData, signHex, publicKey, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -50,13 +50,13 @@ namespace Notus.Core.Wallet
             try
             {
                 PublicKey yPubKey = PublicKey.fromString(
-                    Notus.Core.Convert.Hex2Byte(publicKey),
+                    Notus.Convert.Hex2Byte(publicKey),
                     curveName,
                     true
                 );
                 verifyResult = Ecdsa.verify(
                     messageData,
-                    Signature.fromBase64(System.Convert.ToBase64String(Notus.Core.Convert.Hex2Byte(signHex))),
+                    Signature.fromBase64(System.Convert.ToBase64String(Notus.Convert.Hex2Byte(signHex))),
                     yPubKey
                 );
             }
@@ -75,7 +75,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Result of the Signing as <see cref="string"/>.</returns>
         public static string Sign(string messageData, string privateKey)
         {
-            return Sign_SubFunction(messageData, privateKey, Notus.Core.Variable.Default_EccCurveName);
+            return Sign_SubFunction(messageData, privateKey, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -95,14 +95,14 @@ namespace Notus.Core.Wallet
             if (curveName == "secp256k1")
             {
                 
-                yPrivKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+                yPrivKey = new PrivateKey("secp256k1", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             else
             {
-                yPrivKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+                yPrivKey = new PrivateKey("p256", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             Signature signObj = Ecdsa.sign(messageData, yPrivKey);
-            return Notus.Core.Convert.Byte2Hex(
+            return Notus.Convert.Byte2Hex(
                 System.Convert.FromBase64String(
                     signObj.toBase64()
                 )
@@ -116,14 +116,14 @@ namespace Notus.Core.Wallet
         /// <param name="WhichNetworkFor">Current Network for Request (optional).</param>
         /// <param name="CurveName">Current curve (optional).</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress_StandartWay(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet, string CurveName = "secp256k1")
+        public static string GetAddress_StandartWay(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor = Notus.Variable.Enum.NetworkType.MainNet, string CurveName = "secp256k1")
         {
-            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             PublicKey yPubKey = yPrivKey.publicKey();
             BigInteger pkPointVal = yPubKey.point.x;
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
             string networkByteStr = "00";
-            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
             {
                 networkByteStr = "04";
             }
@@ -138,7 +138,7 @@ namespace Notus.Core.Wallet
                 networkByteStr + hashPubKeyStr + checkSumStr.Substring(0, 8),
                 NumberStyles.AllowHexSpecifier);
 
-            string walletAddressStr = Notus.Core.Wallet.Function.EncodeBase58(number);
+            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number);
             return walletAddressStr;
         }
 
@@ -148,22 +148,22 @@ namespace Notus.Core.Wallet
         /// <param name="walletAddress">Wallet Address <see cref="string"/></param>
         /// <param name="WhichNetworkFor">Current Network for Request (optional).</param>
         /// <returns>Returns true if wallet address is correct. Returns false if wallet address is incorrect.</returns>
-        public static bool CheckAddress(string walletAddress, Notus.Core.Variable.NetworkType WhichNetworkFor = Notus.Core.Variable.NetworkType.MainNet)
+        public static bool CheckAddress(string walletAddress, Notus.Variable.Enum.NetworkType WhichNetworkFor = Notus.Variable.Enum.NetworkType.MainNet)
         {
             if (walletAddress != null)
             {
                 if (walletAddress.Length == 38)
                 {
-                    if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
+                    if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
                     {
-                        if (walletAddress.Substring(0, Notus.Core.Variable.Prefix_TestNetwork.Length) == Notus.Core.Variable.Prefix_TestNetwork)
+                        if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_TestNetwork.Length) == Notus.Variable.Constant.Prefix_TestNetwork)
                         {
                             return true;
                         }
                     }
                     else
                     {
-                        if (walletAddress.Substring(0, Notus.Core.Variable.Prefix_MainNetwork.Length) == Notus.Core.Variable.Prefix_MainNetwork)
+                        if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_MainNetwork.Length) == Notus.Variable.Constant.Prefix_MainNetwork)
                         {
                             return true;
                         }
@@ -180,7 +180,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddressWithPublicKey(string publicKey)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey),Notus.Core.Variable.Default_EccCurveName, true ), Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey),Notus.Variable.Constant.Default_EccCurveName, true ), Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddressWithPublicKey(string publicKey, string CurveName)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey),CurveName,true), Notus.Core.Variable.NetworkType.MainNet,CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey),CurveName,true), Notus.Variable.Enum.NetworkType.MainNet,CurveName);
         }
 
         /// <summary>
@@ -200,9 +200,9 @@ namespace Notus.Core.Wallet
         /// <param name="publicKey">Public Key <see cref="string"/></param>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddressWithPublicKey(string publicKey, Notus.Core.Variable.NetworkType WhichNetworkFor)
+        public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey), Notus.Core.Variable.Default_EccCurveName, true), WhichNetworkFor,Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), Notus.Variable.Constant.Default_EccCurveName, true), WhichNetworkFor,Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -212,9 +212,9 @@ namespace Notus.Core.Wallet
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <param name="CurveName">Current curve.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddressWithPublicKey(string publicKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
+        public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Core.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor,CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor,CurveName);
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Public Address</returns>
         public static string GetAddress(string privateKey)
         {
-            return GetAddress_SubFunction(privateKey, Notus.Core.Variable.NetworkType.MainNet, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction(privateKey, Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace Notus.Core.Wallet
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddress(string privateKey, string CurveName)
         {
-            return GetAddress_SubFunction(privateKey, Notus.Core.Variable.NetworkType.MainNet, CurveName);
+            return GetAddress_SubFunction(privateKey, Notus.Variable.Enum.NetworkType.MainNet, CurveName);
         }
 
         /// <summary>
@@ -244,9 +244,9 @@ namespace Notus.Core.Wallet
         /// <param name="privateKey">Private Key <see cref="string"/></param>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor)
+        public static string GetAddress(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
-            return GetAddress_SubFunction(privateKey, WhichNetworkFor, Notus.Core.Variable.Default_EccCurveName);
+            return GetAddress_SubFunction(privateKey, WhichNetworkFor, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -256,41 +256,41 @@ namespace Notus.Core.Wallet
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <param name="CurveName">Current curve.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName)
+        public static string GetAddress(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName)
         {
             return GetAddress_SubFunction(privateKey, WhichNetworkFor, CurveName);
         }
 
-        private static string GetAddress_SubFunction(string privateKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+        private static string GetAddress_SubFunction(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
         {
-            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+            PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             PublicKey yPubKey = yPrivKey.publicKey();
             return GetAddress_SubFunction_FromPublicKey(yPubKey, WhichNetworkFor, CurveName);
         }
 
-        private static string GetAddress_SubFunction_FromPublicKey(PublicKey yPubKey, Notus.Core.Variable.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+        private static string GetAddress_SubFunction_FromPublicKey(PublicKey yPubKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
         {
             BigInteger pkPointVal = yPubKey.point.x;
             string fullPublicKey = yPubKey.point.x.ToString("x") + yPubKey.point.y.ToString("x");
 
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
 
-            string keyPrefix = Notus.Core.Variable.Prefix_MainNetwork;
+            string keyPrefix = Notus.Variable.Constant.Prefix_MainNetwork;
             string networkByteStr = "10";
-            if (WhichNetworkFor == Notus.Core.Variable.NetworkType.TestNet)
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
             {
-                keyPrefix = Notus.Core.Variable.Prefix_TestNetwork;
+                keyPrefix = Notus.Variable.Constant.Prefix_TestNetwork;
                 networkByteStr = "20";
             }
 
             Notus.HashLib.Sasha sashaObj = new Notus.HashLib.Sasha();
-            string hashPubKeyStr = Notus.Core.Function.ShrinkHex(
+            string hashPubKeyStr = Notus.Toolbox.Text.ShrinkHex(
                 sashaObj.Calculate(
                     sashaObj.Calculate(publicKeyX)
                 ), 22
             );
 
-            string checkSumStr = Notus.Core.Function.ShrinkHex(
+            string checkSumStr = Notus.Toolbox.Text.ShrinkHex(
                 sashaObj.Calculate(
                     sashaObj.Calculate(networkByteStr + fullPublicKey)
                 ), 4
@@ -300,7 +300,7 @@ namespace Notus.Core.Wallet
                 networkByteStr + hashPubKeyStr + checkSumStr,
                 NumberStyles.AllowHexSpecifier);
 
-            string walletAddressStr = Notus.Core.Wallet.Function.EncodeBase58(number, 36);
+            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number, 36);
             return keyPrefix + walletAddressStr;
         }
 
@@ -312,7 +312,7 @@ namespace Notus.Core.Wallet
         public static string PrivateKeyFromWordList(string[] WordList)
         {
             BigInteger PrivateKeySeedNumber = PrivateKeyFromPassPhrase(WordList);
-            string privateHexStr = New(Notus.Core.Variable.Default_EccCurveName, PrivateKeySeedNumber);
+            string privateHexStr = New(Notus.Variable.Constant.Default_EccCurveName, PrivateKeySeedNumber);
             return privateHexStr;
         }
 
@@ -320,20 +320,20 @@ namespace Notus.Core.Wallet
         public static BigInteger PrivateKeyFromPassPhrase(string[] WordList)
         {
             if (WordList.Length != 16) { return 0; }
-            string[] tmpWordList = new string[Notus.Core.Variable.Default_WordListArrayCount];
+            string[] tmpWordList = new string[Notus.Variable.Constant.Default_WordListArrayCount];
             string fullWordLine = "";
-            for (int i = 0; i < Notus.Core.Variable.Default_WordListArrayCount; i++)
+            for (int i = 0; i < Notus.Variable.Constant.Default_WordListArrayCount; i++)
             {
                 if (i == 0)
                 {
-                    fullWordLine = WordList[i] + Notus.Core.Variable.CommonDelimeterChar;
+                    fullWordLine = WordList[i] + Notus.Variable.Constant.CommonDelimeterChar;
                 }
                 else
                 {
                     fullWordLine = fullWordLine + WordList[i];
-                    if (Notus.Core.Variable.Default_WordListArrayCount - 1 > i)
+                    if (Notus.Variable.Constant.Default_WordListArrayCount - 1 > i)
                     {
-                        fullWordLine = fullWordLine + Notus.Core.Variable.CommonDelimeterChar;
+                        fullWordLine = fullWordLine + Notus.Variable.Constant.CommonDelimeterChar;
                     }
                 }
                 tmpWordList[i] = new Notus.Hash().CommonHash("md5", WordList[i]);
@@ -342,16 +342,16 @@ namespace Notus.Core.Wallet
                 new Notus.Hash().CommonHash("sasha",
                     fullWordLine
                 ) +
-                Notus.Core.Variable.CommonDelimeterChar +
+                Notus.Variable.Constant.CommonDelimeterChar +
                 fullWordLine
             );
             string hexResultStr = "";
-            for (int i = 0; i < Notus.Core.Variable.Default_WordListArrayCount; i++)
+            for (int i = 0; i < Notus.Variable.Constant.Default_WordListArrayCount; i++)
             {
-                tmpWordList[i] = Notus.Core.Function.ShrinkHex(
+                tmpWordList[i] = Notus.Toolbox.Text.ShrinkHex(
                     new Notus.Hash().CommonHash("sha1",
                         fullWordLine +
-                        Notus.Core.Variable.CommonDelimeterChar +
+                        Notus.Variable.Constant.CommonDelimeterChar +
                         tmpWordList[i]
                     )
                 , 2);
@@ -361,50 +361,50 @@ namespace Notus.Core.Wallet
         }
 
         /// <summary>
-        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/>
+        /// Generates a new <see cref="Notus.Variable.Struct.EccKeyPair"/>
         /// </summary>
         /// <returns>Returns Wallet Key Pair</returns>
-        public static Notus.Core.Variable.EccKeyPair GenerateKeyPair()
+        public static Notus.Variable.Struct.EccKeyPair GenerateKeyPair()
         {
-            return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, Notus.Core.Variable.NetworkType.MainNet);
+            return GenerateKeyPair(Notus.Variable.Constant.Default_EccCurveName, Notus.Variable.Enum.NetworkType.MainNet);
         }
 
         /// <summary>
-        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given curve name.
+        /// Generates a new <see cref="Notus.Variable.Struct.EccKeyPair"/> via given curve name.
         /// </summary>
         /// <param name="curveName">Current curve.</param>
         /// <returns>Returns Wallet Key Pair</returns>
-        public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(string curveName)
+        public static Notus.Variable.Struct.EccKeyPair GenerateKeyPair(string curveName)
         {
-            return GenerateKeyPair(curveName, Notus.Core.Variable.NetworkType.MainNet);
+            return GenerateKeyPair(curveName, Notus.Variable.Enum.NetworkType.MainNet);
         }
 
         /// <summary>
-        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given network.
+        /// Generates a new <see cref="Notus.Variable.Struct.EccKeyPair"/> via given network.
         /// </summary>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Key Pair</returns>
-        public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(Notus.Core.Variable.NetworkType WhichNetworkFor)
+        public static Notus.Variable.Struct.EccKeyPair GenerateKeyPair(Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
-            return GenerateKeyPair(Notus.Core.Variable.Default_EccCurveName, WhichNetworkFor);
+            return GenerateKeyPair(Notus.Variable.Constant.Default_EccCurveName, WhichNetworkFor);
         }
 
         /// <summary>
-        /// Generates a new <see cref="Notus.Core.Variable.EccKeyPair"/> via given curve name and network.
+        /// Generates a new <see cref="Notus.Variable.Struct.EccKeyPair"/> via given curve name and network.
         /// </summary>
         /// <param name="curveName">Current curve.</param>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Key Pair</returns>
-        public static Notus.Core.Variable.EccKeyPair GenerateKeyPair(string curveName, Notus.Core.Variable.NetworkType WhichNetworkFor)
+        public static Notus.Variable.Struct.EccKeyPair GenerateKeyPair(string curveName, Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
             if (curveName == "")
             {
-                curveName = Notus.Core.Variable.Default_EccCurveName;
+                curveName = Notus.Variable.Constant.Default_EccCurveName;
             }
-            string[] WordList = Notus.Core.Wallet.Function.SeedPhraseList();
+            string[] WordList = Notus.Wallet.Toolbox.SeedPhraseList();
             BigInteger PrivateKeySeedNumber = PrivateKeyFromPassPhrase(WordList);
             string privateHexStr = New(curveName, PrivateKeySeedNumber);
-            return new Notus.Core.Variable.EccKeyPair()
+            return new Notus.Variable.Struct.EccKeyPair()
             {
                 CurveName = curveName,
                 Words = WordList,
@@ -420,19 +420,19 @@ namespace Notus.Core.Wallet
         /// <param name="privateKey">Private Key <see cref="string"/></param>
         /// <param name="curveName">Current curve.</param>
         /// <returns>Returns Public Key</returns>
-        public static string Generate(string privateKey, string curveName = Notus.Core.Variable.Default_EccCurveName)
+        public static string Generate(string privateKey, string curveName = Notus.Variable.Constant.Default_EccCurveName)
         {
             PrivateKey privKey;
             if (curveName.ToLower() == "secp256k1")
             {
-                privKey = new PrivateKey("secp256k1", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+                privKey = new PrivateKey("secp256k1", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             else
             {
-                privKey = new PrivateKey("p256", Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(privateKey));
+                privKey = new PrivateKey("p256", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             PublicKey yPubKey = privKey.publicKey();
-            return Notus.Core.Convert.Byte2Hex(yPubKey.toString(false)).ToLower();
+            return Notus.Convert.Byte2Hex(yPubKey.toString(false)).ToLower();
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Notus.Core.Wallet
         /// <param name="curveName">Current curve.</param>
         /// <param name="PrivateKeySeedValue">Seed to be used</param>
         /// <returns>Returns Private Key</returns>
-        public static string New(string curveName = Notus.Core.Variable.Default_EccCurveName, BigInteger? PrivateKeySeedValue = null)
+        public static string New(string curveName = Notus.Variable.Constant.Default_EccCurveName, BigInteger? PrivateKeySeedValue = null)
         {
             PrivateKey privKey;
             if (curveName.ToLower() == "secp256k1")
@@ -481,7 +481,7 @@ namespace Notus.Core.Wallet
 
             public bool contains(CurvePointStruct p)
             {
-                return Notus.Core.Wallet.Function.Integer_modulo(
+                return Notus.Wallet.Toolbox.Integer_modulo(
                     BigInteger.Pow(p.y, 2) - (BigInteger.Pow(p.x, 3) + A * p.x + B),
                     P
                 ).IsZero;
@@ -513,23 +513,23 @@ namespace Notus.Core.Wallet
             }
 
             public static CurveFp secp256k1 = new CurveFp(
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("0000000000000000000000000000000000000000000000000000000000000000"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("0000000000000000000000000000000000000000000000000000000000000007"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("0000000000000000000000000000000000000000000000000000000000000000"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("0000000000000000000000000000000000000000000000000000000000000007"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8"),
                 "secp256k1",
                 new int[] { 1, 3, 132, 0, 10 }
             );
 
             public static CurveFp prime256v1 = new CurveFp(
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("ffffffff00000001000000000000000000000000fffffffffffffffffffffffc"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("ffffffff00000001000000000000000000000000ffffffffffffffffffffffff"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"),
-                Notus.Core.Wallet.Function.BinaryAscii_numberFromHex("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("ffffffff00000001000000000000000000000000fffffffffffffffffffffffc"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("ffffffff00000001000000000000000000000000ffffffffffffffffffffffff"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"),
+                Notus.Wallet.Toolbox.BinaryAscii_numberFromHex("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"),
                 "prime256v1",
                 new int[] { 1, 2, 840, 10045, 3, 1, 7 },
                 "P-256"
@@ -560,19 +560,19 @@ namespace Notus.Core.Wallet
 
             public byte[] toString(bool encoded = false)
             {
-                byte[] xString = Notus.Core.Wallet.Function.BinaryAscii_stringFromNumber(point.x, curve.length());
-                byte[] yString = Notus.Core.Wallet.Function.BinaryAscii_stringFromNumber(point.y, curve.length());
+                byte[] xString = Notus.Wallet.Toolbox.BinaryAscii_stringFromNumber(point.x, curve.length());
+                byte[] yString = Notus.Wallet.Toolbox.BinaryAscii_stringFromNumber(point.y, curve.length());
 
                 if (encoded)
                 {
-                    return Notus.Core.Wallet.Function.Der_combineByteArrays(new List<byte[]> {
-                        Notus.Core.Wallet.Function.BinaryAscii_binaryFromHex("00"),
-                        Notus.Core.Wallet.Function.BinaryAscii_binaryFromHex("04"),
+                    return Notus.Wallet.Toolbox.Der_combineByteArrays(new List<byte[]> {
+                        Notus.Wallet.Toolbox.BinaryAscii_binaryFromHex("00"),
+                        Notus.Wallet.Toolbox.BinaryAscii_binaryFromHex("04"),
                         xString,
                         yString
                     });
                 }
-                return Notus.Core.Wallet.Function.Der_combineByteArrays(new List<byte[]> {
+                return Notus.Wallet.Toolbox.Der_combineByteArrays(new List<byte[]> {
                 xString,
                 yString
             });
@@ -581,60 +581,60 @@ namespace Notus.Core.Wallet
             public byte[] toDer()
             {
                 int[] oidEcPublicKey = { 1, 2, 840, 10045, 2, 1 };
-                byte[] encodedEcAndOid = Notus.Core.Wallet.Function.Der_encodeSequence(
+                byte[] encodedEcAndOid = Notus.Wallet.Toolbox.Der_encodeSequence(
                     new List<byte[]> {
-                    Notus.Core.Wallet.Function.Der_encodeOid(oidEcPublicKey),
-                    Notus.Core.Wallet.Function.Der_encodeOid(curve.oid)
+                    Notus.Wallet.Toolbox.Der_encodeOid(oidEcPublicKey),
+                    Notus.Wallet.Toolbox.Der_encodeOid(curve.oid)
                     }
                 );
 
-                return Notus.Core.Wallet.Function.Der_encodeSequence(
+                return Notus.Wallet.Toolbox.Der_encodeSequence(
                     new List<byte[]> {
                     encodedEcAndOid,
-                    Notus.Core.Wallet.Function.Der_encodeBitString(toString(true))
+                    Notus.Wallet.Toolbox.Der_encodeBitString(toString(true))
                     }
                 );
             }
 
             public string toPem()
             {
-                return Notus.Core.Wallet.Function.Der_toPem(toDer(), "PUBLIC KEY");
+                return Notus.Wallet.Toolbox.Der_toPem(toDer(), "PUBLIC KEY");
             }
 
 
             public static PublicKey fromPem(string pem)
             {
-                return fromDer(Notus.Core.Wallet.Function.Der_fromPem(pem));
+                return fromDer(Notus.Wallet.Toolbox.Der_fromPem(pem));
             }
 
             public static PublicKey fromDer(byte[] der)
             {
-                Tuple<byte[], byte[]> removeSequence1 = Notus.Core.Wallet.Function.Der_removeSequence(der);
+                Tuple<byte[], byte[]> removeSequence1 = Notus.Wallet.Toolbox.Der_removeSequence(der);
                 byte[] s1 = removeSequence1.Item1;
 
                 if (removeSequence1.Item2.Length > 0)
                 {
                     throw new ArgumentException(
                         "trailing junk after DER public key: " +
-                        Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeSequence1.Item2)
+                        Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeSequence1.Item2)
                     );
                 }
 
-                Tuple<byte[], byte[]> removeSequence2 = Notus.Core.Wallet.Function.Der_removeSequence(s1);
+                Tuple<byte[], byte[]> removeSequence2 = Notus.Wallet.Toolbox.Der_removeSequence(s1);
                 byte[] s2 = removeSequence2.Item1;
                 byte[] pointBitString = removeSequence2.Item2;
 
-                Tuple<int[], byte[]> removeObject1 = Notus.Core.Wallet.Function.Der_removeObject(s2);
+                Tuple<int[], byte[]> removeObject1 = Notus.Wallet.Toolbox.Der_removeObject(s2);
                 byte[] rest = removeObject1.Item2;
 
-                Tuple<int[], byte[]> removeObject2 = Notus.Core.Wallet.Function.Der_removeObject(rest);
+                Tuple<int[], byte[]> removeObject2 = Notus.Wallet.Toolbox.Der_removeObject(rest);
                 int[] oidCurve = removeObject2.Item1;
 
                 if (removeObject2.Item2.Length > 0)
                 {
                     throw new ArgumentException(
                         "trailing junk after DER public key objects: " +
-                        Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeObject2.Item2)
+                        Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeObject2.Item2)
                     );
                 }
 
@@ -658,7 +658,7 @@ namespace Notus.Core.Wallet
 
                 CurveFp curve = Curves.curvesByOid[stringOid];
 
-                Tuple<byte[], byte[]> removeBitString = Notus.Core.Wallet.Function.Der_removeBitString(pointBitString);
+                Tuple<byte[], byte[]> removeBitString = Notus.Wallet.Toolbox.Der_removeBitString(pointBitString);
                 byte[] pointString = removeBitString.Item1;
 
                 if (removeBitString.Item2.Length > 0)
@@ -666,7 +666,7 @@ namespace Notus.Core.Wallet
                     throw new ArgumentException("trailing junk after public key point-string");
                 }
 
-                return fromString(Notus.Core.Wallet.Function.Bytes_sliceByteArray(pointString, 2), curve.name);
+                return fromString(Notus.Wallet.Toolbox.Bytes_sliceByteArray(pointString, 2), curve.name);
 
             }
 
@@ -681,12 +681,12 @@ namespace Notus.Core.Wallet
                     throw new ArgumentException("string length [" + str.Length + "] should be " + 2 * baseLen);
                 }
 
-                string xs = Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(Notus.Core.Wallet.Function.Bytes_sliceByteArray(str, 0, baseLen));
-                string ys = Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(Notus.Core.Wallet.Function.Bytes_sliceByteArray(str, baseLen));
+                string xs = Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(Notus.Wallet.Toolbox.Bytes_sliceByteArray(str, 0, baseLen));
+                string ys = Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(Notus.Wallet.Toolbox.Bytes_sliceByteArray(str, baseLen));
 
                 CurvePointStruct p = new CurvePointStruct(
-                    Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(xs),
-                    Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(ys)
+                    Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(xs),
+                    Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(ys)
                 );
 
                 if (validatePoint & !curveObject.contains(p))
@@ -720,37 +720,37 @@ namespace Notus.Core.Wallet
 
             public byte[] toDer()
             {
-                List<byte[]> sequence = new List<byte[]> { Notus.Core.Wallet.Function.Der_encodeInteger(r), Notus.Core.Wallet.Function.Der_encodeInteger(s) };
-                return Notus.Core.Wallet.Function.Der_encodeSequence(sequence);
+                List<byte[]> sequence = new List<byte[]> { Notus.Wallet.Toolbox.Der_encodeInteger(r), Notus.Wallet.Toolbox.Der_encodeInteger(s) };
+                return Notus.Wallet.Toolbox.Der_encodeSequence(sequence);
             }
 
             public string toBase64()
             {
-                return Notus.Core.Wallet.Function.Base64_encode(toDer());
+                return Notus.Wallet.Toolbox.Base64_encode(toDer());
             }
 
             public static Signature fromDer(byte[] bytes)
             {
-                Tuple<byte[], byte[]> removeSequence = Notus.Core.Wallet.Function.Der_removeSequence(bytes);
+                Tuple<byte[], byte[]> removeSequence = Notus.Wallet.Toolbox.Der_removeSequence(bytes);
                 byte[] rs = removeSequence.Item1;
                 byte[] removeSequenceTrail = removeSequence.Item2;
 
                 if (removeSequenceTrail.Length > 0)
                 {
-                    throw new ArgumentException("trailing junk after DER signature: " + Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeSequenceTrail));
+                    throw new ArgumentException("trailing junk after DER signature: " + Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeSequenceTrail));
                 }
 
-                Tuple<BigInteger, byte[]> removeInteger = Notus.Core.Wallet.Function.Der_removeInteger(rs);
+                Tuple<BigInteger, byte[]> removeInteger = Notus.Wallet.Toolbox.Der_removeInteger(rs);
                 BigInteger r = removeInteger.Item1;
                 byte[] rest = removeInteger.Item2;
 
-                removeInteger = Notus.Core.Wallet.Function.Der_removeInteger(rest);
+                removeInteger = Notus.Wallet.Toolbox.Der_removeInteger(rest);
                 BigInteger s = removeInteger.Item1;
                 byte[] removeIntegerTrail = removeInteger.Item2;
 
                 if (removeIntegerTrail.Length > 0)
                 {
-                    throw new ArgumentException("trailing junk after DER numbers: " + Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeIntegerTrail));
+                    throw new ArgumentException("trailing junk after DER numbers: " + Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeIntegerTrail));
                 }
 
                 return new Signature(r, s);
@@ -759,7 +759,7 @@ namespace Notus.Core.Wallet
 
             public static Signature fromBase64(string str)
             {
-                return fromDer(Notus.Core.Wallet.Function.Base64_decode(str));
+                return fromDer(Notus.Wallet.Toolbox.Base64_decode(str));
             }
 
         }
@@ -769,12 +769,12 @@ namespace Notus.Core.Wallet
             public static Signature sign(string message, PrivateKey privateKey)
             {
                 string hashMessage = hashCalculate(message);
-                BigInteger numberMessage = Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(hashMessage);
+                BigInteger numberMessage = Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(hashMessage);
                 CurveFp curve = privateKey.curve;
-                BigInteger randNum = Notus.Core.Wallet.Function.Integer_randomBetween(BigInteger.One, curve.N - 1);
+                BigInteger randNum = Notus.Wallet.Toolbox.Integer_randomBetween(BigInteger.One, curve.N - 1);
                 CurvePointStruct randSignPoint = EcdsaMath.multiply(curve.G, randNum, curve.N, curve.A, curve.P);
-                BigInteger r = Notus.Core.Wallet.Function.Integer_modulo(randSignPoint.x, curve.N);
-                BigInteger s = Notus.Core.Wallet.Function.Integer_modulo((numberMessage + r * privateKey.secret) * (EcdsaMath.inv(randNum, curve.N)), curve.N);
+                BigInteger r = Notus.Wallet.Toolbox.Integer_modulo(randSignPoint.x, curve.N);
+                BigInteger s = Notus.Wallet.Toolbox.Integer_modulo((numberMessage + r * privateKey.secret) * (EcdsaMath.inv(randNum, curve.N)), curve.N);
 
                 return new Signature(r, s);
             }
@@ -782,7 +782,7 @@ namespace Notus.Core.Wallet
             public static bool verify(string message, Signature signature, PublicKey publicKey)
             {
                 string hashMessage = hashCalculate(message);
-                BigInteger numberMessage = Notus.Core.Wallet.Function.BinaryAscii_numberFromHex(hashMessage);
+                BigInteger numberMessage = Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(hashMessage);
                 CurveFp curve = publicKey.curve;
                 BigInteger sigR = signature.r;
                 BigInteger sigS = signature.s;
@@ -790,14 +790,14 @@ namespace Notus.Core.Wallet
 
                 CurvePointStruct u1 = EcdsaMath.multiply(
                     curve.G,
-                    Notus.Core.Wallet.Function.Integer_modulo((numberMessage * inv), curve.N),
+                    Notus.Wallet.Toolbox.Integer_modulo((numberMessage * inv), curve.N),
                     curve.N,
                     curve.A,
                     curve.P
                 );
                 CurvePointStruct u2 = EcdsaMath.multiply(
                     publicKey.point,
-                    Notus.Core.Wallet.Function.Integer_modulo((sigR * inv), curve.N),
+                    Notus.Wallet.Toolbox.Integer_modulo((sigR * inv), curve.N),
                     curve.N,
                     curve.A,
                     curve.P
@@ -879,7 +879,7 @@ namespace Notus.Core.Wallet
 
                 BigInteger lm = BigInteger.One;
                 BigInteger hm = BigInteger.Zero;
-                BigInteger low = Notus.Core.Wallet.Function.Integer_modulo(x, n);
+                BigInteger low = Notus.Wallet.Toolbox.Integer_modulo(x, n);
                 BigInteger high = n;
                 BigInteger r, nm, newLow;
 
@@ -896,7 +896,7 @@ namespace Notus.Core.Wallet
                     lm = nm;
                 }
 
-                return Notus.Core.Wallet.Function.Integer_modulo(lm, n);
+                return Notus.Wallet.Toolbox.Integer_modulo(lm, n);
 
             }
 
@@ -921,8 +921,8 @@ namespace Notus.Core.Wallet
                 BigInteger z = inv(p.z, P);
 
                 return new CurvePointStruct(
-                    Notus.Core.Wallet.Function.Integer_modulo(p.x * BigInteger.Pow(z, 2), P),
-                    Notus.Core.Wallet.Function.Integer_modulo(p.y * BigInteger.Pow(z, 3), P)
+                    Notus.Wallet.Toolbox.Integer_modulo(p.x * BigInteger.Pow(z, 2), P),
+                    Notus.Wallet.Toolbox.Integer_modulo(p.y * BigInteger.Pow(z, 3), P)
                 );
             }
 
@@ -944,28 +944,28 @@ namespace Notus.Core.Wallet
                     );
                 }
 
-                BigInteger ysq = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger ysq = Notus.Wallet.Toolbox.Integer_modulo(
                     BigInteger.Pow(p.y, 2),
                     P
                 );
-                BigInteger S = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger S = Notus.Wallet.Toolbox.Integer_modulo(
                     4 * p.x * ysq,
                     P
                 );
-                BigInteger M = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger M = Notus.Wallet.Toolbox.Integer_modulo(
                     3 * BigInteger.Pow(p.x, 2) + A * BigInteger.Pow(p.z, 4),
                     P
                 );
 
-                BigInteger nx = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger nx = Notus.Wallet.Toolbox.Integer_modulo(
                     BigInteger.Pow(M, 2) - 2 * S,
                     P
                 );
-                BigInteger ny = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger ny = Notus.Wallet.Toolbox.Integer_modulo(
                     M * (S - nx) - 8 * BigInteger.Pow(ysq, 2),
                     P
                 );
-                BigInteger nz = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger nz = Notus.Wallet.Toolbox.Integer_modulo(
                     2 * p.y * p.z,
                     P
                 );
@@ -996,19 +996,19 @@ namespace Notus.Core.Wallet
                     return p;
                 }
 
-                BigInteger U1 = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger U1 = Notus.Wallet.Toolbox.Integer_modulo(
                     p.x * BigInteger.Pow(q.z, 2),
                     P
                 );
-                BigInteger U2 = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger U2 = Notus.Wallet.Toolbox.Integer_modulo(
                     q.x * BigInteger.Pow(p.z, 2),
                     P
                 );
-                BigInteger S1 = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger S1 = Notus.Wallet.Toolbox.Integer_modulo(
                     p.y * BigInteger.Pow(q.z, 3),
                     P
                 );
-                BigInteger S2 = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger S2 = Notus.Wallet.Toolbox.Integer_modulo(
                     q.y * BigInteger.Pow(p.z, 3),
                     P
                 );
@@ -1024,18 +1024,18 @@ namespace Notus.Core.Wallet
 
                 BigInteger H = U2 - U1;
                 BigInteger R = S2 - S1;
-                BigInteger H2 = Notus.Core.Wallet.Function.Integer_modulo(H * H, P);
-                BigInteger H3 = Notus.Core.Wallet.Function.Integer_modulo(H * H2, P);
-                BigInteger U1H2 = Notus.Core.Wallet.Function.Integer_modulo(U1 * H2, P);
-                BigInteger nx = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger H2 = Notus.Wallet.Toolbox.Integer_modulo(H * H, P);
+                BigInteger H3 = Notus.Wallet.Toolbox.Integer_modulo(H * H2, P);
+                BigInteger U1H2 = Notus.Wallet.Toolbox.Integer_modulo(U1 * H2, P);
+                BigInteger nx = Notus.Wallet.Toolbox.Integer_modulo(
                     BigInteger.Pow(R, 2) - H3 - 2 * U1H2,
                     P
                 );
-                BigInteger ny = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger ny = Notus.Wallet.Toolbox.Integer_modulo(
                     R * (U1H2 - nx) - S1 * H3,
                     P
                 );
-                BigInteger nz = Notus.Core.Wallet.Function.Integer_modulo(
+                BigInteger nz = Notus.Wallet.Toolbox.Integer_modulo(
                     H * p.z * q.z,
                     P
                 );
@@ -1076,14 +1076,14 @@ namespace Notus.Core.Wallet
                 {
                     return jacobianMultiply(
                         p,
-                        Notus.Core.Wallet.Function.Integer_modulo(n, N),
+                        Notus.Wallet.Toolbox.Integer_modulo(n, N),
                         N,
                         A,
                         P
                     );
                 }
 
-                if (Notus.Core.Wallet.Function.Integer_modulo(n, 2).IsZero)
+                if (Notus.Wallet.Toolbox.Integer_modulo(n, 2).IsZero)
                 {
                     return jacobianDouble(
                         jacobianMultiply(
@@ -1147,7 +1147,7 @@ namespace Notus.Core.Wallet
 
                 if (secret == null)
                 {
-                    secret = Notus.Core.Wallet.Function.Integer_randomBetween(1, this.curve.N - 1);
+                    secret = Notus.Wallet.Toolbox.Integer_randomBetween(1, this.curve.N - 1);
                 }
                 this.secret = (BigInteger)secret;
             }
@@ -1160,30 +1160,30 @@ namespace Notus.Core.Wallet
 
             public string toHex()
             {
-                return Notus.Core.Wallet.Function.BinaryAscii_hexFromNumber(secret, curve.length());
+                return Notus.Wallet.Toolbox.BinaryAscii_hexFromNumber(secret, curve.length());
             }
             public byte[] toString()
             {
-                return Notus.Core.Wallet.Function.BinaryAscii_stringFromNumber(secret, curve.length());
+                return Notus.Wallet.Toolbox.BinaryAscii_stringFromNumber(secret, curve.length());
             }
 
             public byte[] toDer()
             {
                 byte[] encodedPublicKey = publicKey().toString(true);
 
-                return Notus.Core.Wallet.Function.Der_encodeSequence(
+                return Notus.Wallet.Toolbox.Der_encodeSequence(
                     new List<byte[]> {
-                    Notus.Core.Wallet.Function.Der_encodeInteger(1),
-                    Notus.Core.Wallet.Function.Der_encodeOctetString(toString()),
-                    Notus.Core.Wallet.Function.Der_encodeConstructed(0, Notus.Core.Wallet.Function.Der_encodeOid(curve.oid)),
-                    Notus.Core.Wallet.Function.Der_encodeConstructed(1, encodedPublicKey)
+                    Notus.Wallet.Toolbox.Der_encodeInteger(1),
+                    Notus.Wallet.Toolbox.Der_encodeOctetString(toString()),
+                    Notus.Wallet.Toolbox.Der_encodeConstructed(0, Notus.Wallet.Toolbox.Der_encodeOid(curve.oid)),
+                    Notus.Wallet.Toolbox.Der_encodeConstructed(1, encodedPublicKey)
                     }
                 );
             }
 
             public string toPem()
             {
-                return Notus.Core.Wallet.Function.Der_toPem(toDer(), "EC PRIVATE KEY");
+                return Notus.Wallet.Toolbox.Der_toPem(toDer(), "EC PRIVATE KEY");
             }
 
             public static PrivateKey fromPem(string str)
@@ -1195,27 +1195,27 @@ namespace Notus.Core.Wallet
                     throw new ArgumentException("invalid PEM");
                 }
 
-                return fromDer(Notus.Core.Wallet.Function.Der_fromPem(split[1]));
+                return fromDer(Notus.Wallet.Toolbox.Der_fromPem(split[1]));
             }
 
             public static PrivateKey fromDer(byte[] der)
             {
-                Tuple<byte[], byte[]> removeSequence = Notus.Core.Wallet.Function.Der_removeSequence(der);
+                Tuple<byte[], byte[]> removeSequence = Notus.Wallet.Toolbox.Der_removeSequence(der);
                 if (removeSequence.Item2.Length > 0)
                 {
-                    throw new ArgumentException("trailing junk after DER private key: " + Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeSequence.Item2));
+                    throw new ArgumentException("trailing junk after DER private key: " + Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeSequence.Item2));
                 }
 
-                Tuple<BigInteger, byte[]> removeInteger = Notus.Core.Wallet.Function.Der_removeInteger(removeSequence.Item1);
+                Tuple<BigInteger, byte[]> removeInteger = Notus.Wallet.Toolbox.Der_removeInteger(removeSequence.Item1);
                 if (removeInteger.Item1 != 1)
                 {
                     throw new ArgumentException("expected '1' at start of DER private key, got " + removeInteger.Item1.ToString());
                 }
 
-                Tuple<byte[], byte[]> removeOctetString = Notus.Core.Wallet.Function.Der_removeOctetString(removeInteger.Item2);
+                Tuple<byte[], byte[]> removeOctetString = Notus.Wallet.Toolbox.Der_removeOctetString(removeInteger.Item2);
                 byte[] privateKeyStr = removeOctetString.Item1;
 
-                Tuple<int, byte[], byte[]> removeConstructed = Notus.Core.Wallet.Function.Der_removeConstructed(removeOctetString.Item2);
+                Tuple<int, byte[], byte[]> removeConstructed = Notus.Wallet.Toolbox.Der_removeConstructed(removeOctetString.Item2);
                 int tag = removeConstructed.Item1;
                 byte[] curveOidString = removeConstructed.Item2;
                 if (tag != 0)
@@ -1223,13 +1223,13 @@ namespace Notus.Core.Wallet
                     throw new ArgumentException("expected tag 0 in DER private key, got " + tag.ToString());
                 }
 
-                Tuple<int[], byte[]> removeObject = Notus.Core.Wallet.Function.Der_removeObject(curveOidString);
+                Tuple<int[], byte[]> removeObject = Notus.Wallet.Toolbox.Der_removeObject(curveOidString);
                 int[] oidCurve = removeObject.Item1;
                 if (removeObject.Item2.Length > 0)
                 {
                     throw new ArgumentException(
                         "trailing junk after DER private key curve_oid: " +
-                        Notus.Core.Wallet.Function.BinaryAscii_hexFromBinary(removeObject.Item2)
+                        Notus.Wallet.Toolbox.BinaryAscii_hexFromBinary(removeObject.Item2)
                     );
                 }
 
@@ -1261,7 +1261,7 @@ namespace Notus.Core.Wallet
                     {
                         padding += "00";
                     }
-                    privateKeyStr = Notus.Core.Wallet.Function.Der_combineByteArrays(new List<byte[]> { Notus.Core.Wallet.Function.BinaryAscii_binaryFromHex(padding), privateKeyStr });
+                    privateKeyStr = Notus.Wallet.Toolbox.Der_combineByteArrays(new List<byte[]> { Notus.Wallet.Toolbox.BinaryAscii_binaryFromHex(padding), privateKeyStr });
                 }
 
                 return fromString(privateKeyStr, curve.name);
@@ -1270,7 +1270,7 @@ namespace Notus.Core.Wallet
 
             public static PrivateKey fromString(byte[] str, string curve = "secp256k1")
             {
-                return new PrivateKey(curve, Notus.Core.Wallet.Function.BinaryAscii_numberFromString(str));
+                return new PrivateKey(curve, Notus.Wallet.Toolbox.BinaryAscii_numberFromString(str));
             }
         }
     }

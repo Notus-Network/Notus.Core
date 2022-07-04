@@ -48,10 +48,10 @@ namespace Notus.HashLib
             Notus.HashLib.SHA1 sha1_obj = new Notus.HashLib.SHA1();
             Notus.HashLib.RIPEMD160 ripemd160_obj = new Notus.HashLib.RIPEMD160();
                 
-            string[] blakeArray = Notus.Core.Function.SplitByLength(Notus.Core.Convert.Byte2Hex(blake2b_obj.ComputeHash(inputArr)), 16).ToArray();
-            string[] md5Array = Notus.Core.Function.SplitByLength(md5_obj.Calculate(inputArr), 4).ToArray();
-            string[] sha1Array = Notus.Core.Function.SplitByLength(sha1_obj.Calculate(inputArr), 5).ToArray();
-            string[] ripemdArray = Notus.Core.Function.SplitByLength(ripemd160_obj.ComputeHashWithArray(inputArr), 5).ToArray();
+            string[] blakeArray = Notus.Toolbox.Text.SplitByLength(Notus.Convert.Byte2Hex(blake2b_obj.ComputeHash(inputArr)), 16).ToArray();
+            string[] md5Array = Notus.Toolbox.Text.SplitByLength(md5_obj.Calculate(inputArr), 4).ToArray();
+            string[] sha1Array = Notus.Toolbox.Text.SplitByLength(sha1_obj.Calculate(inputArr), 5).ToArray();
+            string[] ripemdArray = Notus.Toolbox.Text.SplitByLength(ripemd160_obj.ComputeHashWithArray(inputArr), 5).ToArray();
             string hashResult = "";
             for (int i = 0; i < 8; i++)
             {
@@ -74,12 +74,12 @@ namespace Notus.HashLib
         /// <returns>Returns Sasha Hash <see cref="string"/>.</returns>
         public string Calculate(string rawInput)
         {
-            return Notus.Core.Function.ReplaceChar(
+            return Notus.Toolbox.Text.ReplaceChar(
                 PureCalculate(
                     Encoding.UTF8.GetBytes(rawInput),
                     true
                 ),
-                Notus.Core.Variable.DefaultHexAlphabetString,
+                Notus.Variable.Constant.DefaultHexAlphabetString,
                 SimpleHashAlphabetForHexResult
             );
         }
@@ -91,9 +91,9 @@ namespace Notus.HashLib
         /// <returns>Returns Sasha Hash <see cref="string"/>.</returns>
         public string Calculate(byte[] inputArr)
         {
-            return Notus.Core.Function.ReplaceChar(
+            return Notus.Toolbox.Text.ReplaceChar(
                 PureCalculate(inputArr,true),
-                Notus.Core.Variable.DefaultHexAlphabetString,
+                Notus.Variable.Constant.DefaultHexAlphabetString,
                 SimpleHashAlphabetForHexResult
             );
         }
@@ -137,10 +137,10 @@ namespace Notus.HashLib
             Notus.HashLib.BLAKE2B hashObj2b = new Notus.HashLib.BLAKE2B();
             Notus.HashLib.MD5 hashObjMd5 = new Notus.HashLib.MD5();
 
-            string[] sha1Array = Notus.Core.Function.SplitByLength(hashObjSha1.SignWithHashMethod(signKeyText, rawInput), 5).ToArray();
-            string[] ripemdArray = Notus.Core.Function.SplitByLength(hashObj160.SignWithHashMethod(signKeyText, rawInput), 5).ToArray();
-            string[] blakeArray = Notus.Core.Function.SplitByLength(hashObj2b.SignWithHashMethod(signKeyText, rawInput), 16).ToArray();
-            string[] md5Array = Notus.Core.Function.SplitByLength(hashObjMd5.SignWithHashMethod(signKeyText, rawInput), 4).ToArray();
+            string[] sha1Array = Notus.Toolbox.Text.SplitByLength(hashObjSha1.SignWithHashMethod(signKeyText, rawInput), 5).ToArray();
+            string[] ripemdArray = Notus.Toolbox.Text.SplitByLength(hashObj160.SignWithHashMethod(signKeyText, rawInput), 5).ToArray();
+            string[] blakeArray = Notus.Toolbox.Text.SplitByLength(hashObj2b.SignWithHashMethod(signKeyText, rawInput), 16).ToArray();
+            string[] md5Array = Notus.Toolbox.Text.SplitByLength(hashObjMd5.SignWithHashMethod(signKeyText, rawInput), 4).ToArray();
 
             string hashResult = "";
             for (int i = 0; i < 8; i++)
@@ -163,13 +163,13 @@ namespace Notus.HashLib
             if (newHashAlphabet.Length == 35)
             {
 
-                return Notus.Core.Function.ReplaceChar(
-                    Notus.Core.Convert.ToBase35(hashResult),
-                    Notus.Core.Variable.DefaultBase35AlphabetString,
+                return Notus.Toolbox.Text.ReplaceChar(
+                    Notus.Convert.ToBase35(hashResult),
+                    Notus.Variable.Constant.DefaultBase35AlphabetString,
                     newHashAlphabet
                 );
             }
-            return Notus.Core.Convert.ToBase35(hashResult);
+            return Notus.Convert.ToBase35(hashResult);
         }
 
         /// <summary>
@@ -194,13 +194,13 @@ namespace Notus.HashLib
             string hashResult = PureCalculate(Encoding.UTF8.GetBytes(rawInput));
             if (newHashAlphabet.Length == 35)
             {
-                return Notus.Core.Function.ReplaceChar(
-                    Notus.Core.Convert.ToBase35(hashResult),
-                    Notus.Core.Variable.DefaultBase35AlphabetString,
+                return Notus.Toolbox.Text.ReplaceChar(
+                    Notus.Convert.ToBase35(hashResult),
+                    Notus.Variable.Constant.DefaultBase35AlphabetString,
                     newHashAlphabet
                 );
             }
-            return Notus.Core.Convert.ToBase35(hashResult);
+            return Notus.Convert.ToBase35(hashResult);
         }
     }
 }

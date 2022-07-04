@@ -358,7 +358,7 @@ namespace Notus.HashLib
             byte[] iArr = Encoding.UTF8.GetBytes(input);
             HashCore(iArr, 0, iArr.Length);
             byte[] hhh = HashFinal();
-            return Notus.Core.Convert.Byte2Hex(hhh);
+            return Notus.Convert.Byte2Hex(hhh);
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace Notus.HashLib
             Initialize();
             HashCore(iArr, 0, iArr.Length);
             byte[] hhh = HashFinal();
-            return Notus.Core.Convert.Byte2Hex(hhh);
+            return Notus.Convert.Byte2Hex(hhh);
         }
 
         /// <summary>
@@ -409,9 +409,9 @@ namespace Notus.HashLib
                 keyText = ComputeHash(keyText).ToLower();
             }
 
-            byte[] iPadDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad("", b, "6"));
-            byte[] oPadDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad("", b, System.Convert.ToChar(92).ToString()));
-            byte[] keyDizi = Encoding.UTF8.GetBytes(Notus.Core.Function.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString()));
+            byte[] iPadDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad("", b, "6"));
+            byte[] oPadDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad("", b, System.Convert.ToChar(92).ToString()));
+            byte[] keyDizi = Encoding.UTF8.GetBytes(Notus.Toolbox.Text.AddRightPad(keyText, b, System.Convert.ToChar(0).ToString()));
 
             string k_ipad = "";
             string k_opad = "";
