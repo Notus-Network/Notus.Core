@@ -259,6 +259,108 @@ namespace Notus.Validator
             indexMainMenu = tmpMenuIndexNo;
             Console.Clear();
         }
+        private bool drawMainMenu_DebugInfo(List<string> items)
+        {
+            Console.Clear();
+            PrintWalletKey_AllMenu();
+            Console.CursorVisible = false;
+            const int TextLong = 25;
+            for (int i = 0; i < items.Count; i++)
+            {
+                string mResultStr = items[i].PadRight(TextLong, ' ');
+                string scrnText = "    ";
+                if (i == indexMainMenu)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    scrnText = " >> ";
+                }
+                if (i == 0)
+                {
+                    scrnText = scrnText + "[ " + (nodeObj.DebugMode == true ? "X" : " ") + " ] ";
+                }
+                if (i == 1)
+                {
+                    scrnText = scrnText + "[ " + (nodeObj.InfoMode == true ? "X" : " ") + " ] ";
+                }
+                scrnText = scrnText + mResultStr;
+                Console.WriteLine(scrnText);
+                Console.ResetColor();
+            }
+            ConsoleKeyInfo ckey = Console.ReadKey();
+            if (ckey.Key == ConsoleKey.DownArrow)
+            {
+                if (indexMainMenu == items.Count - 1)
+                {
+                    indexMainMenu = 0;
+                }
+                else
+                {
+                    indexMainMenu++;
+                }
+            }
+            else if (ckey.Key == ConsoleKey.UpArrow)
+            {
+                if (indexMainMenu <= 0)
+                {
+                    indexMainMenu = items.Count - 1;
+                }
+                else
+                {
+                    indexMainMenu--;
+                }
+            }
+            else if (ckey.Key == ConsoleKey.LeftArrow)
+            {
+                Console.Clear();
+            }
+            else if (ckey.Key == ConsoleKey.RightArrow)
+            {
+                Console.Clear();
+            }
+            else if (ckey.Key == ConsoleKey.Spacebar)
+            {
+                if (indexMainMenu == 0)
+                    nodeObj.DebugMode = !nodeObj.DebugMode;
+                if (indexMainMenu == 1)
+                    nodeObj.InfoMode = !nodeObj.InfoMode;
+            }
+            else if (ckey.Key == ConsoleKey.Enter)
+            {
+                if (indexMainMenu == 0)
+                    nodeObj.DebugMode = !nodeObj.DebugMode;
+                if (indexMainMenu == 1)
+                    nodeObj.InfoMode = !nodeObj.InfoMode;
+                return true;
+            }
+
+            Console.Clear();
+            return false;
+        }
+        private void debugInfoMenu()
+        {
+            bool exitFromSubMenuLoop = false;
+            int tmpMenuIndexNo = indexMainMenu;
+            indexMainMenu = 0;
+            while (exitFromSubMenuLoop == false)
+            {
+                List<string> menuList = new List<string>() {
+                    "Debug Mode" ,
+                    "Info Mode",
+                    "Go Back"
+                };
+
+                if (drawMainMenu_DebugInfo(menuList) == true)
+                {
+                    MP_NodeList.Set("Node_DebugMode", nodeObj.DebugMode == true ? "1" : "0", true);
+                    MP_NodeList.Set("Node_InfoMode", nodeObj.InfoMode == true ? "1" : "0", true);
+                    exitFromSubMenuLoop = true;
+                }
+            }
+            indexMainMenu = tmpMenuIndexNo;
+            Console.Clear();
+        }
+
         private bool GetLayerPortNumber(Notus.Variable.Enum.NetworkLayer layerObj)
         {
             Console.CursorVisible = true;
@@ -448,6 +550,7 @@ namespace Notus.Validator
                     "Node Type",
                     "Change Ports",
                     "Change Wallet Key",
+                    "Debug / Info Mode",
                     "Show My Settings",
                     "Exit"
                 });
@@ -481,11 +584,15 @@ namespace Notus.Validator
                     walletMenu();
                 } // else if "Change Wallet Key"
 
-                if (selectedMenuItem == 4) // show my settings
+                if (selectedMenuItem == 4) // "Debug / Info Mode"
+                {
+                    debugInfoMenu();
+                }
+                if (selectedMenuItem == 5) // show my settings
                 {
                     showMySettings();
                 }
-                if (selectedMenuItem == 5) // exit
+                if (selectedMenuItem == 6) // exit
                 {
                     //Dispose();
                     Environment.Exit(0);
@@ -724,21 +831,32 @@ namespace Notus.Validator
         }
         private void checkLayerStatus(Notus.Variable.Enum.NetworkLayer layerObj)
         {
-            string tmpNodeType = MP_NodeList.Get(layerObj.ToString(), "");
-            if (tmpNodeType == "")
+            Notus.Variable.Struct.LayerInfo tmpLayerObj = new Notus.Variable.Struct.LayerInfo()
             {
-                nodeObj.Layer[layerObj]=new Notus.Variable.Struct.LayerInfo()
+                Active = false,
+                Port = new Notus.Variable.Struct.CommunicationPorts()
                 {
-                    Active = false,
-                    Port = new Notus.Variable.Struct.CommunicationPorts()
-                    {
-                        DevNet = 0,
-                        MainNet = 0,
-                        TestNet = 0
-                    }
-                };
+                    DevNet = 0,
+                    MainNet = 0,
+                    TestNet = 0
+                }
+            };
+            string tmpNodeType = MP_NodeList.Get(layerObj.ToString(), "");
+            if (tmpNodeType != "")
+            {
+                try
+                {
+                    nodeObj.Layer[layerObj] = JsonSerializer.Deserialize<Notus.Variable.Struct.LayerInfo>(tmpNodeType);
+                }
+                catch
+                {
+                    nodeObj.Layer[layerObj] = tmpLayerObj;
+                }
             }
-            nodeObj.Layer[layerObj] = JsonSerializer.Deserialize<Notus.Variable.Struct.LayerInfo>(tmpNodeType);
+            else
+            {
+                nodeObj.Layer[layerObj] = tmpLayerObj;
+            }
         }
         public void Start()
         {
@@ -757,6 +875,8 @@ namespace Notus.Validator
                 checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
                 checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
             }
+            nodeObj.DebugMode = (MP_NodeList.Get("Node_DebugMode", "1") == "1" ? true : false);
+            nodeObj.InfoMode = (MP_NodeList.Get("Node_InfoMode", "1") == "1" ? true : false);
             mainMenu();
         }
         private void PrintWalletKey_AllMenu()
@@ -783,6 +903,8 @@ namespace Notus.Validator
 
             nodeObj = new Notus.Variable.Struct.NodeInfo()
             {
+                DebugMode = true,
+                InfoMode = true,
                 Layer = new Dictionary<Notus.Variable.Enum.NetworkLayer, Notus.Variable.Struct.LayerInfo>()
                 {
                     {

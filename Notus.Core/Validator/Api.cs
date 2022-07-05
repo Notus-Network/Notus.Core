@@ -1187,8 +1187,6 @@ namespace Notus.Validator
                 });
             }
 
-            // omergoksoy
-            // omergoksoy
             // burada gelen bakiyeyi zaman kiliti ile kontrol edecek.
             Notus.Variable.Struct.WalletBalanceStruct tmpSenderBalanceObj = Obj_Balance.Get(tmpTransfer.Sender, 0);
 

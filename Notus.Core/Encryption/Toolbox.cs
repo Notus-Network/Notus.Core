@@ -296,15 +296,6 @@ namespace Notus.Encryption
                 Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(40000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
                 Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(45000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern);
         }
-        public static string RepeatString(int HowManyTimes, string TextForRepeat)
-        {
-            string tmpResult = string.Empty;
-            for (int i = 0; i < HowManyTimes; i++)
-            {
-                tmpResult = tmpResult + TextForRepeat;
-            }
-            return tmpResult;
-        }
         public static string GenerateEnryptKey()
         {
             return new Notus.Hash().CommonSign("sasha", GenerateText(29) + GenerateText(14, Notus.Variable.Constant.DefaultHexAlphabetString));

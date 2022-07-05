@@ -91,6 +91,15 @@ namespace Notus.Toolbox
             Array.Reverse(charArray);
             return new string(charArray);
         }
+        public static string RepeatString(int HowManyTimes, string TextForRepeat)
+        {
+            string tmpResult = string.Empty;
+            for (int i = 0; i < HowManyTimes; i++)
+            {
+                tmpResult = tmpResult + TextForRepeat;
+            }
+            return tmpResult;
+        }
 
         public static string AddRightPad(string inputText, int StrLength, string PadString)
         {

@@ -374,6 +374,8 @@ namespace Notus.Variable.Struct
     {
         public NodeWalletInfo Wallet { get; set; }
         public Dictionary<Notus.Variable.Enum.NetworkLayer, LayerInfo> Layer { get; set; }
+        public bool DebugMode { get; set; }
+        public bool InfoMode { get; set; }
     }
 
     public class ConnectionDetailStruct
