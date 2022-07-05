@@ -81,7 +81,7 @@ namespace Notus.Encryption
             {
                 if (string.Equals(patternArray[a], "DE")) // DES ENCRYPTION
                 {
-                    byte[] newDecArray = Notus.Encryption.Common2.DecryptDesWithByte(
+                    byte[] newDecArray = Notus.Encryption.Toolbox.DecryptDesWithByte(
                         decArray,
                         BlockKey,
                         generatedKey,
@@ -92,7 +92,7 @@ namespace Notus.Encryption
                 }
                 if (string.Equals(patternArray[a], "AE")) // AES ENCRYPTION
                 {
-                    byte[] newDecArray = Notus.Encryption.Common2.DecryptWithAes(
+                    byte[] newDecArray = Notus.Encryption.Toolbox.DecryptWithAes(
                         decArray,
                         BlockKey,
                         generatedKey,
@@ -103,7 +103,7 @@ namespace Notus.Encryption
                 }
                 if (string.Equals(patternArray[a], "CE")) // CHACHA20 ENCRYPTION
                 {
-                    byte[] newDecArray = Notus.Encryption.Common2.DecryptWithChaCha20(
+                    byte[] newDecArray = Notus.Encryption.Toolbox.DecryptWithChaCha20(
                         decArray,
                         BlockKey,
                         generatedKey,
@@ -128,7 +128,7 @@ namespace Notus.Encryption
 
             
             rawDataStr =
-                Notus.Toolbox.Text.GenerateText(30 + byte.Parse(patternArray[0].Substring(1))) +
+                Notus.Encryption.Toolbox.GenerateText(30 + byte.Parse(patternArray[0].Substring(1))) +
                 rawDataStr;
 
 
@@ -137,13 +137,13 @@ namespace Notus.Encryption
             {
                 if (string.Equals(patternArray[a], "DE")) // DES ENCRYPTION
                 {
-                    byte[] newRawData = Notus.Encryption.Common2.EncryptWithDes(rawData, BlockKey, generatedKey, generatedIV);
+                    byte[] newRawData = Notus.Encryption.Toolbox.EncryptWithDes(rawData, BlockKey, generatedKey, generatedIV);
                     Array.Resize(ref rawData, newRawData.Length);
                     Array.Copy(newRawData, rawData, newRawData.Length);
                 }
                 if (string.Equals(patternArray[a], "AE")) // AES ENCRYPTION
                 {
-                    byte[] newRawData = Notus.Encryption.Common2.EncryptWithAes(
+                    byte[] newRawData = Notus.Encryption.Toolbox.EncryptWithAes(
                         rawData,
                         BlockKey,
                         generatedKey,
@@ -154,7 +154,7 @@ namespace Notus.Encryption
                 }
                 if (string.Equals(patternArray[a], "CE")) // CHACHA20 ENCRYPTION
                 {
-                    byte[] newRawData = Notus.Encryption.Common2.EncryptWithChaCha20(
+                    byte[] newRawData = Notus.Encryption.Toolbox.EncryptWithChaCha20(
                         rawData,
                         BlockKey,
                         generatedKey,

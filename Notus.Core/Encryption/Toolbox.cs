@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Notus.Encryption
 {
-    public class Common2
+    public class Toolbox
     {
         public static byte[] ArraySplit(string GenKey, int ArrayPart, bool xorWithRestOfThem = true)
         {
@@ -268,5 +268,79 @@ namespace Notus.Encryption
                 )
             );
         }
+
+        private static string GenerateEncKey_subFunc(int startingPoint)
+        {
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+            {
+                return Notus.Convert.Byte2Hex(
+                    md5.ComputeHash(
+                        System.Text.Encoding.ASCII.GetBytes(
+                            DateTime.Now.AddMilliseconds(startingPoint - 123456).Ticks.ToString("x") + "-" +
+                            DateTime.Now.AddSeconds(startingPoint - 123456).ToUniversalTime().ToLongTimeString() + "-" +
+                            new Random().Next(startingPoint, startingPoint + 20000000).ToString("x")
+                        )
+                    )
+                );
+            }
+        }
+        public static string GenerateEncKey()
+        {
+            string newHexPattern = Notus.Toolbox.Text.Iteration(16, GenerateEncKey_subFunc(10000000));
+            return
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(15000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(20000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(25000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(30000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(35000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(40000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(45000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern);
+        }
+        public static string RepeatString(int HowManyTimes, string TextForRepeat)
+        {
+            string tmpResult = string.Empty;
+            for (int i = 0; i < HowManyTimes; i++)
+            {
+                tmpResult = tmpResult + TextForRepeat;
+            }
+            return tmpResult;
+        }
+        public static string GenerateEnryptKey()
+        {
+            return new Notus.Hash().CommonSign("sasha", GenerateText(29) + GenerateText(14, Notus.Variable.Constant.DefaultHexAlphabetString));
+        }
+        public static string GenerateSalt()
+        {
+            string newHexPattern = Notus.Toolbox.Text.Iteration(16, GenerateEncKey_subFunc(10000000));
+            return
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(15000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(20000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(25000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(30000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(35000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(40000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern) +
+                Notus.Toolbox.Text.ReplaceChar(GenerateEncKey_subFunc(45000000), Notus.Variable.Constant.DefaultHexAlphabetString, newHexPattern);
+        }
+        public static string GenerateText(int outputStringLength)
+        {
+            string sonucStr = "";
+            Random sayi = new Random();
+            while (outputStringLength > sonucStr.Length)
+            {
+                sonucStr += Notus.Variable.Constant.DefaultBase64AlphabetCharArray[sayi.Next(0, 64)];
+            }
+            return sonucStr.Substring(0, outputStringLength);
+        }
+        public static string GenerateText(int outputStringLength, string randomTextAlphabet)
+        {
+            Random rastgele = new Random();
+            string uret = "";
+            for (int i = 0; i < outputStringLength; i++)
+            {
+                uret += randomTextAlphabet[rastgele.Next(randomTextAlphabet.Length)];
+            }
+            return uret;
+        }
+
     }
 }
