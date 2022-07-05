@@ -860,8 +860,6 @@ namespace Notus.Validator
         }
         public void Start()
         {
-            Console.WriteLine(Notus.Variable.Enum.NetworkLayer.Layer1.ToString());
-            Console.ReadLine();
             MP_NodeList = new Notus.Mempool(Notus.Variable.Constant.MemoryPoolName["MainNodeWalletConfig"]);
             MP_NodeList.AsyncActive = false;
             //MP_NodeList.Clear();

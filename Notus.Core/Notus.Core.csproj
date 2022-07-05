@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>4.0.1</Version>
+	  <Version>4.0.2</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -17,7 +17,9 @@
 	  <NeutralLanguage>en</NeutralLanguage>
 	  <PackageLicenseFile>MIT-LICENSE.txt</PackageLicenseFile>
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	  <PackageReleaseNotes>In this release, PostRequest and PostRequestSync functions have been updated.</PackageReleaseNotes>  </PropertyGroup>
+	  <PackageReleaseNotes>In this release, PostRequest and PostRequestSync functions have been updated.</PackageReleaseNotes>
+	  <RepositoryUrl>https://github.com/Notus-Network/Notus.Core</RepositoryUrl>
+	  <RepositoryType>git</RepositoryType>  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">
