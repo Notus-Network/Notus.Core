@@ -536,7 +536,8 @@ namespace Notus.Validator
             setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
 
             Console.WriteLine("Layer Ports have been reset");
-            Thread.Sleep(2500);
+            Thread.Sleep(3000);
+            Console.Clear();
         }
         private void nodePortMenu()
         {
