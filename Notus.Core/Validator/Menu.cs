@@ -511,6 +511,33 @@ namespace Notus.Validator
             return 9;
         }
 
+        private void resetPortMenu()
+        {
+            Console.Clear();
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet];
+
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.DevNet= Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.MainNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.TestNet];
+
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.MainNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.TestNet];
+
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.DevNet= Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.MainNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.TestNet];
+
+            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
+            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
+            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
+            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
+
+            Console.WriteLine("Layer Ports have been reset");
+            Thread.Sleep(2500);
+        }
         private void nodePortMenu()
         {
             Dictionary<int, string> PortList = new Dictionary<int, string>();
@@ -569,6 +596,7 @@ namespace Notus.Validator
                     "Start Node",
                     "Node Type",
                     "Change Ports",
+                    "Reset Ports",
                     "Change Wallet Key",
                     "Debug / Info Mode",
                     "Show My Settings",
@@ -587,7 +615,7 @@ namespace Notus.Validator
                         Thread.Sleep(1000);
                         Console.Clear();
                     }
-                }
+                } // "Start Node"
 
                 if (selectedMenuItem == 1) // "Node Type"
                 {
@@ -597,22 +625,27 @@ namespace Notus.Validator
                 if (selectedMenuItem == 2) // "Change Ports"
                 {
                     nodePortMenu();
-                } // else if "Change Wallet Key"
+                } // else if "Change Ports",
 
-                if (selectedMenuItem == 3) // "Change Wallet Key"
+                if (selectedMenuItem == 3) // "reset ports"
+                {
+                    resetPortMenu();
+                } // else if "reset ports",
+
+                if (selectedMenuItem == 4) // "Change Wallet Key"
                 {
                     walletMenu();
                 } // else if "Change Wallet Key"
 
-                if (selectedMenuItem == 4) // "Debug / Info Mode"
+                if (selectedMenuItem == 5) // "Debug / Info Mode"
                 {
                     debugInfoMenu();
                 }
-                if (selectedMenuItem == 5) // show my settings
+                if (selectedMenuItem == 6) // show my settings
                 {
                     showMySettings();
                 }
-                if (selectedMenuItem == 6) // exit
+                if (selectedMenuItem == 7) // exit
                 {
                     //Dispose();
                     Environment.Exit(0);
