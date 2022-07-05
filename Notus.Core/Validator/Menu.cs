@@ -195,15 +195,15 @@ namespace Notus.Validator
             indexMainMenu = prevMenuIndexNo;
             Console.Clear();
         }
-        private string SameLengthStr(string text,int textLen,char padText=' ')
+        private string SameLengthStr(string text, int textLen, char padText = ' ')
         {
             return text.PadRight(textLen, padText);
         }
         private void showMySettings(Notus.Variable.Enum.NetworkLayer layerObj)
         {
-            Console.WriteLine(SameLengthStr("", longestLayerText + 10,'-'));
-            
-            Console.Write(SameLengthStr(layerText[layerObj], longestLayerText) + " : " );
+            Console.WriteLine(SameLengthStr("", longestLayerText + 10, '-'));
+
+            Console.Write(SameLengthStr(layerText[layerObj], longestLayerText) + " : ");
 
             if (nodeObj.Layer[layerObj].Active == true)
             {
@@ -211,7 +211,24 @@ namespace Notus.Validator
                 Console.WriteLine("enable");
                 Console.ResetColor();
                 Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer[layerObj].Port.MainNet.ToString());
-                Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer[layerObj].Port.TestNet.ToString());
+                Console.WriteLine(SameLengthStr("Test Net Port Number", longestLayerText) + " : " + nodeObj.Layer[layerObj].Port.TestNet.ToString());
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("disable");
+                Console.ResetColor();
+            }
+        }
+        private void showMySettings(string optionText, bool boolObj)
+        {
+            Console.WriteLine(SameLengthStr("", longestLayerText + 10, '-'));
+            Console.Write(SameLengthStr(optionText, longestLayerText) + " : ");
+            if (boolObj == true)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine("enable");
+                Console.ResetColor();
             }
             else
             {
@@ -229,6 +246,9 @@ namespace Notus.Validator
             showMySettings(Notus.Variable.Enum.NetworkLayer.Layer2);
             showMySettings(Notus.Variable.Enum.NetworkLayer.Layer3);
             showMySettings(Notus.Variable.Enum.NetworkLayer.Layer4);
+            showMySettings("Debug Mode", nodeObj.DebugMode);
+            showMySettings("Info Mode", nodeObj.InfoMode);
+
             Console.WriteLine();
             Console.WriteLine("Press any to continue");
             Console.ReadKey();
@@ -241,7 +261,7 @@ namespace Notus.Validator
             indexMainMenu = 0;
             while (exitFromSubMenuLoop == false)
             {
-                List<string> menuList = new List<string>(){};
+                List<string> menuList = new List<string>() { };
                 foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, string> entry in layerText)
                 {
                     menuList.Add(entry.Value);
@@ -898,7 +918,6 @@ namespace Notus.Validator
                     longestLayerText = entry.Value.Length;
                 }
             }
-
             nodeObj = new Notus.Variable.Struct.NodeInfo()
             {
                 DebugMode = true,
@@ -911,9 +930,9 @@ namespace Notus.Validator
                         {
                             Port=new Notus.Variable.Struct.CommunicationPorts()
                             {
-                                DevNet=99,
-                                MainNet=88,
-                                TestNet=9
+                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.DevNet],
+                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet],
+                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet]
                             }
                         }
                     },
@@ -922,9 +941,9 @@ namespace Notus.Validator
                         new Notus.Variable.Struct.LayerInfo(){
                             Port=new Notus.Variable.Struct.CommunicationPorts()
                             {
-                                DevNet=99,
-                                MainNet=88,
-                                TestNet=9
+                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet],
+                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.MainNet],
+                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.TestNet]
                             }
                       }
                     },
@@ -933,9 +952,9 @@ namespace Notus.Validator
                         new Notus.Variable.Struct.LayerInfo(){
                             Port=new Notus.Variable.Struct.CommunicationPorts()
                             {
-                                DevNet=99,
-                                MainNet=88,
-                                TestNet=9
+                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.DevNet],
+                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.MainNet],
+                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.TestNet]
                             }
                       }
                     },
@@ -944,9 +963,9 @@ namespace Notus.Validator
                         new Notus.Variable.Struct.LayerInfo(){
                             Port = new Notus.Variable.Struct.CommunicationPorts()
                             {
-                                DevNet=99,
-                                MainNet=88,
-                                TestNet=9
+                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet],
+                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.MainNet],
+                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.TestNet]
                             }
                         }
                     }
