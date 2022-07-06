@@ -395,6 +395,7 @@ namespace Notus.Validator
                     "Debug Mode" ,
                     "Info Mode",
                     "Run Local Mode",
+                    "Development Mode",
                     "Go Back"
                 };
 
