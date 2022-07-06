@@ -104,6 +104,8 @@ namespace Notus.Validator
                         MP_NodeList.Set("Node_WalletKey", newWalletKey.WalletKey, true);
                         Node_WalletDefined = true;
                         Node_WalletKey = newWalletKey.WalletKey;
+                        nodeObj.Wallet.Key = Node_WalletKey;
+                        nodeObj.Wallet.Defined = true;
 
                         innerWalletLoop = true;
                         exitWalletLoop = true;
@@ -118,6 +120,9 @@ namespace Notus.Validator
             MP_NodeList.Set("Node_WalletKey", "", true);
             Node_WalletDefined = false;
             Node_WalletKey = string.Empty;
+            nodeObj.Wallet.Key = string.Empty;
+            nodeObj.Wallet.Defined = false;
+
             Console.Clear();
             Console.WriteLine("Your Wallet ID has been deleted.");
             Thread.Sleep(2500);
@@ -153,6 +158,9 @@ namespace Notus.Validator
                 Node_WalletDefined = true;
                 tmpWalletDefined = true;
                 Node_WalletKey = userDefineWalletKey;
+
+                nodeObj.Wallet.Key = Node_WalletKey;
+                nodeObj.Wallet.Defined = true;
             }
             Console.CursorVisible = false;
             return tmpWalletDefined;
@@ -249,6 +257,8 @@ namespace Notus.Validator
             showMySettings_Str("Debug Mode", nodeObj.DebugMode);
             showMySettings_Str("Info Mode", nodeObj.InfoMode);
             showMySettings_Str("Run Local Mode", nodeObj.LocalMode);
+            showMySettings_Str("Development Mode", nodeObj.DevelopmentMode);
+
 
             Console.WriteLine();
             Console.WriteLine("Press any to continue");
@@ -308,6 +318,10 @@ namespace Notus.Validator
                 {
                     scrnText = scrnText + "[ " + (nodeObj.LocalMode == true ? "X" : " ") + " ] ";
                 }
+                if (i == 3)
+                {
+                    scrnText = scrnText + "[ " + (nodeObj.DevelopmentMode == true ? "X" : " ") + " ] ";
+                }
                 scrnText = scrnText + mResultStr;
                 Console.WriteLine(scrnText);
                 Console.ResetColor();
@@ -351,6 +365,8 @@ namespace Notus.Validator
                     nodeObj.InfoMode = !nodeObj.InfoMode;
                 if (indexMainMenu == 2)
                     nodeObj.LocalMode = !nodeObj.LocalMode;
+                if (indexMainMenu == 3)
+                    nodeObj.DevelopmentMode = !nodeObj.DevelopmentMode;
             }
             else if (ckey.Key == ConsoleKey.Enter)
             {
@@ -360,6 +376,8 @@ namespace Notus.Validator
                     nodeObj.InfoMode = !nodeObj.InfoMode;
                 if (indexMainMenu == 2)
                     nodeObj.LocalMode = !nodeObj.LocalMode;
+                if (indexMainMenu == 3)
+                    nodeObj.DevelopmentMode = !nodeObj.DevelopmentMode;
                 return true;
             }
 
@@ -385,6 +403,7 @@ namespace Notus.Validator
                     MP_NodeList.Set("Node_DebugMode", nodeObj.DebugMode == true ? "1" : "0", true);
                     MP_NodeList.Set("Node_InfoMode", nodeObj.InfoMode == true ? "1" : "0", true);
                     MP_NodeList.Set("Node_LocalMode", nodeObj.LocalMode == true ? "1" : "0", true);
+                    MP_NodeList.Set("Node_DevelopmentMode", nodeObj.DevelopmentMode == true ? "1" : "0", true);
                     exitFromSubMenuLoop = true;
                 }
             }
@@ -623,7 +642,7 @@ namespace Notus.Validator
                     "Show My Settings",
                     "Exit"
                 }, useTimerForStart);
-                
+
                 useTimerForStart = false;
 
                 if (selectedMenuItem == 0) //"Start Node"
@@ -723,14 +742,14 @@ namespace Notus.Validator
                         }
                     }
                 }
+
+                //if not pressed key, start node app
                 if (keyExist == false)
                 {
-                    return 1;
+                    return 0;
                 }
-                else
-                {
-                    return 100;
-                }
+
+                return 100;
             }
             ConsoleKeyInfo ckey = Console.ReadKey();
             if (ckey.Key == ConsoleKey.DownArrow)
@@ -980,9 +999,12 @@ namespace Notus.Validator
                     currentSetting.ActiveLayer[entry.Key] = nodeObj.Layer[entry.Key].Active;
                 }
             }
+            //Console.WriteLine(JsonSerializer.Serialize(nodeObj, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.ReadLine();
             currentSetting.DebugMode = nodeObj.DebugMode;
             currentSetting.InfoMode = nodeObj.InfoMode;
             currentSetting.LocalNode = nodeObj.LocalMode;
+            currentSetting.DevelopmentNode = nodeObj.DevelopmentMode;
             currentSetting.NodeWallet.WalletKey = nodeObj.Wallet.Key;
 
             return currentSetting;
@@ -996,6 +1018,8 @@ namespace Notus.Validator
             if (tmpWalletStr.Length > 0)
             {
                 Node_WalletKey = tmpWalletStr;
+                nodeObj.Wallet.Key = Node_WalletKey;
+                nodeObj.Wallet.Defined = true;
                 Node_WalletDefined = true;
                 checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
                 checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
@@ -1005,7 +1029,7 @@ namespace Notus.Validator
             nodeObj.DebugMode = (MP_NodeList.Get("Node_DebugMode", "1") == "1" ? true : false);
             nodeObj.InfoMode = (MP_NodeList.Get("Node_InfoMode", "1") == "1" ? true : false);
             nodeObj.LocalMode = (MP_NodeList.Get("Node_LocalMode", "1") == "1" ? true : false);
-
+            nodeObj.DevelopmentMode = (MP_NodeList.Get("Node_DevelopmentMode", "1") == "1" ? true : false);
             mainMenu();
         }
         private void PrintWalletKey_AllMenu()
@@ -1033,6 +1057,15 @@ namespace Notus.Validator
             {
                 DebugMode = true,
                 InfoMode = true,
+                LocalMode = false,
+                Wallet = new Variable.Struct.NodeWalletInfo()
+                {
+                    Defined = false,
+                    FullDefined = false,
+                    Key = "",
+                    PublicKey = "",
+                    Sign = ""
+                },
                 Layer = new Dictionary<Notus.Variable.Enum.NetworkLayer, Notus.Variable.Struct.LayerInfo>()
                 {
                     {

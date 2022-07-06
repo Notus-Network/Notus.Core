@@ -6,6 +6,7 @@ namespace Notus.Variable.Common
     public class ClassSetting
     {
         public bool LocalNode { get; set; }
+        public bool DevelopmentNode { get; set; }
 
         public bool GenesisCreated { get; set; }
         public bool GenesisAssigned { get; set; }
