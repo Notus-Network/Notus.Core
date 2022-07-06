@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Notus.Variable.Common
 {
     public class ClassSetting
     {
         public bool LocalNode { get; set; }
+
         public bool GenesisCreated { get; set; }
         public bool GenesisAssigned { get; set; }
         public Notus.Variable.Genesis.GenesisBlockData Genesis { get; set; }
@@ -14,6 +16,7 @@ namespace Notus.Variable.Common
         public Notus.Variable.Enum.NetworkNodeType NodeType { get; set; }
         public Notus.Variable.Enum.NetworkType Network { get; set; }
         public Notus.Variable.Enum.NetworkLayer Layer { get; set; }
+        public Dictionary<Notus.Variable.Enum.NetworkLayer,bool> ActiveLayer { get; set; }
 
         public bool DebugMode { get; set; }
         public bool InfoMode { get; set; }

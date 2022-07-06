@@ -529,7 +529,7 @@ namespace Notus.Validator
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet];
 
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.DevNet= Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.MainNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.TestNet];
 
@@ -537,7 +537,7 @@ namespace Notus.Validator
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.MainNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.TestNet];
 
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.DevNet= Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.MainNet];
             nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.TestNet];
 
@@ -599,6 +599,15 @@ namespace Notus.Validator
         }
         private void mainMenu()
         {
+            bool useTimerForStart = false;
+            if (Node_WalletDefined == true)
+            {
+                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active == true ? true : useTimerForStart);
+                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active == true ? true : useTimerForStart);
+                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active == true ? true : useTimerForStart);
+                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active == true ? true : useTimerForStart);
+            }
+
             Console.Clear();
             bool startNodeSelected = false;
             while (startNodeSelected == false)
@@ -613,7 +622,10 @@ namespace Notus.Validator
                     "Preferences",
                     "Show My Settings",
                     "Exit"
-                });
+                }, useTimerForStart);
+                
+                useTimerForStart = false;
+
                 if (selectedMenuItem == 0) //"Start Node"
                 {
                     if (Node_WalletDefined == true)
@@ -665,7 +677,7 @@ namespace Notus.Validator
                 }
             }
         }
-        private int drawMainMenu_MainMenu(List<string> items)
+        private int drawMainMenu_MainMenu(List<string> items, bool useTimerForStart)
         {
             PrintWalletKey_AllMenu();
             Console.CursorVisible = false;
@@ -686,6 +698,39 @@ namespace Notus.Validator
 
                 Console.WriteLine(scrnText);
                 Console.ResetColor();
+            }
+            if (useTimerForStart == true)
+            {
+                Console.WriteLine("Press any key for setup");
+                Console.WriteLine("Please wait for auto-start");
+                bool keyExist = false;
+                byte iCounter = 0;
+                DateTime bitis = DateTime.Now.AddSeconds(10);
+                while (bitis > DateTime.Now && keyExist == false)
+                {
+                    if (Console.KeyAvailable == true)
+                    {
+                        keyExist = true;
+                    }
+                    else
+                    {
+                        iCounter++;
+                        Thread.Sleep(10);
+                        if (iCounter > 25)
+                        {
+                            Console.Write(".");
+                            iCounter = 0;
+                        }
+                    }
+                }
+                if (keyExist == false)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 100;
+                }
             }
             ConsoleKeyInfo ckey = Console.ReadKey();
             if (ckey.Key == ConsoleKey.DownArrow)
@@ -923,13 +968,23 @@ namespace Notus.Validator
                 nodeObj.Layer[layerObj] = tmpLayerObj;
             }
         }
-        public Notus.Variable.Common.ClassSetting DefineMySetting(Notus.Variable.Common.ClassSetting currentSetting )
+        public Notus.Variable.Common.ClassSetting DefineMySetting(Notus.Variable.Common.ClassSetting currentSetting)
         {
+            currentSetting.ActiveLayer = new Dictionary<Variable.Enum.NetworkLayer, bool>();
+            currentSetting.ActiveLayer.Clear();
+            foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>> entry in Notus.Variable.Constant.PortNo)
+            {
+                currentSetting.ActiveLayer.Add(entry.Key, false);
+                if (nodeObj.Layer.ContainsKey(entry.Key))
+                {
+                    currentSetting.ActiveLayer[entry.Key] = nodeObj.Layer[entry.Key].Active;
+                }
+            }
             currentSetting.DebugMode = nodeObj.DebugMode;
             currentSetting.InfoMode = nodeObj.InfoMode;
             currentSetting.LocalNode = nodeObj.LocalMode;
             currentSetting.NodeWallet.WalletKey = nodeObj.Wallet.Key;
-            
+
             return currentSetting;
         }
         public void Start()
