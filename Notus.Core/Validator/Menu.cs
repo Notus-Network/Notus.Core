@@ -248,6 +248,7 @@ namespace Notus.Validator
             showMySettings(Notus.Variable.Enum.NetworkLayer.Layer4);
             showMySettings("Debug Mode", nodeObj.DebugMode);
             showMySettings("Info Mode", nodeObj.InfoMode);
+            showMySettings("Run Local Mode", nodeObj.LocalMode);
 
             Console.WriteLine();
             Console.WriteLine("Press any to continue");
@@ -303,6 +304,10 @@ namespace Notus.Validator
                 {
                     scrnText = scrnText + "[ " + (nodeObj.InfoMode == true ? "X" : " ") + " ] ";
                 }
+                if (i == 2)
+                {
+                    scrnText = scrnText + "[ " + (nodeObj.LocalMode == true ? "X" : " ") + " ] ";
+                }
                 scrnText = scrnText + mResultStr;
                 Console.WriteLine(scrnText);
                 Console.ResetColor();
@@ -344,6 +349,8 @@ namespace Notus.Validator
                     nodeObj.DebugMode = !nodeObj.DebugMode;
                 if (indexMainMenu == 1)
                     nodeObj.InfoMode = !nodeObj.InfoMode;
+                if (indexMainMenu == 2)
+                    nodeObj.LocalMode = !nodeObj.LocalMode;
             }
             else if (ckey.Key == ConsoleKey.Enter)
             {
@@ -351,6 +358,8 @@ namespace Notus.Validator
                     nodeObj.DebugMode = !nodeObj.DebugMode;
                 if (indexMainMenu == 1)
                     nodeObj.InfoMode = !nodeObj.InfoMode;
+                if (indexMainMenu == 2)
+                    nodeObj.LocalMode = !nodeObj.LocalMode;
                 return true;
             }
 
@@ -367,6 +376,7 @@ namespace Notus.Validator
                 List<string> menuList = new List<string>() {
                     "Debug Mode" ,
                     "Info Mode",
+                    "Run Local Mode",
                     "Go Back"
                 };
 
@@ -374,6 +384,7 @@ namespace Notus.Validator
                 {
                     MP_NodeList.Set("Node_DebugMode", nodeObj.DebugMode == true ? "1" : "0", true);
                     MP_NodeList.Set("Node_InfoMode", nodeObj.InfoMode == true ? "1" : "0", true);
+                    MP_NodeList.Set("Node_LocalMode", nodeObj.LocalMode == true ? "1" : "0", true);
                     exitFromSubMenuLoop = true;
                 }
             }
@@ -599,7 +610,7 @@ namespace Notus.Validator
                     "Change Ports",
                     "Reset Ports",
                     "Change Wallet Key",
-                    "Debug / Info Mode",
+                    "Preferences",
                     "Show My Settings",
                     "Exit"
                 });
@@ -929,6 +940,8 @@ namespace Notus.Validator
             }
             nodeObj.DebugMode = (MP_NodeList.Get("Node_DebugMode", "1") == "1" ? true : false);
             nodeObj.InfoMode = (MP_NodeList.Get("Node_InfoMode", "1") == "1" ? true : false);
+            nodeObj.LocalMode = (MP_NodeList.Get("Node_LocalMode", "1") == "1" ? true : false);
+
             mainMenu();
         }
         private void PrintWalletKey_AllMenu()
