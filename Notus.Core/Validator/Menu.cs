@@ -923,6 +923,15 @@ namespace Notus.Validator
                 nodeObj.Layer[layerObj] = tmpLayerObj;
             }
         }
+        public Notus.Variable.Common.ClassSetting DefineMySetting(Notus.Variable.Common.ClassSetting currentSetting )
+        {
+            currentSetting.DebugMode = nodeObj.DebugMode;
+            currentSetting.InfoMode = nodeObj.InfoMode;
+            currentSetting.LocalNode = nodeObj.LocalMode;
+            currentSetting.NodeWallet.WalletKey = nodeObj.Wallet.Key;
+            
+            return currentSetting;
+        }
         public void Start()
         {
             MP_NodeList = new Notus.Mempool(Notus.Variable.Constant.MemoryPoolName["MainNodeWalletConfig"]);
