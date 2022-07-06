@@ -199,7 +199,7 @@ namespace Notus.Validator
         {
             return text.PadRight(textLen, padText);
         }
-        private void showMySettings(Notus.Variable.Enum.NetworkLayer layerObj)
+        private void showMySettings_Obj(Notus.Variable.Enum.NetworkLayer layerObj)
         {
             Console.WriteLine(SameLengthStr("", longestLayerText + 10, '-'));
 
@@ -220,7 +220,7 @@ namespace Notus.Validator
                 Console.ResetColor();
             }
         }
-        private void showMySettings(string optionText, bool boolObj)
+        private void showMySettings_Str(string optionText, bool boolObj)
         {
             Console.WriteLine(SameLengthStr("", longestLayerText + 10, '-'));
             Console.Write(SameLengthStr(optionText, longestLayerText) + " : ");
@@ -237,18 +237,18 @@ namespace Notus.Validator
                 Console.ResetColor();
             }
         }
-        private void showMySettings()
+        private void showSettings()
         {
             Console.Clear();
             Console.CursorVisible = false;
             PrintWalletKey_AllMenu();
-            showMySettings(Notus.Variable.Enum.NetworkLayer.Layer1);
-            showMySettings(Notus.Variable.Enum.NetworkLayer.Layer2);
-            showMySettings(Notus.Variable.Enum.NetworkLayer.Layer3);
-            showMySettings(Notus.Variable.Enum.NetworkLayer.Layer4);
-            showMySettings("Debug Mode", nodeObj.DebugMode);
-            showMySettings("Info Mode", nodeObj.InfoMode);
-            showMySettings("Run Local Mode", nodeObj.LocalMode);
+            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer1);
+            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer2);
+            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer3);
+            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer4);
+            showMySettings_Str("Debug Mode", nodeObj.DebugMode);
+            showMySettings_Str("Info Mode", nodeObj.InfoMode);
+            showMySettings_Str("Run Local Mode", nodeObj.LocalMode);
 
             Console.WriteLine();
             Console.WriteLine("Press any to continue");
@@ -655,7 +655,7 @@ namespace Notus.Validator
                 }
                 if (selectedMenuItem == 6) // show my settings
                 {
-                    showMySettings();
+                    showSettings();
                 }
                 if (selectedMenuItem == 7) // exit
                 {
