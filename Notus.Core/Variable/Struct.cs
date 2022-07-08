@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Notus.Variable.Struct
 {
@@ -239,7 +237,7 @@ namespace Notus.Variable.Struct
         public string ProtocolVersion { get; set; }
         public string UserAgent { get; set; }
         public string UserHostName { get; set; }
-        
+
         public string LocalEP { get; set; }
         public string LocalIP { get; set; }
         public int LocalPort { get; set; }
@@ -442,16 +440,8 @@ namespace Notus.Variable.Struct
     }
     public class CurrencyListStorageStruct
     {
-        public CurrencyList Detail{ get; set; }   // token generation version
+        public CurrencyList Detail { get; set; }   // token generation version
         public string Uid { get; set; }             // short name
-    }
-
-    public class TaskListInfo
-    {
-        public CancellationTokenSource TokenSourceObj { get; set; }
-        public CancellationToken TokenObj { get; set; }
-        public Task TaskObj { get; set; }
-        public Notus.Variable.Common.ClassSetting SettingsObj { get; set; }
     }
 
 }

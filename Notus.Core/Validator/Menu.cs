@@ -8,11 +8,6 @@ namespace Notus.Validator
     public class Menu : IDisposable
     {
         private Notus.Variable.Struct.NodeInfo nodeObj;
-        public Notus.Variable.Struct.NodeInfo Settings
-        {
-            get { return nodeObj; }
-            set { nodeObj = value; }
-        }
 
         private bool Node_WalletDefined = false;
         private string Node_WalletKey = string.Empty;
@@ -400,7 +395,7 @@ namespace Notus.Validator
                     "Debug Mode" ,
                     "Info Mode",
                     "Run Local Mode",
-                    "Development Mode",
+                    "Only Development Mode",
                     "Go Back"
                 };
 

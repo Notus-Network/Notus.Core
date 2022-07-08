@@ -3,11 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-<<<<<<< HEAD
-	  <Version>4.0.21</Version>
-=======
-	  <Version>4.0.18</Version>
->>>>>>> parent of 0bf61f7 (development mode have been updated)
+	  <Version>4.0.23</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
