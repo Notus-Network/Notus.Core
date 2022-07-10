@@ -8,6 +8,11 @@ namespace Notus.Validator
     public class Menu : IDisposable
     {
         private Notus.Variable.Struct.NodeInfo nodeObj;
+        public Notus.Variable.Struct.NodeInfo Settings
+        {
+            get { return nodeObj; }
+            set { nodeObj = value; }
+        }
 
         private bool Node_WalletDefined = false;
         private string Node_WalletKey = string.Empty;
@@ -213,13 +218,13 @@ namespace Notus.Validator
 
             Console.Write(SameLengthStr(layerText[layerObj], longestLayerText) + " : ");
 
-            if (nodeObj.Layer[layerObj].Active == true)
+            if (nodeObj.Layer.Selected == layerObj)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("enable");
                 Console.ResetColor();
-                Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer[layerObj].Port.MainNet.ToString());
-                Console.WriteLine(SameLengthStr("Test Net Port Number", longestLayerText) + " : " + nodeObj.Layer[layerObj].Port.TestNet.ToString());
+                Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.MainNet.ToString());
+                Console.WriteLine(SameLengthStr("Test Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.TestNet.ToString());
             }
             else
             {
@@ -250,10 +255,8 @@ namespace Notus.Validator
             Console.Clear();
             Console.CursorVisible = false;
             PrintWalletKey_AllMenu();
-            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer1);
-            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer2);
-            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer3);
-            showMySettings_Obj(Notus.Variable.Enum.NetworkLayer.Layer4);
+            
+            showMySettings_Obj(nodeObj.Layer.Selected);
             showMySettings_Str("Debug Mode", nodeObj.DebugMode);
             showMySettings_Str("Info Mode", nodeObj.InfoMode);
             showMySettings_Str("Run Local Mode", nodeObj.LocalMode);
@@ -280,10 +283,8 @@ namespace Notus.Validator
                 menuList.Add("Go Back");
                 if (drawMainMenu_NodeType(menuList) == true)
                 {
-                    setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
-                    setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
-                    setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
-                    setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
+                    setLayerStatus();
+                    resetPortMenu(false);
                     exitFromSubMenuLoop = true;
                 }
             }
@@ -427,9 +428,9 @@ namespace Notus.Validator
                     {
                         if (tmpTestPortNo > 0 && tmpTestPortNo < 65536)
                         {
-                            nodeObj.Layer[layerObj].Port.MainNet = tmpMainPortNo;
-                            nodeObj.Layer[layerObj].Port.TestNet = tmpTestPortNo;
-                            setLayerStatus(layerObj);
+                            nodeObj.Layer.Port.MainNet = tmpMainPortNo;
+                            nodeObj.Layer.Port.TestNet = tmpTestPortNo;
+                            setLayerStatus();
                             Console.CursorVisible = false;
                             Console.WriteLine("Port Numbers Saved");
                             Thread.Sleep(2500);
@@ -542,50 +543,53 @@ namespace Notus.Validator
             return 9;
         }
 
-        private void resetPortMenu()
+        private void resetPortMenu(bool callFromMenu)
         {
-            Console.Clear();
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.DevNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet];
+            if (callFromMenu == true) {
+                Console.Clear();
+            }
+            Dictionary<Variable.Enum.NetworkType, int> tmpPortValue = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1];
 
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.MainNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.TestNet];
+            if (Notus.Variable.Enum.NetworkLayer.Layer2 == nodeObj.Layer.Selected)
+            {
+                tmpPortValue= Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2];
+            }
+            if (Notus.Variable.Enum.NetworkLayer.Layer3 == nodeObj.Layer.Selected)
+            {
+                tmpPortValue = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2];
+            }
+            if (Notus.Variable.Enum.NetworkLayer.Layer4 == nodeObj.Layer.Selected)
+            {
+                tmpPortValue = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2];
+            }
+            nodeObj.Layer.Port.DevNet = tmpPortValue[Variable.Enum.NetworkType.DevNet];
+            nodeObj.Layer.Port.MainNet = tmpPortValue[Variable.Enum.NetworkType.MainNet];
+            nodeObj.Layer.Port.TestNet = tmpPortValue[Variable.Enum.NetworkType.TestNet];
 
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.DevNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.MainNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.TestNet];
+            setLayerStatus();
 
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.MainNet];
-            nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Port.TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.TestNet];
-
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
-
-            Console.WriteLine("Layer Ports have been reset");
-            Thread.Sleep(3000);
-            Console.Clear();
+            if (callFromMenu == true) {
+                Console.WriteLine("Layer Ports have been reset");
+                Thread.Sleep(3000);
+                Console.Clear();
+            }
         }
         private void nodePortMenu()
         {
             Dictionary<int, string> PortList = new Dictionary<int, string>();
-            if (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active == true)
+            if (nodeObj.Layer.Selected==Notus.Variable.Enum.NetworkLayer.Layer1)
             {
                 PortList.Add(1, layerText[Notus.Variable.Enum.NetworkLayer.Layer1]);
             }
-            if (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active == true)
+            if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer2)
             {
                 PortList.Add(2, layerText[Notus.Variable.Enum.NetworkLayer.Layer2]);
             }
-            if (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active == true)
+            if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer3)
             {
                 PortList.Add(3, layerText[Notus.Variable.Enum.NetworkLayer.Layer3]);
             }
-            if (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active == true)
+            if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer4)
             {
                 PortList.Add(4, layerText[Notus.Variable.Enum.NetworkLayer.Layer4]);
             }
@@ -610,23 +614,23 @@ namespace Notus.Validator
                     exitWhileLoop = true;
                 }
             }
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
-            setLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
+            setLayerStatus();
             indexMainMenu = tmpMenuIndexNo;
             Console.Clear();
         }
         private void mainMenu()
         {
             bool useTimerForStart = false;
+            /*
             if (Node_WalletDefined == true)
             {
-                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active == true ? true : useTimerForStart);
+                nodeObj.Layer
+                useTimerForStart = nodeObj.Layer.Active == true ? true : useTimerForStart);
                 useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active == true ? true : useTimerForStart);
                 useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active == true ? true : useTimerForStart);
                 useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active == true ? true : useTimerForStart);
             }
+            */
 
             Console.Clear();
             bool startNodeSelected = false;
@@ -644,7 +648,7 @@ namespace Notus.Validator
                     "Exit"
                 }, useTimerForStart);
 
-                useTimerForStart = false;
+                useTimerForStart = true;
 
                 if (selectedMenuItem == 0) //"Start Node"
                 {
@@ -673,7 +677,7 @@ namespace Notus.Validator
 
                 if (selectedMenuItem == 3) // "reset ports"
                 {
-                    resetPortMenu();
+                    resetPortMenu(true);
                 } // else if "reset ports",
 
                 if (selectedMenuItem == 4) // "Change Wallet Key"
@@ -812,19 +816,19 @@ namespace Notus.Validator
                 }
                 if (i == 0)
                 {
-                    scrnText = scrnText + "[ " + (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active == true ? "X" : " ") + " ] ";
+                    scrnText = scrnText + "[ " + (nodeObj.Layer.Selected==Notus.Variable.Enum.NetworkLayer.Layer1 ? "O" : " ") + " ] ";
                 }
                 if (i == 1)
                 {
-                    scrnText = scrnText + "[ " + (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active == true ? "X" : " ") + " ] ";
+                    scrnText = scrnText + "[ " + (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer2 ? "O" : " ") + " ] ";
                 }
                 if (i == 2)
                 {
-                    scrnText = scrnText + "[ " + (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active == true ? "X" : " ") + " ] ";
+                    scrnText = scrnText + "[ " + (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer3 ? "O" : " ") + " ] ";
                 }
                 if (i == 3)
                 {
-                    scrnText = scrnText + "[ " + (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active == true ? "X" : " ") + " ] ";
+                    scrnText = scrnText + "[ " + (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer4 ? "O" : " ") + " ] ";
                 }
                 scrnText = scrnText + mResultStr;
 
@@ -864,25 +868,11 @@ namespace Notus.Validator
             }
             else if (ckey.Key == ConsoleKey.Spacebar)
             {
-                if (indexMainMenu == 0)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active;
-                if (indexMainMenu == 1)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active;
-                if (indexMainMenu == 2)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active;
-                if (indexMainMenu == 3)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active;
+                drawMainMenu_NodeType_ChangeLayerStatus(indexMainMenu);
             }
             else if (ckey.Key == ConsoleKey.Enter)
             {
-                if (indexMainMenu == 0)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer1].Active;
-                if (indexMainMenu == 1)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active;
-                if (indexMainMenu == 2)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active;
-                if (indexMainMenu == 3)
-                    nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active = !nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active;
+                drawMainMenu_NodeType_ChangeLayerStatus(indexMainMenu);
                 if (indexMainMenu == 4)
                     return true;
             }
@@ -891,7 +881,17 @@ namespace Notus.Validator
             return false;
         }
 
-
+        private void drawMainMenu_NodeType_ChangeLayerStatus(int indexMainMenu)
+        {
+            if (indexMainMenu == 0)
+                nodeObj.Layer.Selected = Notus.Variable.Enum.NetworkLayer.Layer1;
+            if (indexMainMenu == 1)
+                nodeObj.Layer.Selected = Notus.Variable.Enum.NetworkLayer.Layer2;
+            if (indexMainMenu == 2)
+                nodeObj.Layer.Selected = Notus.Variable.Enum.NetworkLayer.Layer3;
+            if (indexMainMenu == 3)
+                nodeObj.Layer.Selected = Notus.Variable.Enum.NetworkLayer.Layer4;
+        }
         private int drawMainMenu_WalletMenu(List<string> items)
         {
             PrintWalletKey_AllMenu();
@@ -955,15 +955,15 @@ namespace Notus.Validator
         }
 
 
-        private void setLayerStatus(Notus.Variable.Enum.NetworkLayer layerObj)
+        private void setLayerStatus()
         {
-            MP_NodeList.Set(layerObj.ToString(), JsonSerializer.Serialize(nodeObj.Layer[layerObj]), true);
+            MP_NodeList.Set("Node_Layer", JsonSerializer.Serialize(nodeObj.Layer), true);
         }
         private void checkLayerStatus(Notus.Variable.Enum.NetworkLayer layerObj)
         {
             Notus.Variable.Struct.LayerInfo tmpLayerObj = new Notus.Variable.Struct.LayerInfo()
             {
-                Active = false,
+                Selected= Variable.Enum.NetworkLayer.Layer1,
                 Port = new Notus.Variable.Struct.CommunicationPorts()
                 {
                     DevNet = 0,
@@ -971,37 +971,26 @@ namespace Notus.Validator
                     TestNet = 0
                 }
             };
-            string tmpNodeType = MP_NodeList.Get(layerObj.ToString(), "");
+            string tmpNodeType = MP_NodeList.Get("Node_Layer", "");
             if (tmpNodeType != "")
             {
                 try
                 {
-                    nodeObj.Layer[layerObj] = JsonSerializer.Deserialize<Notus.Variable.Struct.LayerInfo>(tmpNodeType);
+                    nodeObj.Layer = JsonSerializer.Deserialize<Notus.Variable.Struct.LayerInfo>(tmpNodeType);
                 }
                 catch
                 {
-                    nodeObj.Layer[layerObj] = tmpLayerObj;
+                    nodeObj.Layer = tmpLayerObj;
                 }
             }
             else
             {
-                nodeObj.Layer[layerObj] = tmpLayerObj;
+                nodeObj.Layer = tmpLayerObj;
             }
         }
         public Notus.Variable.Common.ClassSetting DefineMySetting(Notus.Variable.Common.ClassSetting currentSetting)
         {
-            currentSetting.ActiveLayer = new Dictionary<Variable.Enum.NetworkLayer, bool>();
-            currentSetting.ActiveLayer.Clear();
-            foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>> entry in Notus.Variable.Constant.PortNo)
-            {
-                currentSetting.ActiveLayer.Add(entry.Key, false);
-                if (nodeObj.Layer.ContainsKey(entry.Key))
-                {
-                    currentSetting.ActiveLayer[entry.Key] = nodeObj.Layer[entry.Key].Active;
-                }
-            }
-            //Console.WriteLine(JsonSerializer.Serialize(nodeObj, new JsonSerializerOptions() { WriteIndented = true }));
-            //Console.ReadLine();
+            currentSetting.Layer = nodeObj.Layer.Selected;
             currentSetting.DebugMode = nodeObj.DebugMode;
             currentSetting.InfoMode = nodeObj.InfoMode;
             currentSetting.LocalNode = nodeObj.LocalMode;
@@ -1022,9 +1011,6 @@ namespace Notus.Validator
                 nodeObj.Wallet.Key = Node_WalletKey;
                 nodeObj.Wallet.Defined = true;
                 Node_WalletDefined = true;
-                checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer1);
-                checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer2);
-                checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer3);
                 checkLayerStatus(Notus.Variable.Enum.NetworkLayer.Layer4);
             }
             nodeObj.DebugMode = (MP_NodeList.Get("Node_DebugMode", "1") == "1" ? true : false);
@@ -1067,54 +1053,17 @@ namespace Notus.Validator
                     PublicKey = "",
                     Sign = ""
                 },
-                Layer = new Dictionary<Notus.Variable.Enum.NetworkLayer, Notus.Variable.Struct.LayerInfo>()
-                {
-                    {
-                        Notus.Variable.Enum.NetworkLayer.Layer1,
-                        new Notus.Variable.Struct.LayerInfo()
+                 DevelopmentMode=false,
+                  Layer=new Variable.Struct.LayerInfo()
+                  {
+                       Selected= Variable.Enum.NetworkLayer.Layer1,
+                        Port=new Variable.Struct.CommunicationPorts()
                         {
-                            Port=new Notus.Variable.Struct.CommunicationPorts()
-                            {
-                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.DevNet],
-                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet],
-                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet]
-                            }
+                            DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.DevNet],
+                            MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.MainNet],
+                            TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer1][Variable.Enum.NetworkType.TestNet]
                         }
-                    },
-                    {
-                        Notus.Variable.Enum.NetworkLayer.Layer2,
-                        new Notus.Variable.Struct.LayerInfo(){
-                            Port=new Notus.Variable.Struct.CommunicationPorts()
-                            {
-                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.DevNet],
-                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.MainNet],
-                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer2][Variable.Enum.NetworkType.TestNet]
-                            }
-                      }
-                    },
-                    {
-                        Notus.Variable.Enum.NetworkLayer.Layer3,
-                        new Notus.Variable.Struct.LayerInfo(){
-                            Port=new Notus.Variable.Struct.CommunicationPorts()
-                            {
-                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.DevNet],
-                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.MainNet],
-                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer3][Variable.Enum.NetworkType.TestNet]
-                            }
-                      }
-                    },
-                    {
-                        Notus.Variable.Enum.NetworkLayer.Layer4,
-                        new Notus.Variable.Struct.LayerInfo(){
-                            Port = new Notus.Variable.Struct.CommunicationPorts()
-                            {
-                                DevNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.DevNet],
-                                MainNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.MainNet],
-                                TestNet = Notus.Variable.Constant.PortNo[Notus.Variable.Enum.NetworkLayer.Layer4][Variable.Enum.NetworkType.TestNet]
-                            }
-                        }
-                    }
-                }
+                  }
             };
         }
         ~Menu()

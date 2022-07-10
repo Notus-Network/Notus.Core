@@ -359,7 +359,7 @@ namespace Notus.Variable.Struct
     }
     public class LayerInfo
     {
-        public bool Active { get; set; }
+        public Notus.Variable.Enum.NetworkLayer Selected { get; set; }
         public CommunicationPorts Port { get; set; }
     }
     public class NodeWalletInfo
@@ -373,7 +373,7 @@ namespace Notus.Variable.Struct
     public class NodeInfo
     {
         public NodeWalletInfo Wallet { get; set; }
-        public Dictionary<Notus.Variable.Enum.NetworkLayer, LayerInfo> Layer { get; set; }
+        public LayerInfo Layer { get; set; }
         public bool DebugMode { get; set; }
         public bool InfoMode { get; set; }
         public bool LocalMode { get; set; }
