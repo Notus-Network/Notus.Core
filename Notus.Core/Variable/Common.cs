@@ -17,7 +17,8 @@ namespace Notus.Variable.Common
         public Notus.Variable.Enum.NetworkNodeType NodeType { get; set; }
         public Notus.Variable.Enum.NetworkType Network { get; set; }
         public Notus.Variable.Enum.NetworkLayer Layer { get; set; }
-        
+        public Notus.Variable.Struct.CommunicationPorts Port { get; set; }
+    
         public bool DebugMode { get; set; }
         public bool InfoMode { get; set; }
         public bool PrettyJson { get; set; }

@@ -223,8 +223,15 @@ namespace Notus.Validator
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("enable");
                 Console.ResetColor();
-                Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.MainNet.ToString());
-                Console.WriteLine(SameLengthStr("Test Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.TestNet.ToString());
+                if (nodeObj.DevelopmentMode == true)
+                {
+                    Console.WriteLine(SameLengthStr("Dev Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.DevNet.ToString());
+                }
+                else
+                {
+                    Console.WriteLine(SameLengthStr("Main Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.MainNet.ToString());
+                    Console.WriteLine(SameLengthStr("Test Net Port Number", longestLayerText) + " : " + nodeObj.Layer.Port.TestNet.ToString());
+                }
             }
             else
             {
@@ -250,7 +257,7 @@ namespace Notus.Validator
                 Console.ResetColor();
             }
         }
-        private void showSettings()
+        private bool showSettings(bool escapePressed)
         {
             Console.Clear();
             Console.CursorVisible = false;
@@ -264,9 +271,18 @@ namespace Notus.Validator
 
 
             Console.WriteLine();
-            Console.WriteLine("Press any to continue");
-            Console.ReadKey();
+            if (escapePressed == false)
+            {
+                Console.WriteLine("Press any to continue");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Press ESC for Menu");
+                return true;
+            }
             Console.Clear();
+            return false;
         }
         private void nodeTypeMenu()
         {
@@ -416,25 +432,59 @@ namespace Notus.Validator
         private bool GetLayerPortNumber(Notus.Variable.Enum.NetworkLayer layerObj)
         {
             Console.CursorVisible = true;
-            Console.Write("Main Net Port Number : ");
-            string okunan = Console.ReadLine();
-            if (int.TryParse(okunan, out int tmpMainPortNo))
+            if (nodeObj.DevelopmentMode == true)
             {
-                if (tmpMainPortNo > 0 && tmpMainPortNo < 65536)
+                Console.Write("Developetment Net Port Number : ");
+                string okunan = Console.ReadLine();
+                if (int.TryParse(okunan, out int tmpDevPortNo))
                 {
-                    Console.Write("Test Net Port Number : ");
-                    string okunan2 = Console.ReadLine();
-                    if (int.TryParse(okunan2, out int tmpTestPortNo))
+                    if (tmpDevPortNo > 0 && tmpDevPortNo < 65536)
                     {
-                        if (tmpTestPortNo > 0 && tmpTestPortNo < 65536)
+                        nodeObj.Layer.Port.DevNet = tmpDevPortNo;
+                        nodeObj.Layer.Port.MainNet = 0;
+                        nodeObj.Layer.Port.TestNet = 0;
+                        setLayerStatus();
+                        Console.CursorVisible = false;
+                        Console.WriteLine("Port Numbers Saved");
+                        Thread.Sleep(2500);
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong port value");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Wrong port value");
+                }
+            }
+            else {
+                Console.Write("Main Net Port Number : ");
+                string okunan = Console.ReadLine();
+                if (int.TryParse(okunan, out int tmpMainPortNo))
+                {
+                    if (tmpMainPortNo > 0 && tmpMainPortNo < 65536)
+                    {
+                        Console.Write("Test Net Port Number : ");
+                        string okunan2 = Console.ReadLine();
+                        if (int.TryParse(okunan2, out int tmpTestPortNo))
                         {
-                            nodeObj.Layer.Port.MainNet = tmpMainPortNo;
-                            nodeObj.Layer.Port.TestNet = tmpTestPortNo;
-                            setLayerStatus();
-                            Console.CursorVisible = false;
-                            Console.WriteLine("Port Numbers Saved");
-                            Thread.Sleep(2500);
-                            return true;
+                            if (tmpTestPortNo > 0 && tmpTestPortNo < 65536)
+                            {
+                                nodeObj.Layer.Port.DevNet = 0;
+                                nodeObj.Layer.Port.MainNet = tmpMainPortNo;
+                                nodeObj.Layer.Port.TestNet = tmpTestPortNo;
+                                setLayerStatus();
+                                Console.CursorVisible = false;
+                                Console.WriteLine("Port Numbers Saved");
+                                Thread.Sleep(2500);
+                                return true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Wrong port value");
+                            }
                         }
                         else
                         {
@@ -451,10 +501,7 @@ namespace Notus.Validator
                     Console.WriteLine("Wrong port value");
                 }
             }
-            else
-            {
-                Console.WriteLine("Wrong port value");
-            }
+
             Console.CursorVisible = false;
             Thread.Sleep(2500);
             return false;
@@ -627,7 +674,7 @@ namespace Notus.Validator
             }
 
             Console.Clear();
-            bool startNodeSelected = true;
+            bool startNodeSelected = false;
             while (startNodeSelected == false)
             {
                 int selectedMenuItem = drawMainMenu_MainMenu(new List<string>()
@@ -685,7 +732,7 @@ namespace Notus.Validator
                 }
                 if (selectedMenuItem == 6) // show my settings
                 {
-                    showSettings();
+                    showSettings(false);
                 }
                 if (selectedMenuItem == 7) // exit
                 {
@@ -745,6 +792,35 @@ namespace Notus.Validator
                 //if not pressed key, start node app
                 if (keyExist == false)
                 {
+                    Console.Clear();
+                    showSettings(true);
+                    keyExist = false;
+                    iCounter = 0;
+                    bitis = DateTime.Now.AddSeconds(5);
+                    while (bitis > DateTime.Now && keyExist == false)
+                    {
+                        if (Console.KeyAvailable == true)
+                        {
+                            if (Console.ReadKey().Key == ConsoleKey.Escape)
+                            {
+                                keyExist = true;
+                            }
+                        }
+                        else
+                        {
+                            iCounter++;
+                            Thread.Sleep(5);
+                            if (iCounter > 25)
+                            {
+                                Console.Write(".");
+                                iCounter = 0;
+                            }
+                        }
+                    }
+                    if (keyExist == true)
+                    {
+                        return 100;
+                    }
                     return 0;
                 }
 
@@ -990,6 +1066,7 @@ namespace Notus.Validator
             currentSetting.LocalNode = nodeObj.LocalMode;
             currentSetting.DevelopmentNode = nodeObj.DevelopmentMode;
             currentSetting.NodeWallet.WalletKey = nodeObj.Wallet.Key;
+            currentSetting.Port = nodeObj.Layer.Port;
 
             return currentSetting;
         }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text.Json;
 using System.Threading;
 
 namespace Notus.Toolbox
@@ -86,7 +87,7 @@ namespace Notus.Toolbox
         {
             return new Notus.Variable.Struct.NodeIpInfo()
             {
-                Local = GetLocalIPAddress(),
+                Local = GetLocalIPAddress(false),
                 Public = GetPublicIPAddress()
             };
         }
@@ -129,17 +130,47 @@ namespace Notus.Toolbox
             return string.Empty;
         }
 
-        public static string GetLocalIPAddress()
+        public static string GetLocalIPAddress(bool returnLocalIp)
         {
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
+            bool tmpNetworkAvailable=System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+            /*
+            if (tmpNetworkAvailable == true)
             {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                Console.WriteLine("available");
+            }
+            else
+            {
+                Console.WriteLine("un available");
+            }
+            Console.ReadLine();
+            */
+            if (returnLocalIp == true)
+            {
+                return "127.0.0.1";
+            }
+            try
+            {
+                string dnsResult = Dns.GetHostName();
+                //Console.WriteLine(dnsResult);
+
+                IPHostEntry host = Dns.GetHostEntry(dnsResult);
+                //Console.WriteLine(JsonSerializer.Serialize(host, new JsonSerializerOptions() { WriteIndented = true }));
+                //Console.ReadLine();
+                foreach (IPAddress ip in host.AddressList)
                 {
-                    return ip.ToString();
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        return ip.ToString();
+                    }
                 }
             }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
+            catch (Exception err)
+            {
+                //Console.WriteLine(err.Message);
+                //Console.ReadLine();
+                //return "127.0.0.1";
+            }
+            return "127.0.0.1";
         }
         private static ulong GetExactTime_UTC_SubFunc(string server)
         {
