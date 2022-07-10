@@ -621,19 +621,13 @@ namespace Notus.Validator
         private void mainMenu()
         {
             bool useTimerForStart = false;
-            /*
             if (Node_WalletDefined == true)
             {
-                nodeObj.Layer
-                useTimerForStart = nodeObj.Layer.Active == true ? true : useTimerForStart);
-                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer2].Active == true ? true : useTimerForStart);
-                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer3].Active == true ? true : useTimerForStart);
-                useTimerForStart = (nodeObj.Layer[Notus.Variable.Enum.NetworkLayer.Layer4].Active == true ? true : useTimerForStart);
+                useTimerForStart = true;
             }
-            */
 
             Console.Clear();
-            bool startNodeSelected = false;
+            bool startNodeSelected = true;
             while (startNodeSelected == false)
             {
                 int selectedMenuItem = drawMainMenu_MainMenu(new List<string>()
@@ -648,7 +642,7 @@ namespace Notus.Validator
                     "Exit"
                 }, useTimerForStart);
 
-                useTimerForStart = true;
+                useTimerForStart = false;
 
                 if (selectedMenuItem == 0) //"Start Node"
                 {
