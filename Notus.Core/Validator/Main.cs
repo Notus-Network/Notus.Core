@@ -55,7 +55,7 @@ namespace Notus.Validator
         {
             if (Obj_Settings.Genesis.Empty.Active)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Timer Has Started");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Timer Has Started");
 
                 Notus.Threads.Timer TimerObj = new Notus.Threads.Timer(1000);
                 TimerObj.Start(() =>
@@ -87,7 +87,7 @@ namespace Notus.Validator
 
                         if (executeEmptyBlock == true)
                         {
-                            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Empty Block Executed");
+                            Notus.Toolbox.Print.Basic(Obj_Settings, "Empty Block Executed");
                             Obj_BlockQueue.AddEmptyBlock();
                             EmptyBlockTime = DateTime.Now;
                         }
@@ -99,7 +99,7 @@ namespace Notus.Validator
         /*
         public void ImageWaterMarkTimer()
         {
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Water Mark Timer Has Started");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Water Mark Timer Has Started");
 
             Notus.Threads.Timer TimerObj = new Notus.Threads.Timer(2000);
             TimerObj.Start(() =>
@@ -306,7 +306,7 @@ namespace Notus.Validator
 
         public void CryptoTransferTimerFunc()
         {
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Crypto Transfer Timer Has Started");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Crypto Transfer Timer Has Started");
             Notus.Threads.Timer TimerObj = new Notus.Threads.Timer(1000);
             TimerObj.Start(() =>
             {
@@ -579,7 +579,7 @@ namespace Notus.Validator
 
             if (Obj_Settings.Genesis == null)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Notus.Validator.Main -> Genesis Is NULL");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Notus.Validator.Main -> Genesis Is NULL");
             }
             Obj_Api = new Notus.Validator.Api();
             Obj_Api.Settings = Obj_Settings;
@@ -622,7 +622,7 @@ namespace Notus.Validator
 
             if (Obj_Settings.GenesisCreated == false && Obj_Settings.Genesis != null)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Last Block Row No : " + Obj_Settings.LastBlock.info.rowNo.ToString());
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Last Block Row No : " + Obj_Settings.LastBlock.info.rowNo.ToString());
                 using (Notus.Mempool ObjMp_BlockOrder =
                     new Notus.Mempool(
                         Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
@@ -646,13 +646,13 @@ namespace Notus.Validator
                                 }
                                 else
                                 {
-                                    Notus.Toolbox.Print.Danger(Obj_Settings.InfoMode, "Notus.Block.Integrity -> Block Does Not Exist");
+                                    Notus.Toolbox.Print.Danger(Obj_Settings, "Notus.Block.Integrity -> Block Does Not Exist");
                                 }
                             }
                         }
                         else
                         {
-                            Notus.Toolbox.Print.Danger(Obj_Settings.InfoMode, "Hash calculation error");
+                            Notus.Toolbox.Print.Danger(Obj_Settings, "Hash calculation error");
                         }
                     }, 0
                     );
@@ -660,8 +660,19 @@ namespace Notus.Validator
 
                 // Console.WriteLine("Notus.Node.Validator.Main.Start_listener -> Line 377");
                 // Console.WriteLine(Obj_Settings.Layer.ToString());
-
-                SelectedPortVal = Notus.Network.Node.GetNetworkPort(Obj_Settings.Network, Obj_Settings.Layer);
+                if (Obj_Settings.Network == Variable.Enum.NetworkType.MainNet)
+                {
+                    SelectedPortVal = Obj_Settings.Port.MainNet;
+                }
+                if (Obj_Settings.Network == Variable.Enum.NetworkType.TestNet)
+                {
+                    SelectedPortVal = Obj_Settings.Port.TestNet;
+                }
+                if (Obj_Settings.Network == Variable.Enum.NetworkType.DevNet)
+                {
+                    SelectedPortVal = Obj_Settings.Port.DevNet;
+                }
+                //SelectedPortVal = Notus.Network.Node.GetNetworkPort(Obj_Settings.Network, Obj_Settings.Layer);
             }
             else
             {
@@ -673,7 +684,7 @@ namespace Notus.Validator
             //Notus.Toolbox.Print.Basic(Settings.InfoMode,"empty count : " + Obj_Integrity.EmptyBlockCount);
             if (Obj_Settings.GenesisCreated == false)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Main Validator Started");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Main Validator Started");
             }
             Obj_BlockQueue.Settings.LastBlock = Obj_Settings.LastBlock;
             //BlockStatObj = Obj_BlockQueue.CurrentBlockStatus();
@@ -741,14 +752,14 @@ namespace Notus.Validator
                     //blok sıra ve önceki değerleri düzenleniyor...
                     PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
                     
-                    Notus.Toolbox.Print.Basic(Obj_Settings.DebugMode, "NodeOrder : " + NodeOrder.ToString());
+                    Notus.Toolbox.Print.Basic(Obj_Settings, "NodeOrder : " + NodeOrder.ToString());
                     Notus.Variable.Class.BlockData PreparedBlockData = new Notus.Block.Generate(Obj_Settings.NodeWallet.WalletKey).Make(PreBlockData, 1000);
                     Obj_BlockQueue.Settings.LastBlock = PreparedBlockData;
                     Obj_Settings.LastBlock = PreparedBlockData;
 
                     Obj_Api.Settings.LastBlock = Obj_Settings.LastBlock;
 
-                    Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Generated [" + PreparedBlockData.info.type.ToString() + "]: " + PreparedBlockData.info.uID);
+                    Notus.Toolbox.Print.Basic(Obj_Settings, "Block Generated [" + PreparedBlockData.info.type.ToString() + "]: " + PreparedBlockData.info.uID);
                     OrganizeEachBlock(PreparedBlockData, true);
                     Thread.Sleep(500);
                 }
@@ -771,7 +782,7 @@ namespace Notus.Validator
                     //Notus.Core.Function.Sleep(5, true);
                 }
             }
-            Notus.Toolbox.Print.Warning(Obj_Settings.InfoMode, "Main Class Ended");
+            Notus.Toolbox.Print.Warning(Obj_Settings, "Main Class Ended");
         }
 
         private void OrganizeEachBlock(Notus.Variable.Class.BlockData Obj_BlockData, bool NewBlock)
@@ -838,12 +849,12 @@ namespace Notus.Validator
         {
             if (Obj_Settings.LocalNode == true)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Listining : " +
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Listining : " +
                 Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Local, SelectedPortVal), false);
             }
             else
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Listining : " +
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Listining : " +
                 Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Public, SelectedPortVal), false);
             }
             HttpObj.OnReceive(Fnc_OnReceiveData);
@@ -860,7 +871,7 @@ namespace Notus.Validator
             HttpObj.Settings = Obj_Settings;
             HttpObj.StoreUrl = false;
             HttpObj.Start(NodeIpAddress, SelectedPortVal);
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Http Has Started", false);
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Http Has Started", false);
         }
 
         private string Fnc_OnReceiveData(Notus.Variable.Struct.HttpRequestDetails IncomeData)

@@ -20,12 +20,6 @@ namespace Notus.Validator
         private int indexMainMenu = 0;
         private Notus.Mempool MP_NodeList;
         private int longestLayerText = 0;
-        private Dictionary<Notus.Variable.Enum.NetworkLayer, string> layerText = new Dictionary<Notus.Variable.Enum.NetworkLayer, string>() {
-            { Notus.Variable.Enum.NetworkLayer.Layer1,"Layer 1 ( Crypto Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer2,"Layer 2 ( File Storage Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer3,"Layer 3 ( Crypto Message Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
-        };
         private string ChunkString(string str, int chunkSize, string separator, int newLineAfterHowManyChunk = 0, int EmptySpaceAfterNewLine = 0)
         {
             var b = new StringBuilder();
@@ -215,7 +209,7 @@ namespace Notus.Validator
         private void showMySettings_Obj()
         {
             Console.WriteLine(SameLengthStr("", longestLayerText + 10, '-'));
-            Console.Write(SameLengthStr(layerText[nodeObj.Layer.Selected], longestLayerText) + " : ");
+            Console.Write(SameLengthStr(Notus.Variable.Constant.LayerText[nodeObj.Layer.Selected], longestLayerText) + " : ");
 
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("enable");
@@ -282,7 +276,7 @@ namespace Notus.Validator
             while (exitFromSubMenuLoop == false)
             {
                 List<string> menuList = new List<string>() { };
-                foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, string> entry in layerText)
+                foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, string> entry in Notus.Variable.Constant.LayerText)
                 {
                     menuList.Add(entry.Value);
                 }
@@ -616,19 +610,19 @@ namespace Notus.Validator
             Dictionary<int, string> PortList = new Dictionary<int, string>();
             if (nodeObj.Layer.Selected==Notus.Variable.Enum.NetworkLayer.Layer1)
             {
-                PortList.Add(1, layerText[Notus.Variable.Enum.NetworkLayer.Layer1]);
+                PortList.Add(1, Notus.Variable.Constant.LayerText[Notus.Variable.Enum.NetworkLayer.Layer1]);
             }
             if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer2)
             {
-                PortList.Add(2, layerText[Notus.Variable.Enum.NetworkLayer.Layer2]);
+                PortList.Add(2, Notus.Variable.Constant.LayerText[Notus.Variable.Enum.NetworkLayer.Layer2]);
             }
             if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer3)
             {
-                PortList.Add(3, layerText[Notus.Variable.Enum.NetworkLayer.Layer3]);
+                PortList.Add(3, Notus.Variable.Constant.LayerText[Notus.Variable.Enum.NetworkLayer.Layer3]);
             }
             if (nodeObj.Layer.Selected == Notus.Variable.Enum.NetworkLayer.Layer4)
             {
-                PortList.Add(4, layerText[Notus.Variable.Enum.NetworkLayer.Layer4]);
+                PortList.Add(4, Notus.Variable.Constant.LayerText[Notus.Variable.Enum.NetworkLayer.Layer4]);
             }
             if (PortList.Count == 0)
             {
@@ -1275,7 +1269,7 @@ namespace Notus.Validator
         }
         public Menu()
         {
-            foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, string> entry in layerText)
+            foreach (KeyValuePair<Notus.Variable.Enum.NetworkLayer, string> entry in Notus.Variable.Constant.LayerText)
             {
                 if (entry.Value.Length > longestLayerText)
                 {

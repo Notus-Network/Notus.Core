@@ -1,56 +1,50 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 
 namespace Notus.Validator
 {
     public static class Node
     {
+        public static void Start(string[] args)
+        {
+            bool LightNodeActive = false;
+            bool EmptyTimerActive = false;
+            bool CryptoTimerActive = true;
+            Notus.Variable.Common.ClassSetting NodeSettings = new Notus.Variable.Common.ClassSetting();
+
+            using (Notus.Validator.Menu menuObj = new Notus.Validator.Menu())
+            {
+                NodeSettings = menuObj.PreStart(args);
+
+                menuObj.Start();
+                NodeSettings = menuObj.DefineMySetting(NodeSettings);
+                //Notus.Toolbox.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
+            }
+            if (NodeSettings.NodeType != Notus.Variable.Enum.NetworkNodeType.Replicant)
+            {
+                LightNodeActive = false;
+            }
+
+            Console.WriteLine(JsonSerializer.Serialize(NodeSettings, new JsonSerializerOptions() { WriteIndented = true }));
+            Console.ReadLine();
+
+            if (NodeSettings.DevelopmentNode == true)
+            {
+                NodeSettings.Network = Notus.Variable.Enum.NetworkType.DevNet;
+                Notus.Validator.Node.Start(NodeSettings, EmptyTimerActive, CryptoTimerActive, LightNodeActive);
+            }
+        }
         public static void Start(Notus.Variable.Common.ClassSetting NodeSettings, bool EmptyTimerActive, bool CryptoTimerActive, bool LightNodeActive)
         {
             if (NodeSettings.LocalNode == true)
             {
-                Notus.Toolbox.Print.Info(true, "LocalNode Activated");
+                Notus.Toolbox.Print.Info(NodeSettings.InfoMode, "LocalNode Activated");
             }
             Notus.Toolbox.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
 
-            if (NodeSettings.Network == Notus.Variable.Enum.NetworkType.DevNet)
-            {
-                if (NodeSettings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
-                {
-                    Notus.Toolbox.Print.Info(true, "Activated DevNET for Main Layer");
-                }
-                else
-                {
-                    Notus.Toolbox.Print.Info(true, "Activated DevNET for " + NodeSettings.Layer.ToString());
-                }
-            }
-            else
-            {
-                if (NodeSettings.Network == Notus.Variable.Enum.NetworkType.TestNet)
-                {
-                    if (NodeSettings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
-                    {
-                        Notus.Toolbox.Print.Info(true, "Activated TestNET for Main Layer");
-                    }
-                    else
-                    {
-                        Notus.Toolbox.Print.Info(true, "Activated TestNET for " + NodeSettings.Layer.ToString());
-                    }
-                }
-                else
-                {
-                    if (NodeSettings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
-                    {
-                        Notus.Toolbox.Print.Info(true, "Activated MainNET for Main Layer");
-                    }
-                    else
-                    {
-                        Notus.Toolbox.Print.Info(true, "Activated MainNET for " + NodeSettings.Layer.ToString());
-                    }
-                }
-            }
+            Notus.Toolbox.Print.Info(NodeSettings.InfoMode, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
             NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);
-
             switch (NodeSettings.NodeType)
             {
                 case Notus.Variable.Enum.NetworkNodeType.Main:
@@ -68,7 +62,7 @@ namespace Notus.Validator
                 default:
                     break;
             }
-            Notus.Toolbox.Print.Warning(true, "Task Ended");
+            Notus.Toolbox.Print.Warning(NodeSettings, "Task Ended");
         }
         private static void StartAsMaster(Notus.Variable.Common.ClassSetting NodeSettings)
         {
@@ -87,7 +81,7 @@ namespace Notus.Validator
                     MainObj.Start();
                 }
 
-                Notus.Toolbox.Print.Basic(NodeSettings.InfoMode, "Sleep For 2.5 Seconds");
+                Notus.Toolbox.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
                 Thread.Sleep(2500);
             }
         }
@@ -107,7 +101,7 @@ namespace Notus.Validator
                 }
                 catch (Exception err)
                 {
-                    Notus.Toolbox.Print.Danger(true, "Replicant Outer Error Text : " + err.Message);
+                    Notus.Toolbox.Print.Danger(NodeSettings, "Replicant Outer Error Text : " + err.Message);
                 }
             }
         }

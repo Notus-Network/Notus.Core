@@ -17,14 +17,14 @@ namespace Notus.Toolbox
             Obj_Settings.IpInfo = Notus.Toolbox.Network.GetNodeIP();
             if (Obj_Settings.LocalNode == true)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Starting As Main Node");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Starting As Main Node");
                 Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Main;
                 return Obj_Settings;
             }
 
             if (Notus.Variable.Constant.ListMainNodeIp.IndexOf(Obj_Settings.IpInfo.Public) >= 0)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Starting As Main Node");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Starting As Main Node");
                 if (PublicIpIsConnectable(Obj_Settings, Timeout))
                 {
                     Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Main;
@@ -32,19 +32,19 @@ namespace Notus.Toolbox
                 }
                 else
                 {
-                    Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Main Node Port Error");
+                    Notus.Toolbox.Print.Basic(Obj_Settings, "Main Node Port Error");
                 }
             }
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Not Main Node");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Not Main Node");
 
             if (PublicIpIsConnectable(Obj_Settings, Timeout))
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Starting As Master Node");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Starting As Master Node");
                 Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Master;
                 return Obj_Settings;
             }
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Not Master Node");
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Starting As Replicant Node");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Not Master Node");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Starting As Replicant Node");
             Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Replicant;
             return Obj_Settings;
         }

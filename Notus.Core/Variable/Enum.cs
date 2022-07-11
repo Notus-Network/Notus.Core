@@ -73,6 +73,7 @@ namespace Notus.Variable.Enum
 
     public enum NetworkLayer
     {
+        Unknown=99999,
         // MainLayer = 1,     // crypto and token transfer & token generation
         Layer1 = 1,     // crypto and token transfer & token generation
 
@@ -93,6 +94,7 @@ namespace Notus.Variable.Enum
     }
     public enum NetworkType
     {
+        Unknown = 99999,
         MainNet = 10,
         TestNet = 20,
         DevNet = 30

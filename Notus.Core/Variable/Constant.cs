@@ -5,6 +5,7 @@ namespace Notus.Variable
     public static class Constant
     {
         /*
+        
         public class NonceType
         {
             public int Method { get; set; }
@@ -113,6 +114,12 @@ namespace Notus.Variable
                     { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 902}
                 }
             }
+        };
+        public static Dictionary<Notus.Variable.Enum.NetworkLayer, string> LayerText = new Dictionary<Notus.Variable.Enum.NetworkLayer, string>() {
+            { Notus.Variable.Enum.NetworkLayer.Layer1,"Layer 1 ( Crypto Layer )" },
+            { Notus.Variable.Enum.NetworkLayer.Layer2,"Layer 2 ( File Storage Layer )" },
+            { Notus.Variable.Enum.NetworkLayer.Layer3,"Layer 3 ( Crypto Message Layer )" },
+            { Notus.Variable.Enum.NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
         };
 
         // layer 1 - main layer for crypto & token generate and transfer

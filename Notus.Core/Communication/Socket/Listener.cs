@@ -312,7 +312,7 @@ namespace Notus.Communication
                                 Notus.Toolbox.Print.Basic(DebugModeActive, err.Message);
                                 if (OnErrorFunctionDefined == true)
                                 {
-                                    OnErrorFunctionObj(9864, err.ToString());
+                                    OnErrorFunctionObj(97864, err.ToString());
                                 }
                             }
                             catch (Exception err)
@@ -320,7 +320,7 @@ namespace Notus.Communication
                                 Notus.Toolbox.Print.Basic(DebugModeActive, err.Message);
                                 if (OnErrorFunctionDefined == true)
                                 {
-                                    OnErrorFunctionObj(9864, err.ToString());
+                                    OnErrorFunctionObj(129064, err.ToString());
                                 }
                             }
                         }
@@ -490,7 +490,7 @@ namespace Notus.Communication
                             Notus.Toolbox.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
-                                OnErrorFunctionObj(9864, err.ToString());
+                                OnErrorFunctionObj(09817, err.ToString());
                             }
                             else
                             {
@@ -531,7 +531,7 @@ namespace Notus.Communication
                             Notus.Toolbox.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
-                                OnErrorFunctionObj(9864, err.ToString());
+                                OnErrorFunctionObj(220983, err.ToString());
                             }
                         }
                         catch (Exception err)
@@ -539,7 +539,7 @@ namespace Notus.Communication
                             Notus.Toolbox.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
-                                OnErrorFunctionObj(9864, err.ToString());
+                                OnErrorFunctionObj(0987536, err.ToString());
                             }
                         }
                     }

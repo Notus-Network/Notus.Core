@@ -78,7 +78,7 @@ namespace Notus.Block
 
             if (ZipFileList.Length == 0)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = GenesisNeed");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = GenesisNeed");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.GenesisNeed, null);
             }
             SortedDictionary<long, string> BlockOrderList = new SortedDictionary<long, string>();
@@ -116,19 +116,19 @@ namespace Notus.Block
                                         bool Val_BlockVerify = BlockValidateObj.Verify(ControlBlock);
                                         if (Val_BlockVerify == false)
                                         {
-                                            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = NonValid");
+                                            Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = NonValid");
                                         }
                                         else
                                         {
                                             if (BlockOrderList.ContainsKey(ControlBlock.info.rowNo))
                                             {
-                                                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = MultipleHeight");
+                                                Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = MultipleHeight");
                                             }
                                             else
                                             {
                                                 if (BlockPreviousList.ContainsKey(ControlBlock.info.uID))
                                                 {
-                                                    Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = MultipleId");
+                                                    Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = MultipleId");
                                                 }
                                                 else
                                                 {
@@ -187,13 +187,13 @@ namespace Notus.Block
                             }
                         }
                     }
-                    Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Extra Data Was Deleted");
+                    Notus.Toolbox.Print.Basic(Obj_Settings, "Extra Data Was Deleted");
                 }
             }
 
             if (SmallestBlockHeight > 1)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Missing Block Available");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Missing Block Available");
                 bool exitInnerLoop = false;
                 while (exitInnerLoop == false)
                 {
@@ -302,10 +302,10 @@ namespace Notus.Block
             }
             if (prevBlockRownNumberError == true)
             {
-                Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = WrongBlockOrder");
+                Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = WrongBlockOrder");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.WrongBlockOrder, null);
             }
-            Notus.Toolbox.Print.Basic(Obj_Settings.InfoMode, "Block Integrity = Valid");
+            Notus.Toolbox.Print.Basic(Obj_Settings, "Block Integrity = Valid");
 
             using (Notus.Mempool ObjMp_BlockOrder =
                 new Notus.Mempool(
