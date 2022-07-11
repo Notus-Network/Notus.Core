@@ -151,11 +151,8 @@ namespace Notus.Toolbox
             try
             {
                 string dnsResult = Dns.GetHostName();
-                //Console.WriteLine(dnsResult);
-
                 IPHostEntry host = Dns.GetHostEntry(dnsResult);
                 //Console.WriteLine(JsonSerializer.Serialize(host, new JsonSerializerOptions() { WriteIndented = true }));
-                //Console.ReadLine();
                 foreach (IPAddress ip in host.AddressList)
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
@@ -167,8 +164,6 @@ namespace Notus.Toolbox
             catch (Exception err)
             {
                 //Console.WriteLine(err.Message);
-                //Console.ReadLine();
-                //return "127.0.0.1";
             }
             return "127.0.0.1";
         }
