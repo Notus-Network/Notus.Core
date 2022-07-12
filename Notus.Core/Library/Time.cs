@@ -7,6 +7,10 @@ namespace Notus
 {
     public class Time
     {
+        public static DateTime GetExactTime()
+        {
+            return new DateTime(1900, 1, 1).AddMilliseconds((long)Notus.Toolbox.Network.GetExactTime_Int());
+        }
         public static ulong BlockIdToUlong(string blockUid)
         {
             return ulong.Parse(Notus.Block.Key.GetTimeFromKey(blockUid).Substring(0, 17));
