@@ -143,9 +143,9 @@ namespace Notus.Communication
         private byte[] IncomeTextFunction(byte[] incomeArray, System.Net.IPEndPoint RemoteEndPoint, System.Net.IPEndPoint LocalEndPoint)
         {
 
-            //Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
-            //Console.WriteLine(System.Text.Encoding.ASCII.GetString(incomeArray));
-            //Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
+            Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
+            Console.WriteLine(System.Text.Encoding.ASCII.GetString(incomeArray));
+            Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
 
             Notus.Variable.Struct.HttpRequestDetails incomeData = ParseString(incomeArray);
             if (Val_StoreUrl == true)
