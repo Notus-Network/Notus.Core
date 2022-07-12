@@ -167,6 +167,13 @@ namespace Notus.Wallet
                         {
                             return true;
                         }
+                        else
+                        {
+                            if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_DevelopmentNetwork.Length) == Notus.Variable.Constant.Prefix_DevelopmentNetwork)
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -281,6 +288,11 @@ namespace Notus.Wallet
             {
                 keyPrefix = Notus.Variable.Constant.Prefix_TestNetwork;
                 networkByteStr = "20";
+            }
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.DevNet)
+            {
+                keyPrefix = Notus.Variable.Constant.Prefix_DevelopmentNetwork;
+                networkByteStr = "30";
             }
 
             Notus.HashLib.Sasha sashaObj = new Notus.HashLib.Sasha();

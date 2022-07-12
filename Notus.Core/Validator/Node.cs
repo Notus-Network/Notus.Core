@@ -26,12 +26,17 @@ namespace Notus.Validator
                 LightNodeActive = false;
             }
 
-            Console.WriteLine(JsonSerializer.Serialize(NodeSettings, new JsonSerializerOptions() { WriteIndented = true }));
-            Console.ReadLine();
+            //Console.WriteLine(JsonSerializer.Serialize(NodeSettings, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.ReadLine();
 
             if (NodeSettings.DevelopmentNode == true)
             {
                 NodeSettings.Network = Notus.Variable.Enum.NetworkType.DevNet;
+                Notus.Validator.Node.Start(NodeSettings, EmptyTimerActive, CryptoTimerActive, LightNodeActive);
+            }
+            else
+            {
+                NodeSettings.Network = Notus.Variable.Enum.NetworkType.MainNet;
                 Notus.Validator.Node.Start(NodeSettings, EmptyTimerActive, CryptoTimerActive, LightNodeActive);
             }
         }

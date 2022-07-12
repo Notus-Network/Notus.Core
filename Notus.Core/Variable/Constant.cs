@@ -142,6 +142,7 @@ namespace Notus.Variable
         public static readonly int BlockStorageMonthlyGroupCount = 50;
         public static readonly string Prefix_MainNetwork = "NR";
         public static readonly string Prefix_TestNetwork = "NT";
+        public static readonly string Prefix_DevelopmentNetwork = "ND";
 
 
         public static readonly string SocketMessageEndingText = "<EOF>";
