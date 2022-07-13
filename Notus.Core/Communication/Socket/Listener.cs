@@ -502,7 +502,13 @@ namespace Notus.Communication
                         {
                             if (responseToClient == true)
                             {
-                                handler.Send(System.Text.Encoding.ASCII.GetBytes("false-test"));
+                                try
+                                {
+                                    handler.Send(System.Text.Encoding.ASCII.GetBytes("false-test"));
+                                }
+                                catch(Exception err2) {
+                                    Console.WriteLine("Listener.cs - 510 ->" + err2.Message);
+                                }
                             }
 
                             try
