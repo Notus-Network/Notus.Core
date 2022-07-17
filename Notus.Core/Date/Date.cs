@@ -15,6 +15,10 @@ namespace Notus
             return ulong.Parse(convertTime.ToString(Variable.Constant.DefaultDateTimeFormatText));
         }
 
+        public static DateTime ToString(ulong ConverTime)
+        {
+            return ToDateTime(ConverTime.ToString().PadRight(17,'0'));
+        }
         public static string ToString(DateTime DateTimeObj)
         {
             try
