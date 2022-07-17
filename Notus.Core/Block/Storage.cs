@@ -64,11 +64,11 @@ namespace Notus.Block
 
             StoragePreviousHashVal = string.Empty;
             StorageHashVal = string.Empty;
-            //Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Notus.Variable.Constant.StorageFolderName.Block)
+            //Notus.IO.GetFolderName(Val_NetworkType, Notus.Variable.Constant.StorageFolderName.Block)
             
             foreach (string fileName in 
                 Directory.GetFiles(
-                    Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block), "*.zip"
+                    Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block), "*.zip"
                 )
             )
             {
@@ -91,7 +91,7 @@ namespace Notus.Block
         }
         public void ClearStorage()
         {
-            DirectoryInfo d = new DirectoryInfo(Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block));
+            DirectoryInfo d = new DirectoryInfo(Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block));
             FileInfo[] Files = d.GetFiles("*.zip");
             foreach (FileInfo file in Files)
             {
@@ -105,7 +105,7 @@ namespace Notus.Block
             {
                 bool BlockExist = false;
                 string BlockFileName = Notus.Block.Key.GetBlockStorageFileName(BlockUid, true);
-                string ZipFileName = Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
+                string ZipFileName = Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
                 if (File.Exists(ZipFileName) == true)
                 {
                     Notus.Variable.Class.BlockData NewBlock = null;
@@ -150,7 +150,7 @@ namespace Notus.Block
         public void AddSync(Notus.Variable.Class.BlockData NewBlock, bool UpdateBlock = false)
         {
             string BlockFileName = Notus.Block.Key.GetBlockStorageFileName(NewBlock.info.uID, true);
-            string ZipFileName = Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
+            string ZipFileName = Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
             bool exitInnerLoop = false;
             while (exitInnerLoop == false)
             {
@@ -227,7 +227,7 @@ namespace Notus.Block
         {
             LoadZipFromDirectory();
             MP_BlockFile = new Notus.Mempool(
-                Notus.Toolbox.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Common) + 
+                Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Common) + 
                 Notus.Variable.Constant.MemoryPoolName["MempoolListBeforeBlockStorage"]);
 
             TimerObj = new Notus.Threads.Timer(DefaultBlockGenerateInterval);

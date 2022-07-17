@@ -19,7 +19,7 @@ namespace Notus.Validator
 
                 menuObj.Start();
                 NodeSettings = menuObj.DefineMySetting(NodeSettings);
-                //Notus.Toolbox.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
+                //Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
             }
             if (NodeSettings.NodeType != Notus.Variable.Enum.NetworkNodeType.Replicant)
             {
@@ -46,7 +46,7 @@ namespace Notus.Validator
             {
                 Notus.Print.Info(NodeSettings.InfoMode, "LocalNode Activated");
             }
-            Notus.Toolbox.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
+            Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
 
             Notus.Print.Info(NodeSettings.InfoMode, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
             NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);

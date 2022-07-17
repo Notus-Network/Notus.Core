@@ -8,7 +8,7 @@ namespace Notus.Wallet
         private static Notus.Mempool GiveCurrencyListDb(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
             Notus.Mempool ObjMp_Balance = new Notus.Mempool(
-                            Notus.Toolbox.IO.GetFolderName(
+                            Notus.IO.GetFolderName(
                                 networkType,
                                 networkLayer,
                                 Notus.Variable.Constant.StorageFolderName.Balance

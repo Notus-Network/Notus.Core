@@ -74,7 +74,7 @@ namespace Notus.Wallet
         private static string FeeDataStorageDbName(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
             return 
-                Notus.Toolbox.IO.GetFolderName(networkType, networkLayer,Notus.Variable.Constant.StorageFolderName.Common) +
+                Notus.IO.GetFolderName(networkType, networkLayer,Notus.Variable.Constant.StorageFolderName.Common) +
                 "price_data";
         }
         public static Int64 ReadFeeData(Notus.Variable.Enum.Fee FeeConstant, Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)

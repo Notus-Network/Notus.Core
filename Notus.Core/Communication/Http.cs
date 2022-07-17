@@ -151,7 +151,7 @@ namespace Notus.Communication
             if (Val_StoreUrl == true)
             {
                 Mp_UrlList.Add(
-                    Notus.Toolbox.Date.ToString(DateTime.Now) + new Random().Next(10000000, 42949295).ToString(),
+                    Date.ToString(DateTime.Now) + new Random().Next(10000000, 42949295).ToString(),
                     JsonSerializer.Serialize(incomeData)
                 );
             }
@@ -198,7 +198,7 @@ namespace Notus.Communication
         {
             if (Val_StoreUrl == true)
             {
-                Mp_UrlList = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                Mp_UrlList = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                     "url_visit"
                 );
                 Mp_UrlList.DebugMode = DebugModeActivated;

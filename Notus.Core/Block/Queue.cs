@@ -325,7 +325,7 @@ namespace Notus.Block
             BS_Storage.Start();
 
             MP_BlockPoolList = new Notus.Mempool(
-                Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                 Notus.Variable.Constant.MemoryPoolName["BlockPoolList"]
             );
             MP_BlockPoolList.Each((string blockTransactionKey, string TextBlockDataString) =>

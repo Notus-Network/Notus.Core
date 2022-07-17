@@ -393,7 +393,7 @@ namespace Notus.Wallet
         public void Start()
         {
             ObjMp_Balance = new Notus.Mempool(
-                Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Balance) +
+                Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Balance) +
                 "account_balance"
             );
             ObjMp_Balance.AsyncActive = false;

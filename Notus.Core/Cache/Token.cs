@@ -23,7 +23,7 @@ namespace Notus.Cache
             using
                 (Notus.Mempool MP_TokenList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Notus.Variable.Constant.StorageFolderName.Common) +
+                    Notus.IO.GetFolderName(Obj_Settings.Network, Notus.Variable.Constant.StorageFolderName.Common) +
                     "token_name_list"
                 )
             )
@@ -55,7 +55,7 @@ namespace Notus.Cache
             using (
                 Notus.Mempool ObjMp_TokenBalance =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Notus.Variable.Constant.StorageFolderName.Common) +
+                    Notus.IO.GetFolderName(Obj_Settings.Network, Notus.Variable.Constant.StorageFolderName.Common) +
                     "token_balance"
                 )
             )

@@ -36,7 +36,7 @@ namespace Notus.Block
 
             using (Notus.Mempool ObjMp_Genesis =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(NetworkType, NetworkLayer, Notus.Variable.Constant.StorageFolderName.Common) + "genesis_accounts"
+                    Notus.IO.GetFolderName(NetworkType, NetworkLayer, Notus.Variable.Constant.StorageFolderName.Common) + "genesis_accounts"
                 )
             )
             {

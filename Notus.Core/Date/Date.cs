@@ -6,16 +6,16 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Notus.Toolbox
+namespace Notus
 {
     public static class Date
     {
-        public static ulong ToLong(System.DateTime convertTime)
+        public static ulong ToLong(DateTime convertTime)
         {
-            return ulong.Parse(convertTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
+            return ulong.Parse(convertTime.ToString(Variable.Constant.DefaultDateTimeFormatText));
         }
 
-        public static string ToString(System.DateTime DateTimeObj)
+        public static string ToString(DateTime DateTimeObj)
         {
             try
             {
@@ -26,15 +26,15 @@ namespace Notus.Toolbox
                 return "19810125020000000";
             }
         }
-        public static System.DateTime ToDateTime(string DateTimeStr)
+        public static DateTime ToDateTime(string DateTimeStr)
         {
             try
             {
-                return System.DateTime.ParseExact(DateTimeStr.Substring(0, 17), "yyyyMMddHHmmssfff", System.Globalization.CultureInfo.InvariantCulture);
+                return DateTime.ParseExact(DateTimeStr.Substring(0, 17), "yyyyMMddHHmmssfff", System.Globalization.CultureInfo.InvariantCulture);
             }
             catch
             {
-                return new System.DateTime(1981, 01, 25, 2, 00, 00);
+                return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }
 

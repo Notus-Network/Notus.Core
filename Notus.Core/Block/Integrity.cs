@@ -63,11 +63,11 @@ namespace Notus.Block
         }
         private string[] GetZipFiles()
         {
-            if (Directory.Exists(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Block)) == false)
+            if (Directory.Exists(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Block)) == false)
             {
                 return new string[] { };
             }
-            return Directory.GetFiles(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Block), "*.zip");
+            return Directory.GetFiles(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Block), "*.zip");
         }
         private (Notus.Variable.Enum.BlockIntegrityStatus, Notus.Variable.Class.BlockData) ControlBlockIntegrity()
         {
@@ -309,7 +309,7 @@ namespace Notus.Block
 
             using (Notus.Mempool ObjMp_BlockOrder =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                    Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                     "block_order_list"
                 )
             )

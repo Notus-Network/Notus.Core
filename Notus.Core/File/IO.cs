@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 
-namespace Notus.Toolbox
+namespace Notus
 {
     public static class IO
     {
@@ -44,32 +44,32 @@ namespace Notus.Toolbox
         }
      
         */
-        public static string GetFolderName(Notus.Variable.Enum.NetworkType networkType, Notus.Variable.Enum.NetworkLayer networkLayer, string folderName)
+        public static string GetFolderName(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer, string folderName)
         {
             return
-                Notus.Network.Text.NetworkTypeText(networkType) +
-                System.IO.Path.DirectorySeparatorChar +
-                Notus.Network.Text.NetworkLayerText(networkLayer) +
-                System.IO.Path.DirectorySeparatorChar +
+                Network.Text.NetworkTypeText(networkType) +
+                Path.DirectorySeparatorChar +
+                Network.Text.NetworkLayerText(networkLayer) +
+                Path.DirectorySeparatorChar +
                 folderName +
-                System.IO.Path.DirectorySeparatorChar;
+                Path.DirectorySeparatorChar;
         }
         public static void CreateDirectory(string DirectoryName)
         {
             if (!Directory.Exists(DirectoryName))
                 Directory.CreateDirectory(DirectoryName);
         }
-        public static void NodeFolderControl(Notus.Variable.Enum.NetworkType networkType, Notus.Variable.Enum.NetworkLayer networkLayer)
+        public static void NodeFolderControl(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer)
         {
-            CreateDirectory(GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.Balance));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Balance));
 
-            CreateDirectory(GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.Block));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Block));
 
-            CreateDirectory(GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.Common));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Common));
 
-            CreateDirectory(GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.File));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.File));
 
-            CreateDirectory(GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.Node));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Node));
         }
     }
 }

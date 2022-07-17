@@ -27,7 +27,7 @@ namespace Notus.Wallet
         {
             using(
                 Notus.Mempool ObjMp_CryptoTranStatus= new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         WhichNetwork, WhichLayer, Notus.Variable.Constant.StorageFolderName.Common 
                     ) + "crypto_transfer_status")
             )

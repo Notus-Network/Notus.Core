@@ -109,7 +109,7 @@ namespace Notus.Validator
                     ImageWaterMarkTimerIsRunning = true;
                     using (Notus.Mempool ObjMp_FileStatus =
                         new Notus.Mempool(
-                            Notus.Toolbox.IO.GetFolderName(
+                            Notus.IO.GetFolderName(
                                 Obj_Settings.Network,
                                 Obj_Settings.Layer,
                                 Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -124,7 +124,7 @@ namespace Notus.Validator
                             {
                                 using (Notus.Mempool ObjMp_FileList =
                                     new Notus.Mempool(
-                                        Notus.Toolbox.IO.GetFolderName(
+                                        Notus.IO.GetFolderName(
                                             Obj_Settings.Network,
                                             Obj_Settings.Layer,
                                             Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -139,12 +139,12 @@ namespace Notus.Validator
                                     try
                                     {
                                         string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey);
-                                        string tmpOutputFileName = Notus.Toolbox.IO.GetFolderName(
+                                        string tmpOutputFileName = Notus.IO.GetFolderName(
                                             Obj_Settings.Network,
                                             Obj_Settings.Layer,
                                             Notus.Variable.Constant.StorageFolderName.Storage
                                         ) + tmpWalletKey + System.IO.Path.DirectorySeparatorChar;
-                                        Notus.Toolbox.IO.CreateDirectory(tmpOutputFileName);
+                                        Notus.IO.CreateDirectory(tmpOutputFileName);
                                         string fileExtensionStr = Path.GetExtension(tmpFileObj.FileName);
                                         string outputFileName = tmpOutputFileName + tmpStorageId + fileExtensionStr;
                                         FileStream fs = new FileStream(outputFileName, FileMode.Create, FileAccess.ReadWrite);
@@ -157,7 +157,7 @@ namespace Notus.Validator
                                             );
                                             using (Notus.Mempool ObjMp_FileChunkList =
                                                 new Notus.Mempool(
-                                                    Notus.Toolbox.IO.GetFolderName(
+                                                    Notus.IO.GetFolderName(
                                                         Obj_Settings.Network,
                                                         Obj_Settings.Layer,
                                                         Notus.Variable.Constant.StorageFolderName.File) + "chunk_list_" + tmpStorageNo.ToString()
@@ -172,7 +172,7 @@ namespace Notus.Validator
                                         }
                                         fs.Close();
                                         string destinationFileName = tmpOutputFileName + tmpStorageId + ".marked";
-                                        Notus.Toolbox.IO.AddWatermarkToImage(outputFileName, destinationFileName, tmpWalletKey, tmpFileObj.Level, !tmpFileObj.WaterMarkIsLight);
+                                        Notus.IO.AddWatermarkToImage(outputFileName, destinationFileName, tmpWalletKey, tmpFileObj.Level, !tmpFileObj.WaterMarkIsLight);
                                         ObjMp_FileStatus.Set(tmpStorageId, JsonSerializer.Serialize(Notus.Variable.Enum.BlockStatusCode.Completed));
                                         Console.WriteLine("Watermark Function Executed");
                                     }
@@ -203,7 +203,7 @@ namespace Notus.Validator
                     FileStorageTimerIsRunning = true;
                     using (Notus.Mempool ObjMp_FileStatus =
                         new Notus.Mempool(
-                            Notus.Toolbox.IO.GetFolderName(
+                            Notus.IO.GetFolderName(
                                 Obj_Settings.Network,
                                 Obj_Settings.Layer,
                                 Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -218,7 +218,7 @@ namespace Notus.Validator
                             {
                                 using (Notus.Mempool ObjMp_FileList =
                                     new Notus.Mempool(
-                                        Notus.Toolbox.IO.GetFolderName(
+                                        Notus.IO.GetFolderName(
                                             Obj_Settings.Network,
                                             Obj_Settings.Layer,
                                             Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -233,13 +233,13 @@ namespace Notus.Validator
                                     //try
                                     //{
                                     string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey);
-                                    string tmpOutputFolder = Notus.Toolbox.IO.GetFolderName(
+                                    string tmpOutputFolder = Notus.IO.GetFolderName(
                                         Obj_Settings.Network,
                                         Obj_Settings.Layer,
                                         Notus.Variable.Constant.StorageFolderName.Storage
                                     ) + tmpWalletKey + System.IO.Path.DirectorySeparatorChar +
                                     tmpStorageId + System.IO.Path.DirectorySeparatorChar;
-                                    Notus.Toolbox.IO.CreateDirectory(tmpOutputFolder);
+                                    Notus.IO.CreateDirectory(tmpOutputFolder);
                                     string outputFileName = tmpOutputFolder + tmpFileObj.FileName;
                                     using (FileStream fs = new FileStream(outputFileName, FileMode.Create, FileAccess.ReadWrite))
                                     {
@@ -252,7 +252,7 @@ namespace Notus.Validator
                                             );
                                             using (Notus.Mempool ObjMp_FileChunkList =
                                                 new Notus.Mempool(
-                                                    Notus.Toolbox.IO.GetFolderName(
+                                                    Notus.IO.GetFolderName(
                                                         Obj_Settings.Network,
                                                         Obj_Settings.Layer,
                                                         Notus.Variable.Constant.StorageFolderName.File) + "chunk_list_" + tmpStorageNo.ToString()
@@ -625,7 +625,7 @@ namespace Notus.Validator
                 Notus.Print.Basic(Obj_Settings, "Last Block Row No : " + Obj_Settings.LastBlock.info.rowNo.ToString());
                 using (Notus.Mempool ObjMp_BlockOrder =
                     new Notus.Mempool(
-                        Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                        Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                         "block_order_list"
                     )
                 )

@@ -62,8 +62,8 @@ namespace Notus.Validator
                 Obj_TransferStatusList = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
                 Obj_Balance.Settings = Obj_Settings;
                 Obj_Balance.Start();
-                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
-                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
+                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
+                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
 
                 ObjMp_CryptoTransfer.AsyncActive = false;
                 ObjMp_CryptoTranStatus.AsyncActive = false;
@@ -76,8 +76,8 @@ namespace Notus.Validator
                 Obj_TransferStatusList = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
                 Obj_Balance.Settings = Obj_Settings;
                 Obj_Balance.Start();
-                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
-                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
+                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
+                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
 
                 ObjMp_CryptoTransfer.AsyncActive = false;
                 ObjMp_CryptoTranStatus.AsyncActive = false;
@@ -90,8 +90,8 @@ namespace Notus.Validator
                 Obj_TransferStatusList = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
                 Obj_Balance.Settings = Obj_Settings;
                 Obj_Balance.Start();
-                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
-                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
+                ObjMp_CryptoTransfer = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer");
+                ObjMp_CryptoTranStatus = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) + "crypto_transfer_status");
 
                 ObjMp_CryptoTransfer.AsyncActive = false;
                 ObjMp_CryptoTranStatus.AsyncActive = false;
@@ -479,7 +479,7 @@ namespace Notus.Validator
             string tmpKeyPair = string.Empty;
             using (Notus.Mempool ObjMp_Genesis =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                    Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                     "genesis_accounts"
                 )
             )
@@ -496,7 +496,7 @@ namespace Notus.Validator
                     PrivateKey = KeyPair_PreSeed.PrivateKey,
                     Receiver = ReceiverWalletKey,
                     Sender = KeyPair_PreSeed.WalletKey,
-                    UnlockTime = Notus.Toolbox.Date.ToLong(DateTime.Now),
+                    UnlockTime = Date.ToLong(DateTime.Now),
                     Volume = "200000",
                     Network = Obj_Settings.Network,
                     CurveName = Notus.Variable.Constant.Default_EccCurveName
@@ -595,7 +595,7 @@ namespace Notus.Validator
             string tmpTransferIdKey = IncomeData.UrlList[3].ToLower();
             using (Notus.Mempool ObjMp_FileChunkList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -609,7 +609,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileStatus =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -632,7 +632,7 @@ namespace Notus.Validator
         {
             using (Notus.Mempool ObjMp_FileList =
                             new Notus.Mempool(
-                                Notus.Toolbox.IO.GetFolderName(
+                                Notus.IO.GetFolderName(
                                     Obj_Settings.Network,
                                     Obj_Settings.Layer,
                                     Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -669,7 +669,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileChunkList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "chunk_list_" + tmpStorageNo.ToString()
@@ -683,7 +683,7 @@ namespace Notus.Validator
             Notus.Variable.Struct.FileTransferStruct tmpFileObj = new Notus.Variable.Struct.FileTransferStruct();
             using (Notus.Mempool ObjMp_FileList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -732,7 +732,7 @@ namespace Notus.Validator
                     //Console.WriteLine("Status Update Key : " + tmpStorageIdKey);
                     using (Notus.Mempool ObjMp_FileStatus =
                         new Notus.Mempool(
-                            Notus.Toolbox.IO.GetFolderName(
+                            Notus.IO.GetFolderName(
                                 Obj_Settings.Network,
                                 Obj_Settings.Layer,
                                 Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -758,7 +758,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileStatus =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -813,7 +813,7 @@ namespace Notus.Validator
             string tmpTransferIdKey = Notus.Block.Key.Generate(true);
             using (Notus.Mempool ObjMp_FileChunkList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -827,7 +827,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileStatus =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -883,7 +883,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileChunkList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "chunk_list_" + tmpStorageNo.ToString()
@@ -897,7 +897,7 @@ namespace Notus.Validator
             Notus.Variable.Struct.FileTransferStruct tmpFileObj = new Notus.Variable.Struct.FileTransferStruct();
             using (Notus.Mempool ObjMp_FileList =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list"
@@ -940,7 +940,7 @@ namespace Notus.Validator
                     //Console.WriteLine("Status Update Key : " + tmpStorageIdKey);
                     using (Notus.Mempool ObjMp_FileStatus =
                         new Notus.Mempool(
-                            Notus.Toolbox.IO.GetFolderName(
+                            Notus.IO.GetFolderName(
                                 Obj_Settings.Network,
                                 Obj_Settings.Layer,
                                 Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -966,7 +966,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileStatus =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -1092,7 +1092,7 @@ namespace Notus.Validator
 
             using (Notus.Mempool ObjMp_FileStatus =
                 new Notus.Mempool(
-                    Notus.Toolbox.IO.GetFolderName(
+                    Notus.IO.GetFolderName(
                         Obj_Settings.Network,
                         Obj_Settings.Layer,
                         Notus.Variable.Constant.StorageFolderName.File) + "upload_list_status"
@@ -1647,12 +1647,12 @@ namespace Notus.Validator
         {
             string tmpWalletKey = IncomeData.UrlList[2];
 
-            string tmpListingDir = Notus.Toolbox.IO.GetFolderName(
+            string tmpListingDir = Notus.IO.GetFolderName(
                 Obj_Settings.Network,
                 Obj_Settings.Layer,
                 Notus.Variable.Constant.StorageFolderName.Storage
             ) + tmpWalletKey + System.IO.Path.DirectorySeparatorChar;
-            Notus.Toolbox.IO.CreateDirectory(tmpListingDir);
+            Notus.IO.CreateDirectory(tmpListingDir);
 
             List<string> imageListId = new List<string>();
             string[] fileLists = Directory.GetFiles(tmpListingDir, "*.*");
@@ -1671,12 +1671,12 @@ namespace Notus.Validator
 
         private string Request_NFTPublicImageDetail_SubFunction(string tmpWalletKey, string tmpStorageId)
         {
-            string tmpListingDir = Notus.Toolbox.IO.GetFolderName(
+            string tmpListingDir = Notus.IO.GetFolderName(
                 Obj_Settings.Network,
                 Obj_Settings.Layer,
                 Notus.Variable.Constant.StorageFolderName.Storage
             ) + tmpWalletKey + System.IO.Path.DirectorySeparatorChar;
-            Notus.Toolbox.IO.CreateDirectory(tmpListingDir);
+            Notus.IO.CreateDirectory(tmpListingDir);
 
             string[] fileLists = Directory.GetFiles(tmpListingDir, tmpStorageId + ".*");
             foreach (string fileName in fileLists)
@@ -1717,7 +1717,7 @@ namespace Notus.Validator
                 string signStr = "";
                 string timeStr = "";
 
-                string tmpListingDir = Notus.Toolbox.IO.GetFolderName(
+                string tmpListingDir = Notus.IO.GetFolderName(
                     Obj_Settings.Network,
                     Obj_Settings.Layer,
                     Notus.Variable.Constant.StorageFolderName.Storage
