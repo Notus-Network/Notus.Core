@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>4.0.55</Version>
+	  <Version>4.0.56</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -22,6 +22,9 @@
 	  <RepositoryType>git</RepositoryType>  </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Print\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -36,4 +39,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Print\" />
+  </ItemGroup>
 </Project>

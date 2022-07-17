@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Notus.Toolbox
+namespace Notus
 {
     public static class Print
     {
