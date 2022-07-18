@@ -355,9 +355,9 @@ namespace Notus.Block
             }
             catch (Exception err)
             {
-                Notus.Print.Danger(Settings.DebugMode, "Error -> Notus.Block.Queue");
-                Notus.Print.Danger(Settings.DebugMode, err.Message);
-                Notus.Print.Danger(Settings.DebugMode, "Error -> Notus.Block.Queue");
+                Notus.Debug.Print.Danger(Settings.DebugMode, "Error -> Notus.Block.Queue");
+                Notus.Debug.Print.Danger(Settings.DebugMode, err.Message);
+                Notus.Debug.Print.Danger(Settings.DebugMode, "Error -> Notus.Block.Queue");
             }
         }
     }

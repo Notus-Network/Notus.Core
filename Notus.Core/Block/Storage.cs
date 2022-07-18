@@ -131,7 +131,7 @@ namespace Notus.Block
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(DebugModeActivated, "Storage Error Text : " + err.Message);
+                Notus.Debug.Print.Basic(DebugModeActivated, "Storage Error Text : " + err.Message);
                 return (false, null);
             }
 

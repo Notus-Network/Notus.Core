@@ -77,7 +77,7 @@ namespace Notus.Validator
                     catch (Exception err)
                     {
                         errorCount++;
-                        Notus.Print.Basic(DebugModeActive, "Error Text [a9b467ce] : " + err.Message);
+                        Notus.Debug.Print.Basic(DebugModeActive, "Error Text [a9b467ce] : " + err.Message);
                     }
                 }
                 if (nodeCount > errorCount)

@@ -101,7 +101,7 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(DebugModeActive, err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                 ErrorText = err.Message;
             }
             return (false, ErrorText);
@@ -126,7 +126,7 @@ namespace Notus.Communication
                 }
                 catch (Exception err)
                 {
-                    Notus.Print.Basic(DebugModeActive, err.Message);
+                    Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                     ErrorText = err.Message;
                 }
             }

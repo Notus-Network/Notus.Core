@@ -198,11 +198,11 @@ namespace Notus.Communication
             }
             catch (System.Net.Sockets.SocketException err)
             {
-                Notus.Print.Basic(DebugModeActive, "Error text [ 9870 ] : " + err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, "Error text [ 9870 ] : " + err.Message);
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(DebugModeActive, "Error text [ 9870 ] : " + err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, "Error text [ 9870 ] : " + err.Message);
             }
         }
 
@@ -275,7 +275,7 @@ namespace Notus.Communication
             }
             catch (System.Net.Sockets.SocketException err)
             {
-                Notus.Print.Basic(DebugModeActive, err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                 if (OnErrorFunctionDefined == true)
                 {
                     OnErrorFunctionObj(3568, err.ToString());
@@ -283,7 +283,7 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(DebugModeActive, err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                 if (OnErrorFunctionDefined == true)
                 {
                     OnErrorFunctionObj(3568, err.ToString());
@@ -309,7 +309,7 @@ namespace Notus.Communication
                             }
                             catch (System.Net.Sockets.SocketException err)
                             {
-                                Notus.Print.Basic(DebugModeActive, err.Message);
+                                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                                 if (OnErrorFunctionDefined == true)
                                 {
                                     OnErrorFunctionObj(97864, err.ToString());
@@ -317,7 +317,7 @@ namespace Notus.Communication
                             }
                             catch (Exception err)
                             {
-                                Notus.Print.Basic(DebugModeActive, err.Message);
+                                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                                 if (OnErrorFunctionDefined == true)
                                 {
                                     OnErrorFunctionObj(129064, err.ToString());
@@ -338,7 +338,7 @@ namespace Notus.Communication
                         }
                         catch (System.Net.Sockets.SocketException err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
 
                             if (OnErrorFunctionDefined == true)
                             {
@@ -347,7 +347,7 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
 
                             if (OnErrorFunctionDefined == true)
                             {
@@ -416,7 +416,7 @@ namespace Notus.Communication
                                 }
                                 catch (System.Net.Sockets.SocketException err4)
                                 {
-                                    Notus.Print.Basic(DebugModeActive, err4.Message);
+                                    Notus.Debug.Print.Basic(DebugModeActive, err4.Message);
                                     if (OnErrorFunctionDefined == true)
                                     {
                                         OnErrorFunctionObj(88556325, err4.ToString());
@@ -428,7 +428,7 @@ namespace Notus.Communication
                                 }
                                 catch (Exception err6)
                                 {
-                                    Notus.Print.Basic(DebugModeActive, err6.Message);
+                                    Notus.Debug.Print.Basic(DebugModeActive, err6.Message);
                                     if (OnErrorFunctionDefined == true)
                                     {
                                         OnErrorFunctionObj(532197753, err6.ToString());
@@ -466,7 +466,7 @@ namespace Notus.Communication
                                     }
                                     catch (Exception err2)
                                     {
-                                        Notus.Print.Basic(DebugModeActive, err2.Message);
+                                        Notus.Debug.Print.Basic(DebugModeActive, err2.Message);
                                         if (OnErrorFunctionDefined == true)
                                         {
                                             OnErrorFunctionObj(22165, err2.ToString());
@@ -487,7 +487,7 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
                                 OnErrorFunctionObj(09817, err.ToString());
@@ -534,7 +534,7 @@ namespace Notus.Communication
                         }
                         catch (System.Net.Sockets.SocketException err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
                                 OnErrorFunctionObj(220983, err.ToString());
@@ -542,7 +542,7 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
                                 OnErrorFunctionObj(0987536, err.ToString());
@@ -606,7 +606,7 @@ namespace Notus.Communication
                     }
                     catch (System.Net.Sockets.SocketException err)
                     {
-                        Notus.Print.Basic(DebugModeActive, err.Message);
+                        Notus.Debug.Print.Basic(DebugModeActive, err.Message);
 
                         if (OnErrorFunctionDefined == true)
                         {
@@ -615,7 +615,7 @@ namespace Notus.Communication
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Basic(DebugModeActive, err.Message);
+                        Notus.Debug.Print.Basic(DebugModeActive, err.Message);
 
                         if (OnErrorFunctionDefined == true)
                         {
@@ -659,7 +659,7 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Basic(DebugModeActive, err.Message);
+                            Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
                                 OnErrorFunctionObj(22165, err.ToString());
@@ -698,7 +698,7 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(DebugModeActive, err.Message);
+                Notus.Debug.Print.Basic(DebugModeActive, err.Message);
                 if (OnErrorFunctionDefined == true)
                 {
                     OnErrorFunctionObj(5326, err.ToString());

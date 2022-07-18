@@ -41,7 +41,7 @@ namespace Notus.Wallet
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                        Notus.Debug.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                     }
                 }
             }

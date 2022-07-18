@@ -76,7 +76,7 @@ namespace Notus.Prepare
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                        Notus.Debug.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                         return new Notus.Variable.Struct.BlockResponseStruct()
                         {
                             UID = "",

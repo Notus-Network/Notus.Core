@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>4.0.59</Version>
+	  <Version>4.0.60</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -40,6 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Print\" />
+    <Folder Include="Debug\" />
   </ItemGroup>
 </Project>
