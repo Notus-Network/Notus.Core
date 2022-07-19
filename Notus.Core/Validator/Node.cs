@@ -44,11 +44,11 @@ namespace Notus.Validator
         {
             if (NodeSettings.LocalNode == true)
             {
-                Notus.Debug.Print.Info(NodeSettings.InfoMode, "LocalNode Activated");
+                Notus.Print.Info(NodeSettings.InfoMode, "LocalNode Activated");
             }
             Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
 
-            Notus.Debug.Print.Info(NodeSettings.InfoMode, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
+            Notus.Print.Info(NodeSettings.InfoMode, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
             NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);
             switch (NodeSettings.NodeType)
             {
@@ -67,7 +67,7 @@ namespace Notus.Validator
                 default:
                     break;
             }
-            Notus.Debug.Print.Warning(NodeSettings, "Task Ended");
+            Notus.Print.Warning(NodeSettings, "Task Ended");
         }
         private static void StartAsMaster(Notus.Variable.Common.ClassSetting NodeSettings)
         {
@@ -86,7 +86,7 @@ namespace Notus.Validator
                     MainObj.Start();
                 }
 
-                Notus.Debug.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
+                Notus.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
                 Thread.Sleep(2500);
             }
         }
@@ -106,7 +106,7 @@ namespace Notus.Validator
                 }
                 catch (Exception err)
                 {
-                    Notus.Debug.Print.Danger(NodeSettings, "Replicant Outer Error Text : " + err.Message);
+                    Notus.Print.Danger(NodeSettings, "Replicant Outer Error Text : " + err.Message);
                 }
             }
         }

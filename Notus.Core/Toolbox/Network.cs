@@ -17,14 +17,14 @@ namespace Notus.Toolbox
             Obj_Settings.IpInfo = Notus.Toolbox.Network.GetNodeIP();
             if (Obj_Settings.LocalNode == true)
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Starting As Main Node");
+                Notus.Print.Basic(Obj_Settings, "Starting As Main Node");
                 Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Main;
                 return Obj_Settings;
             }
 
             if (Notus.Variable.Constant.ListMainNodeIp.IndexOf(Obj_Settings.IpInfo.Public) >= 0)
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Starting As Main Node");
+                Notus.Print.Basic(Obj_Settings, "Starting As Main Node");
                 if (PublicIpIsConnectable(Obj_Settings, Timeout))
                 {
                     Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Main;
@@ -32,19 +32,19 @@ namespace Notus.Toolbox
                 }
                 else
                 {
-                    Notus.Debug.Print.Basic(Obj_Settings, "Main Node Port Error");
+                    Notus.Print.Basic(Obj_Settings, "Main Node Port Error");
                 }
             }
-            Notus.Debug.Print.Basic(Obj_Settings, "Not Main Node");
+            Notus.Print.Basic(Obj_Settings, "Not Main Node");
 
             if (PublicIpIsConnectable(Obj_Settings, Timeout))
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Starting As Master Node");
+                Notus.Print.Basic(Obj_Settings, "Starting As Master Node");
                 Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Master;
                 return Obj_Settings;
             }
-            Notus.Debug.Print.Basic(Obj_Settings, "Not Master Node");
-            Notus.Debug.Print.Basic(Obj_Settings, "Starting As Replicant Node");
+            Notus.Print.Basic(Obj_Settings, "Not Master Node");
+            Notus.Print.Basic(Obj_Settings, "Starting As Replicant Node");
             Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Replicant;
             return Obj_Settings;
         }
@@ -237,7 +237,7 @@ namespace Notus.Toolbox
                         }
                         catch (Exception errInner)
                         {
-                            Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error [75fde6374]: " + errInner.Message);
+                            Notus.Print.Basic(Obj_Settings.DebugMode, "Error [75fde6374]: " + errInner.Message);
                         }
                     }
                     if (tmp_HttpObj.Started == false)
@@ -249,7 +249,7 @@ namespace Notus.Toolbox
             }
             catch (Exception err)
             {
-                Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error [065]: " + err.Message);
+                Notus.Print.Basic(Obj_Settings.DebugMode, "Error [065]: " + err.Message);
                 Error_TestIpAddress = true;
             }
             if (Error_TestIpAddress == true)

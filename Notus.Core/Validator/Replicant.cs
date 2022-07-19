@@ -28,7 +28,7 @@ namespace Notus.Validator
 
         private void GetBlockFromNode(string NodeAddress, Int64 BlockRowNo, bool AssingToLastBlockVar)
         {
-            Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + BlockRowNo.ToString());
+            Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + BlockRowNo.ToString());
             bool exitWhileLoop = false;
             while (exitWhileLoop == false)
             {
@@ -52,7 +52,7 @@ namespace Notus.Validator
         public void Start()
         {
             Notus.IO.NodeFolderControl(Obj_Settings.Network, Obj_Settings.Layer);
-            Notus.Debug.Print.Basic(Obj_Settings, "Replicant Started");
+            Notus.Print.Basic(Obj_Settings, "Replicant Started");
             AllMasterList.Clear();
             bool stayInTheLoop = true;
             // burada main node'lardaki en küçük row numarası alınıyor...
@@ -94,14 +94,14 @@ namespace Notus.Validator
             if (validBlock == true)
             {
                 Obj_Settings.LastBlock = tmpLastBlock;
-                Notus.Debug.Print.Basic(Obj_Settings, "All Blocks Valid");
+                Notus.Print.Basic(Obj_Settings, "All Blocks Valid");
             }
             else
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Non-Valid Blocks");
+                Notus.Print.Basic(Obj_Settings, "Non-Valid Blocks");
                 if (notEmpty == true && tmpMasterList.Count > 0)
                 {
-                    Notus.Debug.Print.Basic(Obj_Settings, "Smallest block height : " + smallestBlockRownNo.ToString());
+                    Notus.Print.Basic(Obj_Settings, "Smallest block height : " + smallestBlockRownNo.ToString());
                     bool tmpDefinedLastBlock = false;
                     for (Int64 i = smallestBlockRownNo; i > 0; i--)
                     {
@@ -118,7 +118,7 @@ namespace Notus.Validator
                 }
                 else
                 {
-                    Notus.Debug.Print.Basic(Obj_Settings, "Last Block reading issues");
+                    Notus.Print.Basic(Obj_Settings, "Last Block reading issues");
                     //Console.ReadLine();
                 }
             }
@@ -138,36 +138,36 @@ namespace Notus.Validator
                     LastPrintTime = DateTime.Now;
                     if (Obj_Settings.LastBlock.info.rowNo == MN_LastBlockRowNo)
                     {
-                        Notus.Debug.Print.Basic(Obj_Settings, "Checking Block Height");
+                        Notus.Print.Basic(Obj_Settings, "Checking Block Height");
                         (bool tmpNoError, Notus.Variable.Struct.LastBlockInfo tmpLastBlockInfo) = Notus.Validator.Query.GetLastBlockInfo(NodeAddress);
                         if (tmpNoError == true)
                         {
                             if (MN_LastBlockRowNo == tmpLastBlockInfo.RowNo)
                             {
-                                Notus.Debug.Print.Basic(Obj_Settings, "Chain Could Not Change");
+                                Notus.Print.Basic(Obj_Settings, "Chain Could Not Change");
                                 SleepWithoutBlocking(5, false);
                             }
                             else
                             {
                                 MN_LastBlockRowNo = tmpLastBlockInfo.RowNo;
-                                Notus.Debug.Print.Basic(Obj_Settings, "There Are New Blocks");
+                                Notus.Print.Basic(Obj_Settings, "There Are New Blocks");
                             }
                         }
                         else
                         {
-                            Notus.Debug.Print.Basic(Obj_Settings, "Last Block Row Number Could Not Get");
+                            Notus.Print.Basic(Obj_Settings, "Last Block Row Number Could Not Get");
                             SleepWithoutBlocking(2, false);
                         }
                     }
                     else
                     {
-                        Notus.Debug.Print.Basic(Obj_Settings, "Block Sync Starting");
+                        Notus.Print.Basic(Obj_Settings, "Block Sync Starting");
                         bool SyncCompleted = false;
                         while (SyncCompleted == false)
                         {
                             if (Obj_Settings.LastBlock.info.rowNo == MN_LastBlockRowNo)
                             {
-                                Notus.Debug.Print.Basic(Obj_Settings, "Block Sync Finished");
+                                Notus.Print.Basic(Obj_Settings, "Block Sync Finished");
                                 SyncCompleted = true;
                             }
                             else

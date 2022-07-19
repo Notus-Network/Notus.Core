@@ -67,7 +67,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Debug.Print.Basic(DebugModeActive, "Error Text [90ecab593] : " + err.Message);
+                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab593] : " + err.Message);
             }
 
             SqlObj.Select("key_value",
@@ -194,8 +194,8 @@ namespace Notus
                 }
                 catch (Exception err)
                 {
-                    Notus.Debug.Print.Basic(DebugModeActive, "Error Text [90ecab567]   : " + err.Message);
-                    Notus.Debug.Print.Basic(DebugModeActive, "Mempool Name [90ecab567] : " + PoolNameForDb);
+                    Notus.Print.Basic(DebugModeActive, "Error Text [90ecab567]   : " + err.Message);
+                    Notus.Print.Basic(DebugModeActive, "Mempool Name [90ecab567] : " + PoolNameForDb);
                 }
             }
             return false;
@@ -370,7 +370,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Debug.Print.Basic(DebugModeActive, "Error Text [90ecab524] : " + err.Message);
+                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab524] : " + err.Message);
                 return "19810125020000000";
             }
         }
@@ -382,7 +382,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Debug.Print.Basic(DebugModeActive, "Error Text [90ecab547] : " + err.Message);
+                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab547] : " + err.Message);
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }

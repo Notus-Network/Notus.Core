@@ -55,7 +55,7 @@ namespace Notus.Block
                     catch (Exception err)
                     {
 
-                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error Text [7abc63]: " + err.Message);
+                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [7abc63]: " + err.Message);
                     }
                 }
             }
@@ -78,7 +78,7 @@ namespace Notus.Block
 
             if (ZipFileList.Length == 0)
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = GenesisNeed");
+                Notus.Print.Basic(Obj_Settings, "Block Integrity = GenesisNeed");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.GenesisNeed, null);
             }
             SortedDictionary<long, string> BlockOrderList = new SortedDictionary<long, string>();
@@ -116,19 +116,19 @@ namespace Notus.Block
                                         bool Val_BlockVerify = BlockValidateObj.Verify(ControlBlock);
                                         if (Val_BlockVerify == false)
                                         {
-                                            Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = NonValid");
+                                            Notus.Print.Basic(Obj_Settings, "Block Integrity = NonValid");
                                         }
                                         else
                                         {
                                             if (BlockOrderList.ContainsKey(ControlBlock.info.rowNo))
                                             {
-                                                Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = MultipleHeight");
+                                                Notus.Print.Basic(Obj_Settings, "Block Integrity = MultipleHeight");
                                             }
                                             else
                                             {
                                                 if (BlockPreviousList.ContainsKey(ControlBlock.info.uID))
                                                 {
-                                                    Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = MultipleId");
+                                                    Notus.Print.Basic(Obj_Settings, "Block Integrity = MultipleId");
                                                 }
                                                 else
                                                 {
@@ -162,7 +162,7 @@ namespace Notus.Block
                                     }
                                     catch (Exception err)
                                     {
-                                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error Text [235abc]: " + err.Message);
+                                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [235abc]: " + err.Message);
                                     }
                                 }
                             }
@@ -187,13 +187,13 @@ namespace Notus.Block
                             }
                         }
                     }
-                    Notus.Debug.Print.Basic(Obj_Settings, "Extra Data Was Deleted");
+                    Notus.Print.Basic(Obj_Settings, "Extra Data Was Deleted");
                 }
             }
 
             if (SmallestBlockHeight > 1)
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Missing Block Available");
+                Notus.Print.Basic(Obj_Settings, "Missing Block Available");
                 bool exitInnerLoop = false;
                 while (exitInnerLoop == false)
                 {
@@ -209,7 +209,7 @@ namespace Notus.Block
                             Obj_Settings.NodeType != Notus.Variable.Enum.NetworkNodeType.Master
                         )
                         {
-                            Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
+                            Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
                             StoreBlockWithRowNo(SmallestBlockHeight);
                         }
                         else
@@ -235,7 +235,7 @@ namespace Notus.Block
                         Obj_Settings.NodeType != Notus.Variable.Enum.NetworkNodeType.Master
                     )
                     {
-                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
+                        Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
                         StoreBlockWithRowNo(controlNumber);
                     }
                     else
@@ -302,10 +302,10 @@ namespace Notus.Block
             }
             if (prevBlockRownNumberError == true)
             {
-                Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = WrongBlockOrder");
+                Notus.Print.Basic(Obj_Settings, "Block Integrity = WrongBlockOrder");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.WrongBlockOrder, null);
             }
-            Notus.Debug.Print.Basic(Obj_Settings, "Block Integrity = Valid");
+            Notus.Print.Basic(Obj_Settings, "Block Integrity = Valid");
 
             using (Notus.Mempool ObjMp_BlockOrder =
                 new Notus.Mempool(
@@ -365,7 +365,7 @@ namespace Notus.Block
                     }
                     catch (Exception err)
                     {
-                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error Text [96a3c2]: " + err.Message);
+                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [96a3c2]: " + err.Message);
                         Thread.Sleep(5000);
                     }
                 }
@@ -404,8 +404,8 @@ namespace Notus.Block
                     }
                     catch (Exception err)
                     {
-                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Error Text [5a6e84]: " + err.Message);
-                        Notus.Debug.Print.Basic(Obj_Settings.DebugMode, "Income Text [5a6e84]: " + MainResultStr);
+                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [5a6e84]: " + err.Message);
+                        Notus.Print.Basic(Obj_Settings.DebugMode, "Income Text [5a6e84]: " + MainResultStr);
                     }
                 }
             }

@@ -110,7 +110,7 @@ namespace Notus.Wallet
                         }
                         catch (Exception err)
                         {
-                            Notus.Debug.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                            Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                             Thread.Sleep(1000);
                         }
                         if (whichNodeIpAddress != "")
@@ -126,7 +126,7 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
-                Notus.Debug.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
+                Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()
             {
