@@ -289,11 +289,12 @@ namespace Notus.Validator
         }
         public string Process(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
             return ProcessIncomeData(IncomeData.PostParams["data"]);
         }
         private string ProcessIncomeData(string IncomeData)
         {
+            Console.WriteLine(IncomeData);
             if (CheckXmlTag(IncomeData, "hash"))
             {
                 IncomeData = GetPureText(IncomeData, "hash");
@@ -418,6 +419,8 @@ namespace Notus.Validator
         }
         private void MainLoop()
         {
+
+            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
             while (ExitFromLoop == false)
             {
                 //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
@@ -640,7 +643,6 @@ namespace Notus.Validator
         {
             Task.Run(() =>
             {
-                //StartListening();
                 MainLoop();
             });
         }

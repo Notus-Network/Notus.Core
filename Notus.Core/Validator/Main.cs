@@ -692,6 +692,7 @@ namespace Notus.Validator
 
             ValidatorQueueObj.Settings = Obj_Settings;
             ValidatorQueueObj.PreStart();
+            ValidatorQueueObj.Start();
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
             {
@@ -885,12 +886,12 @@ namespace Notus.Validator
             if (string.Equals(resultData, "queue-data"))
             {
                 resultData = ValidatorQueueObj.Process(IncomeData);
+                //Console.WriteLine("------------------------------------------------");
+                //Console.WriteLine("Notus.Node.Validator.Main -> Line 520");
+                Console.WriteLine(resultData);
+                //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
+                Console.WriteLine("------------------------------------------------");
             }
-            Console.WriteLine("------------------------------------------------");
-            Console.WriteLine("Notus.Node.Validator.Main -> Line 520");
-            Console.WriteLine(resultData);
-            //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
-            Console.WriteLine("------------------------------------------------");
             return resultData;
         }
 
