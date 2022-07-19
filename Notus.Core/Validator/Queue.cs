@@ -349,6 +349,7 @@ namespace Notus.Validator
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
+            Console.WriteLine("out : " + messageText);
             string urlPath=Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo)+ "node/queue";
             string incodeResponse=Notus.Communication.Request.PostSync(urlPath, new Dictionary<string, string>()
             {
