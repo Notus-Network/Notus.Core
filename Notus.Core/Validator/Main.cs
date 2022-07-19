@@ -689,6 +689,9 @@ namespace Notus.Validator
             Obj_BlockQueue.Settings.LastBlock = Obj_Settings.LastBlock;
             //BlockStatObj = Obj_BlockQueue.CurrentBlockStatus();
             Start_HttpListener();
+
+            ValidatorQueueObj.Settings = Obj_Settings;
+            ValidatorQueueObj.PreStart();
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
             {
@@ -751,7 +754,7 @@ namespace Notus.Validator
 
                     //blok sıra ve önceki değerleri düzenleniyor...
                     PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
-                    
+
                     Notus.Print.Basic(Obj_Settings, "NodeOrder : " + NodeOrder.ToString());
                     Notus.Variable.Class.BlockData PreparedBlockData = new Notus.Block.Generate(Obj_Settings.NodeWallet.WalletKey).Make(PreBlockData, 1000);
                     Obj_BlockQueue.Settings.LastBlock = PreparedBlockData;
@@ -877,10 +880,17 @@ namespace Notus.Validator
         private string Fnc_OnReceiveData(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
             string resultData = Obj_Api.Interpret(IncomeData);
-            //Console.WriteLine("------------------------------------------------");
-            //Console.WriteLine("Notus.Node.Validator.Main -> Line 520");
+
+            // node ağına katılan için yapılan istek, bunu sorguyu Queue Class'ına gönder
+            if (string.Equals(resultData, "queue-data"))
+            {
+                resultData = ValidatorQueueObj.Process(IncomeData);
+            }
+            Console.WriteLine("------------------------------------------------");
+            Console.WriteLine("Notus.Node.Validator.Main -> Line 520");
+            Console.WriteLine(resultData);
             //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
-            //Console.WriteLine("------------------------------------------------");
+            Console.WriteLine("------------------------------------------------");
             return resultData;
         }
 

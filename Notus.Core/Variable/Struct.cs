@@ -444,4 +444,35 @@ namespace Notus.Variable.Struct
         public string Uid { get; set; }             // short name
     }
 
+
+
+    public enum NodeStatus
+    {
+        Unknown = 999,
+        Online = 1,
+        Offline = 2,
+        Error = 3
+    }
+    public class IpInfo
+    {
+        public string IpAddress { get; set; }
+        public int Port { get; set; }
+    }
+    public class NodeQueueInfo_Time
+    {
+        public DateTime Error { get; set; }             // node ile alınan zaman bilgisi
+        public DateTime World { get; set; }             // node ile alınan zaman bilgisi
+        public DateTime Node { get; set; }             // node ile alınan zaman bilgisi
+    }
+    public class NodeQueueInfo
+    {
+        public bool InTheCode { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
+        public IpInfo IP { get; set; }
+        public NodeStatus Status { get; set; }
+        public string Wallet { get; set; }                  // node'un cüzdan adresi
+        public string NodeHash { get; set; }                // nodu'un elindeki listenin özeti
+        public NodeQueueInfo_Time Time { get; set; }             // node'un son hata verme zamanı
+        public int ErrorCount { get; set; }                 // node'un verdiği error sayısı peşpeşe 10 olursa, kontrol sıklığı azalacak
+    }
 }
+

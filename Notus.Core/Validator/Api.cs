@@ -145,8 +145,6 @@ namespace Notus.Validator
 
         public string Interpret(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            /*
-            */
             if (PrepareExecuted == false)
             {
                 Prepare();
@@ -161,7 +159,6 @@ namespace Notus.Validator
             {
                 return JsonSerializer.Serialize(false);
             }
-
 
             if (IncomeData.UrlList.Length > 2)
             {
@@ -471,6 +468,22 @@ namespace Notus.Validator
                     }
                 }
             }
+
+            // bu veri API class'ı tarafından değil, Queue Class'ı tarafından yorumlanacak
+            if (IncomeData.UrlList.Length > 1)
+            {
+                if (
+                    string.Equals(IncomeData.UrlList[0].ToLower(), "node")
+                    &&
+                    string.Equals(IncomeData.UrlList[0].ToLower(), "queue")
+                    &&
+                    IncomeData.PostParams.ContainsKey("data")
+                )
+                {
+                    return "queue-data";
+                }
+            }
+
             return JsonSerializer.Serialize(false);
         }
 
