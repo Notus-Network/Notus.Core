@@ -881,16 +881,16 @@ namespace Notus.Validator
         private string Fnc_OnReceiveData(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
             string resultData = Obj_Api.Interpret(IncomeData);
-
+            //Console.WriteLine("resultData : " + resultData);
             // node ağına katılan için yapılan istek, bunu sorguyu Queue Class'ına gönder
             if (string.Equals(resultData, "queue-data"))
             {
                 resultData = ValidatorQueueObj.Process(IncomeData);
                 //Console.WriteLine("------------------------------------------------");
                 //Console.WriteLine("Notus.Node.Validator.Main -> Line 520");
-                Console.WriteLine(resultData);
+                //Console.WriteLine(resultData);
                 //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
-                Console.WriteLine("------------------------------------------------");
+                //Console.WriteLine("------------------------------------------------");
             }
             return resultData;
         }

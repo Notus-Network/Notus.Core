@@ -15,6 +15,12 @@ namespace Notus.Validator
             get { return Obj_Settings; }
             set { Obj_Settings = value; }
         }
+        private bool Val_Ready;
+        public bool Ready
+        {
+            get { return Val_Ready; }
+            set { Val_Ready = value; }
+        }
         //private bool LocalNode = false;
         private bool MyTurn = false;
         private bool SyncReady = true;
@@ -29,11 +35,9 @@ namespace Notus.Validator
         private Dictionary<string, DateTime> MessageTimeList = new Dictionary<string, DateTime>();
         private Dictionary<int, string> NodeOrderList = new Dictionary<int, string>();
 
-        private readonly string MessageEndText = "</EOF>";
         private readonly DateTime DefaultTime = new DateTime(2000, 01, 1, 0, 00, 00);
         private Notus.Mempool ObjMp_NodeList;
         private bool ExitFromLoop = false;
-        private string IncomeData = null;
         private string LastHashForStoreList = "#####";
         private string NodeListHash = "#";
 
@@ -62,7 +66,6 @@ namespace Notus.Validator
         {
             return Notus.Variable.Enum.ValidatorOrder.Primary;
         }
-
 
         private void RefreshNtpTime()
         {
@@ -287,18 +290,18 @@ namespace Notus.Validator
             rawDataStr = rawDataStr.Replace("</" + tagName + ">", "");
             return rawDataStr;
         }
-        public string Process(Notus.Variable.Struct.HttpRequestDetails IncomeData)
+        public string Process(Notus.Variable.Struct.HttpRequestDetails incomeData)
         {
             //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
-            return ProcessIncomeData(IncomeData.PostParams["data"]);
+            return ProcessIncomeData(incomeData.PostParams["data"]);
         }
-        private string ProcessIncomeData(string IncomeData)
+        private string ProcessIncomeData(string incomeData)
         {
-            Console.WriteLine(IncomeData);
-            if (CheckXmlTag(IncomeData, "hash"))
+            //Console.WriteLine("in : " + incomeData);
+            if (CheckXmlTag(incomeData, "hash"))
             {
-                IncomeData = GetPureText(IncomeData, "hash");
-                string[] tmpHashPart = IncomeData.Split(':');
+                incomeData = GetPureText(incomeData, "hash");
+                string[] tmpHashPart = incomeData.Split(':');
                 if (string.Equals(tmpHashPart[0], MainAddressListHash.Substring(0, 20)) == false)
                 {
                     return "1";
@@ -310,10 +313,10 @@ namespace Notus.Validator
                 }
                 return "0";
             }
-            if (CheckXmlTag(IncomeData, "time"))
+            if (CheckXmlTag(incomeData, "time"))
             {
-                IncomeData = GetPureText(IncomeData, "time");
-                NextQueueValidNtpTime = Notus.Date.ToDateTime(IncomeData);
+                incomeData = GetPureText(incomeData, "time");
+                NextQueueValidNtpTime = Notus.Date.ToDateTime(incomeData);
                 /*
                 CalculateTimeDifference(false);
                 NodeList[MyNodeHexKey].Time.Node = NtpCheckTime;
@@ -321,12 +324,12 @@ namespace Notus.Validator
                 */
                 return "ok";
             }
-            if (CheckXmlTag(IncomeData, "node"))
+            if (CheckXmlTag(incomeData, "node"))
             {
-                IncomeData = GetPureText(IncomeData, "node");
+                incomeData = GetPureText(incomeData, "node");
                 try
                 {
-                    NodeQueueInfo tmpNodeQueueInfo = JsonSerializer.Deserialize<NodeQueueInfo>(IncomeData);
+                    NodeQueueInfo tmpNodeQueueInfo = JsonSerializer.Deserialize<NodeQueueInfo>(incomeData);
                     AddToNodeList(tmpNodeQueueInfo);
                 }
                 catch
@@ -335,10 +338,10 @@ namespace Notus.Validator
                 }
                 return "<node>" + JsonSerializer.Serialize(NodeList[MyNodeHexKey]) + "</node>";
             }
-            if (CheckXmlTag(IncomeData, "list"))
+            if (CheckXmlTag(incomeData, "list"))
             {
-                IncomeData = GetPureText(IncomeData, "list");
-                SortedDictionary<string, IpInfo> tmpNodeList = JsonSerializer.Deserialize<SortedDictionary<string, IpInfo>>(IncomeData);
+                incomeData = GetPureText(incomeData, "list");
+                SortedDictionary<string, IpInfo> tmpNodeList = JsonSerializer.Deserialize<SortedDictionary<string, IpInfo>>(incomeData);
                 foreach (KeyValuePair<string, IpInfo> entry in tmpNodeList)
                 {
                     AddToMainAddressList(entry.Value.IpAddress, entry.Value.Port, true);
@@ -349,9 +352,10 @@ namespace Notus.Validator
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
-            Console.WriteLine("out : " + messageText);
-            string urlPath=Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo)+ "node/queue";
-            string incodeResponse=Notus.Communication.Request.PostSync(urlPath, new Dictionary<string, string>()
+            //Console.WriteLine("out : " + messageText);
+            string urlPath=Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo)+ "queue/node";
+            //Console.WriteLine(urlPath);
+            string incodeResponse =Notus.Communication.Request.PostSync(urlPath, new Dictionary<string, string>()
             {
                 { "data",messageText }
             });
@@ -532,6 +536,7 @@ namespace Notus.Validator
 
                 if (SyncReady == true)
                 {
+                    Val_Ready = true;
                     if (LastHashForStoreList != NodeListHash)
                     {
                         CalculateTimeDifference(true);
@@ -646,6 +651,12 @@ namespace Notus.Validator
             {
                 MainLoop();
             });
+            
+            Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Node Sync", false);
+            while (Val_Ready == false)
+            {
+
+            }
         }
 
         public void PreStart()

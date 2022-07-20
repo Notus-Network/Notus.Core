@@ -473,9 +473,9 @@ namespace Notus.Validator
             if (IncomeData.UrlList.Length > 1)
             {
                 if (
-                    string.Equals(IncomeData.UrlList[0].ToLower(), "node")
-                    &&
                     string.Equals(IncomeData.UrlList[0].ToLower(), "queue")
+                    &&
+                    string.Equals(IncomeData.UrlList[1].ToLower(), "node")
                     &&
                     IncomeData.PostParams.ContainsKey("data")
                 )

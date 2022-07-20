@@ -27,6 +27,7 @@ namespace Notus.Communication
         }        
         public static string PostSync(string UrlAddress, Dictionary<string, string> PostData, int TimeOut = 0, bool UseTimeoutAsSecond = true)
         {
+            //Console.WriteLine(UrlAddress);
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(PostData);
             try
             {
@@ -46,9 +47,10 @@ namespace Notus.Communication
                 }
             }catch(Exception err)
             {
-				//PrintDanger(ShowError,"Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
-                Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 606");
-                // Console.WriteLine(err.Message);
+
+                Notus.Print.Danger(true,"Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
+                //Console.WriteLine("Notus.Core.Function.PostRequestSync -> Line 606");
+                //Console.WriteLine(err.Message);
             }
             return string.Empty;
         }
