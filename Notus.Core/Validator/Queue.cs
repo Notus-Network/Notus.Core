@@ -651,12 +651,6 @@ namespace Notus.Validator
             {
                 MainLoop();
             });
-            
-            Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Node Sync", false);
-            while (Val_Ready == false)
-            {
-
-            }
         }
 
         public void PreStart()

@@ -693,6 +693,13 @@ namespace Notus.Validator
             ValidatorQueueObj.Settings = Obj_Settings;
             ValidatorQueueObj.PreStart();
             ValidatorQueueObj.Start();
+            Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Node Sync", false);
+            Console.WriteLine("Waiting For Node Sync");
+            while (ValidatorQueueObj.Ready == false)
+            {
+
+            }
+
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
             {
