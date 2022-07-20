@@ -26,8 +26,8 @@ namespace Notus.Block
 
         public static GenesisBlockData GetGenesis_SubFunction(string CreatorWalletKey, bool EncryptKeyPair, Notus.Variable.Enum.NetworkType NetworkType, Notus.Variable.Enum.NetworkLayer NetworkLayer)
         {
-            DateTime GenerationTime = DateTime.Now;
-            string EncKey = GenerationTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
+            DateTime generationTime = Notus.Time.GetFromNtpServer();
+            string EncKey = generationTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
             Notus.Variable.Struct.EccKeyPair KeyPair_PreSeed = Notus.Wallet.ID.GenerateKeyPair(SelectedCurveName, NetworkType);
             Notus.Variable.Struct.EccKeyPair KeyPair_Private = Notus.Wallet.ID.GenerateKeyPair(SelectedCurveName, NetworkType);
             Notus.Variable.Struct.EccKeyPair KeyPair_Public = Notus.Wallet.ID.GenerateKeyPair(SelectedCurveName, NetworkType);
@@ -84,6 +84,7 @@ namespace Notus.Block
 
             return new GenesisBlockData()
             {
+                Version = 10000,
                 Empty = new EmptyBlockType()
                 {
                     Active = true,
@@ -159,7 +160,7 @@ namespace Notus.Block
                 },
                 Info = new GenesisInfoType()
                 {
-                    Creation = GenerationTime,
+                    Creation = generationTime,
                     Creator = CreatorWalletKey,
                     CurveName = SelectedCurveName,
                     EncryptKeyPair = Val_DefaultEncryptKeyPair

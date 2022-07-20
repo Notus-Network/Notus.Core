@@ -6,7 +6,7 @@ namespace Notus.Validator
 {
     public static class Node
     {
-        public static void Start(string[] args)
+        public static void Start(string[] argsFromCLI)
         {
             bool LightNodeActive = false;
             bool EmptyTimerActive = false;
@@ -15,11 +15,9 @@ namespace Notus.Validator
 
             using (Notus.Validator.Menu menuObj = new Notus.Validator.Menu())
             {
-                NodeSettings = menuObj.PreStart(args);
-
+                NodeSettings = menuObj.PreStart(argsFromCLI);
                 menuObj.Start();
                 NodeSettings = menuObj.DefineMySetting(NodeSettings);
-                //Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
             }
             if (NodeSettings.NodeType != Notus.Variable.Enum.NetworkNodeType.Replicant)
             {

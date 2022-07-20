@@ -76,6 +76,57 @@ namespace Notus.Block
             Notus.Variable.Class.BlockData LastBlock = Notus.Variable.Class.Block.GetEmpty();
             string[] ZipFileList = GetZipFiles();
 
+            if (ZipFileList.Length == 0) // genesis needed
+            {
+                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                bool exitInnerLoop = false;
+                bool exitOuterLoop = false;
+                int portNo = Notus.Toolbox.Network.GetNetworkPort(Obj_Settings);
+                Int64 blockRowNo = 1;
+                while (exitOuterLoop == false)
+                {
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                    {
+                        string nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
+                        if (string.Equals(Obj_Settings.IpInfo.Public, nodeIpAddress) == false)
+                        {
+                            try
+                            {
+                                string NodeAddress = Notus.Network.Node.MakeHttpListenerPath(nodeIpAddress, portNo);
+                                (bool NoError, Notus.Variable.Class.BlockData tmpBlockData) = Notus.Validator.Query.GetBlock(NodeAddress, blockRowNo);
+                                if (NoError == true)
+                                {
+                                    using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                                    {
+                                        BS_Storage.Network = Obj_Settings.Network;
+                                        BS_Storage.Layer = Obj_Settings.Layer;
+                                        BS_Storage.AddSync(tmpBlockData, true);
+                                    }
+                                }
+                                else
+                                {
+                                    SleepWithoutBlocking(5, false);
+                                    Console.Write(".");
+                                    exitInnerLoop = true;
+                                }
+                            }
+                            catch (Exception err)
+                            {
+                                Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [96a3c2]: " + err.Message);
+                                Thread.Sleep(5000);
+                            }
+                        }
+                    }
+                    blockRowNo++;
+                }
+                ZipFileList = GetZipFiles();
+                Console.WriteLine("genesis generated and wait");
+            }
+
             if (ZipFileList.Length == 0)
             {
                 Notus.Print.Basic(Obj_Settings, "Block Integrity = GenesisNeed");
@@ -518,6 +569,14 @@ namespace Notus.Block
             {
                 Obj_Settings.GenesisCreated = false;
                 Obj_Settings.LastBlock = LastBlock;
+            }
+        }
+        public static void SleepWithoutBlocking(int SleepTime, bool UseAsSecond = false)
+        {
+            DateTime NextTime = (UseAsSecond == true ? DateTime.Now.AddMilliseconds(SleepTime) : DateTime.Now.AddSeconds(SleepTime));
+            while (NextTime > DateTime.Now)
+            {
+
             }
         }
         public Integrity()

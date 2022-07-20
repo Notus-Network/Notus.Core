@@ -16,7 +16,7 @@ namespace Notus.Validator
             get { return Obj_Settings; }
             set { Obj_Settings = value; }
         }
-        private int SelectedPortVal = Notus.Variable.Constant.PortNo_MainNet_L1;
+        private int SelectedPortVal = 0;
 
         //bu nesnenin görevi network'e bağlı nodeların listesini senkronize etmek
         //private Notus.Network.Controller ControllerObj = new Notus.Network.Controller();

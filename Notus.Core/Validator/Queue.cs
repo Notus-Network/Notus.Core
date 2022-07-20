@@ -87,14 +87,14 @@ namespace Notus.Validator
         {
             if ((DateTime.Now - NtpCheckTime).TotalMinutes > 10 && useLocalValue == false)
             {
-                NtpTime = Notus.Toolbox.Network.GetExactTime_DateTime();
+                NtpTime = Notus.Time.GetFromNtpServer();
                 NtpCheckTime = DateTime.Now;
                 NodeTimeAfterNtpTime = (NtpCheckTime > NtpTime);
                 if (NodeTimeAfterNtpTime == true)
                 {
                     NtpTimeDifference = NtpCheckTime - NtpTime;
                 }
-                elses
+                else
                 {
                     NtpTimeDifference = NtpTime - NtpCheckTime;
                 }
@@ -255,7 +255,7 @@ namespace Notus.Validator
                 ObjMp_NodeList.Set("ip_list", JsonSerializer.Serialize(MainAddressList), true);
             }
         }
-        private string IpPortToKey(string ipAddress, int portNo)
+        public string IpPortToKey(string ipAddress, int portNo)
         {
             string resultStr = "";
             foreach (string byteStr in ipAddress.Split("."))
@@ -264,7 +264,6 @@ namespace Notus.Validator
             }
             return resultStr + portNo.ToString("x").PadLeft(5, '0');
         }
-
         private bool CheckXmlTag(string rawDataStr, string tagName)
         {
             return ((rawDataStr.IndexOf("<" + tagName + ">") >= 0 && rawDataStr.IndexOf("</" + tagName + ">") >= 0) ? true : false);
@@ -593,13 +592,7 @@ namespace Notus.Validator
 
         public void PreStart()
         {
-            MyPortNo = Obj_Settings.Port.MainNet;
-            
-            if (Obj_Settings.Network == Variable.Enum.NetworkType.TestNet)
-                MyPortNo = Obj_Settings.Port.TestNet;
-            
-            if (Obj_Settings.Network == Variable.Enum.NetworkType.DevNet)
-                MyPortNo = Obj_Settings.Port.DevNet;
+            MyPortNo = Notus.Toolbox.Network.GetNetworkPort(Obj_Settings);
 
             InTheCodeNodeList.Clear();
             foreach (string defaultIpAddress in Notus.Variable.Constant.ListMainNodeIp)

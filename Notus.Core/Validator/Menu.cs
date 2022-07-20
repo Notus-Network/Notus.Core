@@ -1123,7 +1123,7 @@ namespace Notus.Validator
                 HashSalt = Notus.Encryption.Toolbox.GenerateSalt(),
                 EncryptKey = "key-password-string",
 
-                SynchronousSocketIsActive = true,
+                SynchronousSocketIsActive = false,
                 Layer = Notus.Variable.Enum.NetworkLayer.Layer1,
                 Network = Notus.Variable.Enum.NetworkType.MainNet,
                 NodeType = Notus.Variable.Enum.NetworkNodeType.Suitable,

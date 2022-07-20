@@ -122,17 +122,6 @@ namespace Notus.Variable
             { Notus.Variable.Enum.NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
         };
 
-        // layer 1 - main layer for crypto & token generate and transfer
-        public static readonly int PortNo_MainNet_L1 = 5000;
-        public static readonly int PortNo_TestNet_L1 = 5001;
-        public static readonly int PortNo_DevNet_L1 = 5002;
-
-        // layer 2 - sub layer for file storage
-        public static readonly int PortNo_MainNet_L2 = 5000;
-        public static readonly int PortNo_TestNet_L2 = 5001;
-        public static readonly int PortNo_DevNet_L2 = 5002;
-
-
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "89.252.134.91",
             "89.252.184.151"

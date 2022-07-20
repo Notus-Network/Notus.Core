@@ -12,6 +12,16 @@ namespace Notus.Toolbox
     {
         private static bool Error_TestIpAddress = true;
         private static readonly string DefaultControlTestData = "notus-network-test-result-data";
+        public static int GetNetworkPort(Notus.Variable.Common.ClassSetting Obj_Settings)
+        {
+            if (Obj_Settings.Network == Variable.Enum.NetworkType.TestNet)
+                return Obj_Settings.Port.TestNet;
+
+            if (Obj_Settings.Network == Variable.Enum.NetworkType.DevNet)
+                return Obj_Settings.Port.DevNet;
+            
+            return Obj_Settings.Port.MainNet;
+        }
         public static Notus.Variable.Common.ClassSetting IdentifyNodeType(Notus.Variable.Common.ClassSetting Obj_Settings,int Timeout=5)
         {
             Obj_Settings.IpInfo = Notus.Toolbox.Network.GetNodeIP();
@@ -48,6 +58,7 @@ namespace Notus.Toolbox
             Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Replicant;
             return Obj_Settings;
         }
+        
         public static int FindFreeTcpPort()
         {
             TcpListener l = new TcpListener(IPAddress.Loopback, 0);
@@ -166,43 +177,6 @@ namespace Notus.Toolbox
                 //Console.WriteLine(err.Message);
             }
             return "127.0.0.1";
-        }
-        private static ulong GetExactTime_UTC_SubFunc(string server)
-        {
-            if (string.IsNullOrEmpty(server)) throw new ArgumentException("Must be non-empty", nameof(server));
-
-            byte[] ntpData = new byte[48];
-            ntpData[0] = 0x1B;
-            IPAddress[] addresses = Dns.GetHostEntry(server).AddressList;
-            for (int i = 0; i < addresses.Length; i++)
-            {
-                try
-                {
-                    Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp) { ReceiveTimeout = 3000 };
-                    socket.Connect(new IPEndPoint(addresses[i], 123));
-                    socket.Send(ntpData);
-                    socket.Receive(ntpData);
-                    socket.Close();
-                    ulong intPart = ((ulong)ntpData[40] << 24) | ((ulong)ntpData[41] << 16) | ((ulong)ntpData[42] << 8) | ntpData[43];
-                    ulong fractPart = ((ulong)ntpData[44] << 24) | ((ulong)ntpData[45] << 16) | ((ulong)ntpData[46] << 8) | ntpData[47];
-                    ulong milliseconds = intPart * 1000 + fractPart * 1000 / 0x100000000L;
-                    return milliseconds;
-                }
-                catch
-                {
-
-                }
-            }
-            return 0;
-        }
-        public static ulong GetExactTime_Int()
-        {
-            return GetExactTime_UTC_SubFunc("pool.ntp.org");
-        }
-
-        public static DateTime GetExactTime_DateTime()
-        {
-            return new DateTime(1900, 1, 1).AddMilliseconds((long)GetExactTime_Int());
         }
 
         private static bool PublicIpIsConnectable(Notus.Variable.Common.ClassSetting Obj_Settings,int Timeout)

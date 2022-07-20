@@ -151,7 +151,7 @@ namespace Notus.Communication
                 ScktDataEndTextIsActive = value;
             }
         }
-        private bool SynchronousSocketIsActive_Val = true;
+        private bool SynchronousSocketIsActive_Val = false;
         public bool SynchronousSocketIsActive
         {
             get
