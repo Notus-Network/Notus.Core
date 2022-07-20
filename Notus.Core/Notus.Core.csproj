@@ -22,7 +22,7 @@
 	  <RepositoryType>git</RepositoryType>  </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Print\" />
+    <None Remove="Helper\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\MIT-LICENSE.txt">
@@ -37,5 +37,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 </Project>

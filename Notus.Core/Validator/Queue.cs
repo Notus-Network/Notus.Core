@@ -21,16 +21,19 @@ namespace Notus.Validator
             get { return Val_Ready; }
             set { Val_Ready = value; }
         }
-        //private bool LocalNode = false;
         private bool MyTurn = false;
         private bool SyncReady = true;
 
         private SortedDictionary<string, IpInfo> MainAddressList = new SortedDictionary<string, IpInfo>();
         private string MainAddressListHash = string.Empty;
 
-        //private const int DefaultPortNo = 7575;
         private List<IpInfo> InTheCodeNodeList = new List<IpInfo>();
         private Dictionary<string, NodeQueueInfo> PreviousNodeList = new Dictionary<string, NodeQueueInfo>();
+        public Dictionary<string, NodeQueueInfo> SyncNodeList
+        {
+            get { return PreviousNodeList; }
+            set { PreviousNodeList = value; }
+        }
         private Dictionary<string, NodeQueueInfo> NodeList = new Dictionary<string, NodeQueueInfo>();
         private Dictionary<string, DateTime> MessageTimeList = new Dictionary<string, DateTime>();
         private Dictionary<int, string> NodeOrderList = new Dictionary<int, string>();
@@ -49,11 +52,11 @@ namespace Notus.Validator
         private DateTime LastPingTime;
         private DateTime NextCheckTime = DateTime.Now;
 
-        private DateTime NtpTime;                       // ntp sunucu zamanı
-        private DateTime NtpCheckTime;                  // son ntp kontrol zamanı
-        private TimeSpan NtpTimeDifference;             // ntp sunucusu ile node zaman farkı
-        private bool NodeTimeAfterNtpTime = false;      // zaman farkı eksi mi, artı mı
-        private DateTime NextQueueValidNtpTime;         // yeni sıralamanın geçerli olacağı ntp zamanı
+        private DateTime NtpTime;                       // ntp server time
+        private DateTime NtpCheckTime;                  // last check ntp time
+        private TimeSpan NtpTimeDifference;             // time difference between NTP server and current node
+        private bool NodeTimeAfterNtpTime = false;      // time difference before or after NTP Server
+        private DateTime NextQueueValidNtpTime;         // New Queue will be usable after this NTP time
 
         //empty blok için kontrolü yapacak olan node'u seçen fonksiyon
         public Notus.Variable.Enum.ValidatorOrder EmptyTimer()
@@ -78,19 +81,6 @@ namespace Notus.Validator
             );
             double secondVal = midPointConst + (midPointConst - (ulong.Parse(afterMiliSecondTime.ToString("ss")) % midPointConst));
             NextQueueValidNtpTime = afterMiliSecondTime.AddSeconds(secondVal);
-            //NextQueueValidNodeTime = exactTime.AddSeconds(secondVal);
-
-            /*
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
-
-            // bu zaman değeri üzerinde hem fikir kalınan değişken
-            // bu değer sonraki sıranın geçerli olacağı zaman bilgisi
-            Console.WriteLine(nextQueueValidNtpTime.ToString("HH:mm:ss:fff"));
-
-            //bu zaman bilgisi bizim beklememizin için kullanılacak olan zaman değişkeni
-            Console.WriteLine(nextQueueValidNodeTime.ToString("HH:mm:ss:fff"));
-            Console.ReadLine();
-            */
         }
 
         private void CalculateTimeDifference(bool useLocalValue)
@@ -100,11 +90,11 @@ namespace Notus.Validator
                 NtpTime = Notus.Toolbox.Network.GetExactTime_DateTime();
                 NtpCheckTime = DateTime.Now;
                 NodeTimeAfterNtpTime = (NtpCheckTime > NtpTime);
-                if (NodeTimeAfterNtpTime == true) //Console.WriteLine("eğer node'un zamanı sonra ise");
+                if (NodeTimeAfterNtpTime == true)
                 {
                     NtpTimeDifference = NtpCheckTime - NtpTime;
                 }
-                else //Console.WriteLine("node NTP zamanından geride ise");
+                elses
                 {
                     NtpTimeDifference = NtpTime - NtpCheckTime;
                 }
@@ -112,11 +102,11 @@ namespace Notus.Validator
             else
             {
                 NtpCheckTime = DateTime.Now;
-                if (NodeTimeAfterNtpTime == true) //Console.WriteLine("eğer node'un zamanı sonra ise");
+                if (NodeTimeAfterNtpTime == true)
                 {
                     NtpTime = NtpCheckTime.Subtract(NtpTimeDifference);
                 }
-                else //Console.WriteLine("node NTP zamanından geride ise");
+                else
                 {
                     NtpTime = NtpCheckTime.Add(NtpTimeDifference);
                 }
@@ -262,7 +252,6 @@ namespace Notus.Validator
             }
             if (storeList)
             {
-                //Console.WriteLine(JsonSerializer.Serialize(MainAddressList, new JsonSerializerOptions() { WriteIndented = true }));
                 ObjMp_NodeList.Set("ip_list", JsonSerializer.Serialize(MainAddressList), true);
             }
         }
@@ -278,26 +267,19 @@ namespace Notus.Validator
 
         private bool CheckXmlTag(string rawDataStr, string tagName)
         {
-            if (rawDataStr.IndexOf("<" + tagName + ">") >= 0 && rawDataStr.IndexOf("</" + tagName + ">") >= 0)
-            {
-                return true;
-            }
-            return false;
+            return ((rawDataStr.IndexOf("<" + tagName + ">") >= 0 && rawDataStr.IndexOf("</" + tagName + ">") >= 0) ? true : false);
         }
         private string GetPureText(string rawDataStr, string tagName)
         {
             rawDataStr = rawDataStr.Replace("<" + tagName + ">", "");
-            rawDataStr = rawDataStr.Replace("</" + tagName + ">", "");
-            return rawDataStr;
+            return rawDataStr.Replace("</" + tagName + ">", "");
         }
         public string Process(Notus.Variable.Struct.HttpRequestDetails incomeData)
         {
-            //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
             return ProcessIncomeData(incomeData.PostParams["data"]);
         }
         private string ProcessIncomeData(string incomeData)
         {
-            //Console.WriteLine("in : " + incomeData);
             if (CheckXmlTag(incomeData, "hash"))
             {
                 incomeData = GetPureText(incomeData, "hash");
@@ -317,11 +299,6 @@ namespace Notus.Validator
             {
                 incomeData = GetPureText(incomeData, "time");
                 NextQueueValidNtpTime = Notus.Date.ToDateTime(incomeData);
-                /*
-                CalculateTimeDifference(false);
-                NodeList[MyNodeHexKey].Time.Node = NtpCheckTime;
-                NodeList[MyNodeHexKey].Time.World = NtpTime;
-                */
                 return "ok";
             }
             if (CheckXmlTag(incomeData, "node"))
@@ -352,9 +329,7 @@ namespace Notus.Validator
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
-            //Console.WriteLine("out : " + messageText);
             string urlPath=Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo)+ "queue/node";
-            //Console.WriteLine(urlPath);
             string incodeResponse =Notus.Communication.Request.PostSync(urlPath, new Dictionary<string, string>()
             {
                 { "data",messageText }
@@ -380,10 +355,7 @@ namespace Notus.Validator
                     true
                 );
             }
-            else
-            {
-                return "b";
-            }
+            return "b";
         }
         private void Message_Node_ViaSocket(string _ipAddress, int _portNo, string _nodeHex = "")
         {
@@ -424,12 +396,8 @@ namespace Notus.Validator
         }
         private void MainLoop()
         {
-
-            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
             while (ExitFromLoop == false)
             {
-                //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
-
                 //burası belirli periyotlarda hash gönderiminin yapıldığı kod grubu
                 if ((DateTime.Now - LastPingTime).TotalSeconds > 20 || SyncReady == false)
                 {
@@ -452,29 +420,23 @@ namespace Notus.Validator
                         if (string.Equals(MyNodeHexKey, tmpNodeHexStr) == false)
                         {
                             string tmpReturnStr = Message_Hash_ViaSocket(entry.Value.IpAddress, entry.Value.Port, "hash");
-                            if (tmpReturnStr == "1") // liste eşit değil
+                            if (tmpReturnStr == "1") // list not equal
                             {
-                                //Console.WriteLine("Hash Result = list not equal");
                                 Message_List_ViaSocket(entry.Value.IpAddress, entry.Value.Port, tmpNodeHexStr);
                             }
 
-                            if (tmpReturnStr == "2") // liste eşit ancak hash eşit değil
+                            if (tmpReturnStr == "2") // list equal but node hash different
                             {
-                                //Console.WriteLine("Hash Result = node not equal");
                                 tmpRefreshNodeDetails = true;
                             }
 
-                            if (tmpReturnStr == "0") // liste ve hash eşit
+                            if (tmpReturnStr == "0") // list and node hash are equal
                             {
-                                //Console.WriteLine("Hash Result = sync");
-                                // herşey eşit
                             }
 
-                            if (tmpReturnStr == "err") // soket iletişim hatası
+                            if (tmpReturnStr == "err") // socket comm error
                             {
-                                Console.WriteLine("Hash Result = socket error");
                                 tmpRefreshNodeDetails = true;
-                                // soket hatası
                             }
                         }
                     }
@@ -533,22 +495,20 @@ namespace Notus.Validator
                     SyncReady = false;
                 }
 
-
                 if (SyncReady == true)
                 {
-                    Val_Ready = true;
                     if (LastHashForStoreList != NodeListHash)
                     {
                         CalculateTimeDifference(true);
                         if (NtpTime > NextQueueValidNtpTime)
                         {
                             OrganizeQueue();
+                            Val_Ready = true;
                         }
                         StoreNodeListToDb();
                     }
                 }
             }
-            Notus.Print.Danger(true, "MainLoop-End", false);
         }
         private void OrganizeQueue()
         {
@@ -587,31 +547,16 @@ namespace Notus.Validator
             int counter = 0;
             NodeOrderList.Clear();
 
-            //Console.WriteLine(JsonSerializer.Serialize(tmpWalletHashList, new JsonSerializerOptions() { WriteIndented = true }));
             foreach (KeyValuePair<string, string> entry in tmpWalletHashList)
             {
                 counter++;
                 NodeOrderList.Add(counter, entry.Value);
-                /*
-                Console.Write("Order : " + counter);
-                if (string.Equals(MyWallet, entry.Value))
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine(" [ ME ]");
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine(" (other)");
-                }
-                Console.ResetColor();
-                */
             }
 
             MyTurn = (string.Equals(MyWallet, NodeOrderList[1]));
             if (MyTurn == true)
             {
-                Console.WriteLine("My Turn");
+                Notus.Print.Info(Obj_Settings.DebugMode,"My Turn");
                 CalculateTimeDifference(false);
                 RefreshNtpTime();
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
@@ -628,22 +573,15 @@ namespace Notus.Validator
                             "<time>" + Notus.Date.ToString(NextQueueValidNtpTime) + "</time>",
                             true
                         );
-                        //Console.WriteLine("giden : <time>" + Notus.Date.ToString(NextQueueValidNtpTime) + "</time>");
-                        //Console.WriteLine(responseStr);
                     }
                 }
             }
             else
             {
-                Console.WriteLine("Waiting");
+                Notus.Print.Info(Obj_Settings.DebugMode, "Waiting For Turn");
             }
             NodeList[MyNodeHexKey].Time.Node = DateTime.Now;
             NodeList[MyNodeHexKey].Time.World = NtpTime;
-            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
-
-            //Console.ForegroundColor = ConsoleColor.Green;
-            Notus.Print.Info(true, "All Node SYNC", false);
-            //Console.ResetColor();
         }
         public void Start()
         {
@@ -673,11 +611,8 @@ namespace Notus.Validator
                 }
                 );
             }
-            //MyPortNo = (portNo > 0 ? portNo : DefaultPortNo);
             MyIpAddress = (Obj_Settings.LocalNode == true ? Obj_Settings.IpInfo.Local : Obj_Settings.IpInfo.Public);
             MyNodeHexKey = IpPortToKey(MyIpAddress, MyPortNo);
-
-            //Console.WriteLine(MyNodeHexKey + " = " + MyIpAddress + " -> " + MyPortNo.ToString());
 
             if (Obj_Settings.LocalNode == true)
             {
@@ -760,10 +695,8 @@ namespace Notus.Validator
             NtpCheckTime = DefaultTime;
             LastPingTime = DefaultTime;
             NextQueueValidNtpTime = DefaultTime;
-            //ObjMp_NodeList = new Notus.Mempool("node_list_" + MyNodeHexKey);
             ObjMp_NodeList = new Notus.Mempool("node_pool_list");
             ObjMp_NodeList.AsyncActive = false;
-            //ObjMp_NodeList.Clear();
         }
         ~Queue()
         {
@@ -776,7 +709,6 @@ namespace Notus.Validator
             {
                 ObjMp_NodeList.Dispose();
             }
-            //MP_BlockPoolList.Dispose();
         }
     }
 }
