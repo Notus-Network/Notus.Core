@@ -50,14 +50,17 @@ namespace Notus.Validator
             NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);
             switch (NodeSettings.NodeType)
             {
+                // if IP and port node written in the code
                 case Notus.Variable.Enum.NetworkNodeType.Main:
                     StartAsMain(NodeSettings, EmptyTimerActive, CryptoTimerActive);
                     break;
 
+                // if node join the network
                 case Notus.Variable.Enum.NetworkNodeType.Master:
                     StartAsMaster(NodeSettings);
                     break;
 
+                // if node only store the data
                 case Notus.Variable.Enum.NetworkNodeType.Replicant:
                     StartAsReplicant(NodeSettings, LightNodeActive);
                     break;

@@ -120,15 +120,23 @@ namespace Notus.Wallet
             }
             return 0;
         }
-        public static void StoreFeeData(string KeyName, string RawData, Notus.Variable.Enum.NetworkType networkType , Notus.Variable.Enum.NetworkLayer networkLayer , bool ClearTable = false)
+        public static void ClearFeeData(Notus.Variable.Enum.NetworkType networkType , Notus.Variable.Enum.NetworkLayer networkLayer)
         {
             using (Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(FeeDataStorageDbName(networkType, networkLayer)))
             {
                 ObjMp_BlockOrder.AsyncActive = false;
-                if (ClearTable == true)
-                {
-                    ObjMp_BlockOrder.Clear();
-                }
+                ObjMp_BlockOrder.Clear();
+            }
+        }
+        public static void StoreFeeData(string KeyName, string RawData, Notus.Variable.Enum.NetworkType networkType , Notus.Variable.Enum.NetworkLayer networkLayer , bool ClearTable = false)
+        {
+            if (ClearTable == true)
+            {
+                ClearFeeData(networkType, networkLayer);
+            }
+            using (Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(FeeDataStorageDbName(networkType, networkLayer)))
+            {
+                ObjMp_BlockOrder.AsyncActive = false;
                 if (KeyName.Length > 0)
                 {
                     ObjMp_BlockOrder.Add(KeyName, RawData);

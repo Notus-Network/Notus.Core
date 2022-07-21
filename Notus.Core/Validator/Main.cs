@@ -563,6 +563,11 @@ namespace Notus.Validator
         }
         public void Start()
         {
+
+            //yapılacak işlemler
+            // 1-
+
+
             //Console.Write("--------------------------------------------------------------------");
             //Console.Write("Notus.Node.Validator.Main.Start - Line 283");
             //Console.Write(JsonSerializer.Serialize(Obj_Settings, new JsonSerializerOptions() { WriteIndented = true }));
@@ -571,6 +576,7 @@ namespace Notus.Validator
             //Obj_Settings.Layer
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
+            //Obj_Integrity.ControlGenesisBlock();
             Obj_Integrity.GetLastBlock();
 
             Obj_Settings.GenesisCreated = Obj_Integrity.Settings.GenesisCreated;
@@ -657,22 +663,7 @@ namespace Notus.Validator
                     }, 0
                     );
                 }
-
-                // Console.WriteLine("Notus.Node.Validator.Main.Start_listener -> Line 377");
-                // Console.WriteLine(Obj_Settings.Layer.ToString());
-                if (Obj_Settings.Network == Variable.Enum.NetworkType.MainNet)
-                {
-                    SelectedPortVal = Obj_Settings.Port.MainNet;
-                }
-                if (Obj_Settings.Network == Variable.Enum.NetworkType.TestNet)
-                {
-                    SelectedPortVal = Obj_Settings.Port.TestNet;
-                }
-                if (Obj_Settings.Network == Variable.Enum.NetworkType.DevNet)
-                {
-                    SelectedPortVal = Obj_Settings.Port.DevNet;
-                }
-                //SelectedPortVal = Notus.Network.Node.GetNetworkPort(Obj_Settings.Network, Obj_Settings.Layer);
+                SelectedPortVal = Notus.Toolbox.Network.GetNetworkPort(Obj_Settings);
             }
             else
             {
@@ -709,6 +700,9 @@ namespace Notus.Validator
 
                 }
             }
+            Console.WriteLine(EmptyTimerActive);
+            Console.WriteLine(EmptyTimerActive);
+            Console.WriteLine(EmptyTimerActive);
             if (Obj_Settings.GenesisCreated == false)
             {
                 if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)

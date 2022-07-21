@@ -235,6 +235,7 @@ namespace Notus.Variable.Struct
         public bool IsAuthenticated { get; set; }
         public string HttpMethod { get; set; }
         public string ProtocolVersion { get; set; }
+        public string ContentType { get; set; }
         public string UserAgent { get; set; }
         public string UserHostName { get; set; }
 
