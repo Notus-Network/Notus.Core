@@ -459,6 +459,7 @@ namespace Notus.Variable.Struct
         public string IpAddress { get; set; }
         public int Port { get; set; }
     }
+
     public class NodeQueueInfo_Time
     {
         public DateTime Error { get; set; }             // node ile alınan zaman bilgisi

@@ -576,7 +576,7 @@ namespace Notus.Validator
             //Obj_Settings.Layer
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
-            //Obj_Integrity.ControlGenesisBlock();
+            Obj_Integrity.ControlGenesisBlock();
             Obj_Integrity.GetLastBlock();
 
             Obj_Settings.GenesisCreated = Obj_Integrity.Settings.GenesisCreated;
@@ -700,9 +700,9 @@ namespace Notus.Validator
 
                 }
             }
-            Console.WriteLine(EmptyTimerActive);
-            Console.WriteLine(EmptyTimerActive);
-            Console.WriteLine(EmptyTimerActive);
+            //Console.WriteLine(EmptyTimerActive);
+            //Console.WriteLine(EmptyTimerActive);
+            //Console.WriteLine(EmptyTimerActive);
             if (Obj_Settings.GenesisCreated == false)
             {
                 if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)

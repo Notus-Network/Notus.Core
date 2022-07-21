@@ -469,14 +469,11 @@ namespace Notus.Block
         }
         public void ControlGenesisBlock()
         {
+            Console.WriteLine("Check Genesisi block status");
             string[] ZipFileList = GetZipFiles();
             if (ZipFileList.Length == 0) // genesis needed
             {
-                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
-                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
-                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
-                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
-                //burada ağa dahil olan nodeların ip ve port bilgileri alınacak...
+                Console.WriteLine("Trying to connect other nodes");
                 bool exitInnerLoop = false;
                 bool exitOuterLoop = false;
                 int portNo = Notus.Toolbox.Network.GetNetworkPort(Obj_Settings);
