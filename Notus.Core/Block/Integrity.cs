@@ -148,7 +148,7 @@ namespace Notus.Block
                                                                 ControlBlock.cipher.data
                                                             )
                                                         );
-                                                        Notus.Wallet.Fee.StoreFeeData("genesis_block", JsonSerializer.Serialize(Obj_Settings.Genesis), Obj_Settings.Network, Obj_Settings.Layer,true);
+                                                        Notus.Wallet.Fee.StoreFeeData("genesis_block", JsonSerializer.Serialize(Obj_Settings.Genesis), Obj_Settings.Network, Obj_Settings.Layer, true);
                                                     }
 
                                                     ZipArchiveList.Add(fif.Name, Val_BlockVerify);
@@ -469,8 +469,91 @@ namespace Notus.Block
         }
         public void ControlGenesisBlock()
         {
-            Console.WriteLine("Check Genesisi block status");
+            // control-point
+            // control-point
+            // controlpoint
+            // controlpoint
+
             string[] ZipFileList = GetZipFiles();
+            bool GenesisNeeded = true;
+            DateTime localCreationTime = DateTime.Now;
+            Notus.Variable.Genesis.GenesisBlockData currentGenesisData = null;
+            if (ZipFileList.Length > 0) // genesis needed
+            {
+                using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                {
+                    BS_Storage.Network = Obj_Settings.Network;
+                    BS_Storage.Layer = Obj_Settings.Layer;
+                    (bool blockExist, Notus.Variable.Class.BlockData blockData) = BS_Storage.ReadBlock(Notus.Variable.Constant.GenesisBlockUid);
+                    if (blockExist == true)
+                    {
+                        currentGenesisData = JsonSerializer.Deserialize<
+                            Notus.Variable.Genesis.GenesisBlockData
+                        >(
+                            System.Text.Encoding.UTF8.GetString(
+                                System.Convert.FromBase64String(
+                                    blockData.cipher.data
+                                )
+                            )
+                        );
+                        localCreationTime = currentGenesisData.Info.Creation;
+                        GenesisNeeded = false;
+                    }
+                }
+            }
+
+
+            if (Notus.Validator.List.Main.ContainsKey(Obj_Settings.Layer))
+            {
+                if (Notus.Validator.List.Main[Obj_Settings.Layer].ContainsKey(Obj_Settings.Network))
+                {
+                    foreach (Variable.Struct.IpInfo item in Notus.Validator.List.Main[Obj_Settings.Layer][Obj_Settings.Network])
+                    {
+                        if (string.Equals(Obj_Settings.IpInfo.Public, item.IpAddress) == false)
+                        {
+                            try
+                            {
+                                string NodeAddress = Notus.Network.Node.MakeHttpListenerPath(item.IpAddress, item.Port);
+                                (bool NoError, Notus.Variable.Class.BlockData tmpBlockData) = Notus.Validator.Query.GetBlock(NodeAddress, 1);
+                                if (NoError == true)
+                                {
+                                    Notus.Variable.Genesis.GenesisBlockData remoteGenesisData = JsonSerializer.Deserialize<
+                                        Notus.Variable.Genesis.GenesisBlockData
+                                    >(
+                                        System.Text.Encoding.UTF8.GetString(
+                                            System.Convert.FromBase64String(
+                                                tmpBlockData.cipher.data
+                                            )
+                                        )
+                                    );
+                                    if (localCreationTime > remoteGenesisData.Info.Creation)
+                                    {
+                                        // remote node genesis older than local node
+                                        currentGenesisData = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
+                                            JsonSerializer.Serialize(remoteGenesisData)
+                                        );
+
+                                    }
+                                }
+                                else
+                                {
+                                    SleepWithoutBlocking(5, false);
+                                    Console.Write(".");
+                                }
+                            }
+                            catch (Exception err)
+                            {
+                                Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [96a3c2]: " + err.Message);
+                                Thread.Sleep(5000);
+                            }
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine("Check Genesisi block status");
+            /*
+            //string[] ZipFileList = GetZipFiles();
             if (ZipFileList.Length == 0) // genesis needed
             {
                 Console.WriteLine("Trying to connect other nodes");
@@ -516,8 +599,9 @@ namespace Notus.Block
                     blockRowNo++;
                 }
                 ZipFileList = GetZipFiles();
-                Console.WriteLine("genesis generated and wait");
             }
+            */
+            Console.WriteLine("genesis generated and wait");
         }
         public void GetLastBlock()
         {

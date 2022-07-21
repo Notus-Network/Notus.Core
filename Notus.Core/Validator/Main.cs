@@ -563,10 +563,8 @@ namespace Notus.Validator
         }
         public void Start()
         {
-
-            //yapılacak işlemler
-            // 1-
-
+            // control-point
+            // controlpoint
 
             //Console.Write("--------------------------------------------------------------------");
             //Console.Write("Notus.Node.Validator.Main.Start - Line 283");
@@ -577,6 +575,7 @@ namespace Notus.Validator
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
             Obj_Integrity.ControlGenesisBlock();
+
             Obj_Integrity.GetLastBlock();
 
             Obj_Settings.GenesisCreated = Obj_Integrity.Settings.GenesisCreated;
