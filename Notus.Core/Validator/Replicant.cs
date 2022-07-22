@@ -32,7 +32,7 @@ namespace Notus.Validator
             bool exitWhileLoop = false;
             while (exitWhileLoop == false)
             {
-                (bool NoError, Notus.Variable.Class.BlockData tmpBlockData) = Notus.Validator.Query.GetBlock(NodeAddress, BlockRowNo);
+                (bool NoError, Notus.Variable.Class.BlockData tmpBlockData) = Notus.Validator.Query.GetBlock(NodeAddress, BlockRowNo, Obj_Settings.DebugMode);
                 if (NoError == true)
                 {
                     Obj_Storage.AddSync(tmpBlockData);

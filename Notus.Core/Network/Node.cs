@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Notus.Network
@@ -11,8 +7,8 @@ namespace Notus.Network
     public static class Node
     {
         public static async Task<string> FindAvailable(
-            string UrlText, 
-            Notus.Variable.Enum.NetworkType currentNetwork, 
+            string UrlText,
+            Notus.Variable.Enum.NetworkType currentNetwork,
             Notus.Variable.Enum.NetworkLayer networkLayer
         )
         {
@@ -24,7 +20,7 @@ namespace Notus.Network
                 {
                     try
                     {
-                        MainResultStr = await Notus.Communication.Request.Get(MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a], 
+                        MainResultStr = await Notus.Communication.Request.Get(MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a],
                             GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
                     }
                     catch (Exception err)
@@ -70,9 +66,10 @@ namespace Notus.Network
         }
 
         public static string FindAvailableSync(
-            string UrlText, 
-            Notus.Variable.Enum.NetworkType currentNetwork, 
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            string UrlText,
+            Notus.Variable.Enum.NetworkType currentNetwork,
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            bool showError=true
         )
         {
             string MainResultStr = string.Empty;
@@ -83,11 +80,16 @@ namespace Notus.Network
                 {
                     try
                     {
-                        MainResultStr = Notus.Communication.Request.GetSync(MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
+                        MainResultStr = Notus.Communication.Request.GetSync(
+                            MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 
+                            10, 
+                            true,
+                            showError
+                        );
                     }
                     catch (Exception err)
                     {
-                        Console.WriteLine(err.Message);
+                        Notus.Print.Danger(showError, "Notus.Network.Node.FindAvailableSync -> Line 92 -> " + err.Message);
                         SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
@@ -110,11 +112,15 @@ namespace Notus.Network
                 {
                     try
                     {
-                        MainResultStr = Notus.Communication.Request.PostSync(
+                        (bool worksCorrent, string tmpMainResultStr) = Notus.Communication.Request.PostSync(
                             MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a],
                             GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
                             PostData
                         );
+                        if (worksCorrent == true)
+                        {
+                            MainResultStr = tmpMainResultStr;
+                        }
                     }
                     catch (Exception err)
                     {

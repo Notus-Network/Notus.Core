@@ -26,7 +26,13 @@ namespace Notus.Communication
             }
             return string.Empty;
         }        
-        public static string PostSync(string UrlAddress, Dictionary<string, string> PostData, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        public static (bool,string) PostSync(
+            string UrlAddress, 
+            Dictionary<string, string> PostData, 
+            int TimeOut = 0, 
+            bool UseTimeoutAsSecond = true,
+            bool showOnError=true
+        )
         {
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(PostData);
             try
@@ -42,17 +48,16 @@ namespace Notus.Communication
                     if (response.IsSuccessStatusCode)
                     {
                         HttpContent responseContent = response.Content;
-                        return responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+                        return (true,responseContent.ReadAsStringAsync().GetAwaiter().GetResult());
                     }
                 }
             }catch(Exception err)
             {
-
-                Notus.Print.Danger(true,"Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
+                Notus.Print.Danger(showOnError, "Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
             }
-            return string.Empty;
+            return (false,string.Empty);
         }
-        public static async Task<string> Get(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        public static async Task<string> Get(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true, bool showOnError = true)
         {
             try
             {
@@ -72,13 +77,12 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Console.WriteLine(err.Message);
+                Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 80 -> " + err.Message);
             }
             return string.Empty;
         }
-        public static string GetSync(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        public static string GetSync(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true, bool showOnError = true)
         {
-            Console.WriteLine(UrlAddress);
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -88,7 +92,6 @@ namespace Notus.Communication
                         client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
                     }
                     HttpResponseMessage response = client.GetAsync(UrlAddress).GetAwaiter().GetResult();
-                    Console.WriteLine(JsonSerializer.Serialize(response));
                     if (response.IsSuccessStatusCode)
                     {
                         HttpContent responseContent = response.Content;
@@ -98,7 +101,7 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Console.WriteLine(err.Message);
+                Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 80 -> " + err.Message);
             }
             return string.Empty;
         }

@@ -574,8 +574,6 @@ namespace Notus.Validator
             //Obj_Settings.Layer
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
-            Obj_Integrity.ControlGenesisBlock();
-
             Obj_Integrity.GetLastBlock();
 
             Obj_Settings.GenesisCreated = Obj_Integrity.Settings.GenesisCreated;
@@ -684,11 +682,12 @@ namespace Notus.Validator
             ValidatorQueueObj.PreStart();
             ValidatorQueueObj.Start();
             Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Node Sync", false);
-            Console.WriteLine("Waiting For Node Sync");
-            while (ValidatorQueueObj.Ready == false)
-            {
+            Thread.Sleep(1500);
+            //Console.WriteLine("Waiting For Node Sync");
+            Console.WriteLine("ValidatorQueueObj.TotalNodeCount : " + ValidatorQueueObj.TotalNodeCount.ToString());
+            Console.WriteLine("ValidatorQueueObj.OnlineNodeCount : " + ValidatorQueueObj.OnlineNodeCount.ToString());
 
-            }
+            // genesisi oluşturulduktan sonra diğer node lar ile iletişime geçip, senkronizasyona başlatılmalı
 
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
@@ -701,6 +700,9 @@ namespace Notus.Validator
             }
             //Console.WriteLine(EmptyTimerActive);
             //Console.WriteLine(EmptyTimerActive);
+            //Console.WriteLine(JsonSerializer.Serialize(Obj_Settings, new JsonSerializerOptions(){WriteIndented = true}));
+            //Console.ReadLine();
+
             //Console.WriteLine(EmptyTimerActive);
             if (Obj_Settings.GenesisCreated == false)
             {
@@ -853,6 +855,15 @@ namespace Notus.Validator
         {
             if (Obj_Settings.LocalNode == true)
             {
+                Console.WriteLine("Listining : " + Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Local, SelectedPortVal));
+            }
+            else
+            {
+                Console.WriteLine( "Listining : " +Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Public, SelectedPortVal));
+            }
+
+            if (Obj_Settings.LocalNode == true)
+            {
                 Notus.Print.Basic(Obj_Settings, "Listining : " +
                 Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Local, SelectedPortVal), false);
             }
@@ -875,7 +886,7 @@ namespace Notus.Validator
             HttpObj.Settings = Obj_Settings;
             HttpObj.StoreUrl = false;
             HttpObj.Start(NodeIpAddress, SelectedPortVal);
-            Notus.Print.Basic(Obj_Settings, "Http Has Started", false);
+            Notus.Print.Basic(true, "Http Has Started", false);
         }
 
         private string Fnc_OnReceiveData(Notus.Variable.Struct.HttpRequestDetails IncomeData)

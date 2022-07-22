@@ -5,12 +5,17 @@ namespace Notus.Validator
 {
     public class Query
     {
-        public static (bool, Notus.Variable.Class.BlockData) GetBlock(string nodeAdress, Int64 BlockRowNo)
+        public static (bool, Notus.Variable.Class.BlockData) GetBlock(string nodeAdress, Int64 BlockRowNo,bool showOnError=true)
         {
             //string mainAddressStr = Notus.Core.Function.MakeHttpListenerPath(nodeAdress, Notus.Variable.Struct.PortNo_HttpListener);
             try
             {
-                string MainResultStr = Notus.Communication.Request.GetSync(nodeAdress + "block/" + BlockRowNo.ToString(), 10, true);
+                string MainResultStr = Notus.Communication.Request.GetSync(
+                    nodeAdress + "block/" + BlockRowNo.ToString(), 
+                    10, 
+                    true,
+                    showOnError
+                );
                 Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                 return (true, PreBlockData);
             }
