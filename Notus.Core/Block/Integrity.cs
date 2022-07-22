@@ -474,15 +474,7 @@ namespace Notus.Block
         }
         public DateTime GetGenesisCreationTimeFromString(string genesisText)
         {
-            Variable.Genesis.GenesisBlockData currentGenesisData = JsonSerializer.Deserialize<
-                                       Notus.Variable.Genesis.GenesisBlockData
-                                   >(
-                                       System.Text.Encoding.UTF8.GetString(
-                                           System.Convert.FromBase64String(
-                                               genesisText
-                                           )
-                                       )
-                                   );
+            Notus.Variable.Genesis.GenesisBlockData currentGenesisData = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(System.Text.Encoding.ASCII.GetString(System.Convert.FromBase64String(genesisText)));
             return currentGenesisData.Info.Creation;
         }
         public void ControlGenesisBlock()
@@ -500,8 +492,11 @@ namespace Notus.Block
                     (bool blockExist, Notus.Variable.Class.BlockData blockData) = BS_Storage.ReadBlock(Notus.Variable.Constant.GenesisBlockUid);
                     if (blockExist == true)
                     {
-                        localGenesisSign = blockData.sign;
-                        localGenesisTime = GetGenesisCreationTimeFromString(blockData.cipher.data);
+                        if (blockData.info.type == 360)
+                        {
+                            localGenesisSign = blockData.sign;
+                            localGenesisTime = GetGenesisCreationTimeFromString(blockData.cipher.data);
+                        }
                     }
                 }
             }
@@ -527,11 +522,23 @@ namespace Notus.Block
                                     if (string.Equals(localGenesisSign, tmpBlockData.sign) == false)
                                     {
                                         Console.WriteLine("Remote Genesis Block Are Different");
-                                        DateTime remoteGenesisTime = GetGenesisCreationTimeFromString(tmpBlockData.cipher.data);
-
-                                        if (localGenesisTime > remoteGenesisTime)
+                                        DateTime remoteGenesisTime = DateTime.Now;
+                                        bool storeBlock = true;
+                                        if (tmpBlockData.info.type == 360)
                                         {
-                                            Console.WriteLine("Remote Genesis Older Than Me");
+                                            remoteGenesisTime = GetGenesisCreationTimeFromString(tmpBlockData.cipher.data);
+                                            if (localGenesisTime > remoteGenesisTime)
+                                            {
+                                                Console.WriteLine("Remote Genesis Older Than Me");
+                                            }
+                                            else
+                                            {
+                                                storeBlock = false;
+                                            }
+                                        }
+
+                                        if (storeBlock == true)
+                                        {
                                             using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
                                             {
                                                 BS_Storage.Network = Obj_Settings.Network;
