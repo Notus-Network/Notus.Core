@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Notus.Communication
@@ -77,6 +78,7 @@ namespace Notus.Communication
         }
         public static string GetSync(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true)
         {
+            Console.WriteLine(UrlAddress);
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -86,6 +88,7 @@ namespace Notus.Communication
                         client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
                     }
                     HttpResponseMessage response = client.GetAsync(UrlAddress).GetAwaiter().GetResult();
+                    Console.WriteLine(JsonSerializer.Serialize(response));
                     if (response.IsSuccessStatusCode)
                     {
                         HttpContent responseContent = response.Content;

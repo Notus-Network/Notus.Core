@@ -528,11 +528,18 @@ namespace Notus.Block
                                     );
                                     if (localCreationTime > remoteGenesisData.Info.Creation)
                                     {
+                                        GenesisNeeded = true;
+                                        Console.WriteLine("my creation time : " + localCreationTime.ToLongTimeString());
+                                        Console.WriteLine("remote creation time : " + remoteGenesisData.Info.Creation.ToLongTimeString());
                                         // remote node genesis older than local node
                                         currentGenesisData = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
                                             JsonSerializer.Serialize(remoteGenesisData)
                                         );
-
+                                        Console.WriteLine("local genesis bigger");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("remote genesis bigger");
                                     }
                                 }
                                 else
@@ -550,8 +557,16 @@ namespace Notus.Block
                     }
                 }
             }
-
+            if (GenesisNeeded == true)
+            {
+                Console.WriteLine("Genesis Needed");
+            }
+            else
+            {
+                Console.WriteLine("Genesis Do Not Need");
+            }
             Console.WriteLine("Check Genesisi block status");
+            Console.ReadLine();
             /*
             //string[] ZipFileList = GetZipFiles();
             if (ZipFileList.Length == 0) // genesis needed

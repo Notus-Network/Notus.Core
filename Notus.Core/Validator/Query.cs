@@ -10,7 +10,7 @@ namespace Notus.Validator
             //string mainAddressStr = Notus.Core.Function.MakeHttpListenerPath(nodeAdress, Notus.Variable.Struct.PortNo_HttpListener);
             try
             {
-                string MainResultStr = Notus.Communication.Request.Get(nodeAdress + "block/" + BlockRowNo.ToString(), 10, true).GetAwaiter().GetResult();
+                string MainResultStr = Notus.Communication.Request.GetSync(nodeAdress + "block/" + BlockRowNo.ToString(), 10, true);
                 Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                 return (true, PreBlockData);
             }
