@@ -19,7 +19,7 @@ namespace Notus
         {
             try
             {
-                return DateTimeObj.ToString("yyyyMMddHHmmssfff");
+                return DateTimeObj.ToString(Variable.Constant.DefaultDateTimeFormatText);
             }
             catch
             {
@@ -34,7 +34,7 @@ namespace Notus
         {
             try
             {
-                return DateTime.ParseExact(DateTimeStr.Substring(0, 17), "yyyyMMddHHmmssfff", System.Globalization.CultureInfo.InvariantCulture);
+                return DateTime.ParseExact(DateTimeStr.Substring(0, 17), Variable.Constant.DefaultDateTimeFormatText, System.Globalization.CultureInfo.InvariantCulture);
             }
             catch
             {

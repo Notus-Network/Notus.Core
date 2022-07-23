@@ -29,15 +29,18 @@ namespace Notus.Validator
         public bool Ready
         {
             get { return Val_Ready; }
-            set { Val_Ready = value; }
         }
-        private bool MyTurn = false;
+        private bool MyTurn_Val = false;
+        public bool MyTurn
+        {
+            get { return MyTurn_Val; }
+        }
         private bool SyncReady = true;
 
         private SortedDictionary<string, IpInfo> MainAddressList = new SortedDictionary<string, IpInfo>();
         private string MainAddressListHash = string.Empty;
 
-        private Dictionary<string, DateTime> ErrorNodeList = new Dictionary<string, DateTime>();
+        private Dictionary<string, string> ErrorNodeList = new Dictionary<string, string>();
         private Dictionary<string, NodeQueueInfo> PreviousNodeList = new Dictionary<string, NodeQueueInfo>();
         public Dictionary<string, NodeQueueInfo> SyncNodeList
         {
@@ -187,7 +190,7 @@ namespace Notus.Validator
             else
             {
                 NodeList.Add(tmpNodeHexStr, NodeQueueInfo);
-                ErrorNodeList.Add(tmpNodeHexStr, DefaultTime);
+                ErrorNodeList.Add(tmpNodeHexStr, DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
             }
 
             if (Obj_Settings.LocalNode == true)
@@ -273,7 +276,7 @@ namespace Notus.Validator
             {
                 resultStr += int.Parse(byteStr).ToString("x").PadLeft(2, '0');
             }
-            return resultStr + portNo.ToString("x").PadLeft(5, '0');
+            return resultStr.ToLower() + portNo.ToString("x").PadLeft(5, '0').ToLower();
         }
         private bool CheckXmlTag(string rawDataStr, string tagName)
         {
@@ -341,6 +344,9 @@ namespace Notus.Validator
         }
         private void NodeError(string nodeHexText)
         {
+            //Console.WriteLine("NodeError : " + nodeHexText);
+            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(ErrorNodeList, new JsonSerializerOptions() { WriteIndented = true }));
             if (NodeList.ContainsKey(nodeHexText) == true)
             {
                 NodeList[nodeHexText].ErrorCount++;
@@ -348,27 +354,30 @@ namespace Notus.Validator
                 NodeList[nodeHexText].Time.Error = DateTime.Now;
                 if (ErrorNodeList.ContainsKey(nodeHexText) == true)
                 {
-                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error;
+                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
                 }
             }
         }
         private void NodeIsOnline(string nodeHexText)
         {
+            //Console.WriteLine("NodeIsOnline : " + nodeHexText);
+            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(ErrorNodeList, new JsonSerializerOptions() { WriteIndented = true }));
             if (NodeList.ContainsKey(nodeHexText) == true)
             {
-                NodeList[nodeHexText].ErrorCount=0;
+                NodeList[nodeHexText].ErrorCount = 0;
                 NodeList[nodeHexText].Status = NodeStatus.Online;
                 NodeList[nodeHexText].Time.Error = DefaultTime;
                 if (ErrorNodeList.ContainsKey(nodeHexText) == true)
                 {
-                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error;
+                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
                 }
             }
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
             string tmpNodeHexStr = IpPortToKey(receiverIpAddress, receiverPortNo);
-            TimeSpan tmpErrorDiff = DateTime.Now - ErrorNodeList[tmpNodeHexStr];
+            TimeSpan tmpErrorDiff = DateTime.Now - Notus.Date.ToDateTime(ErrorNodeList[tmpNodeHexStr]);
             //Console.WriteLine(tmpErrorDiff);
             if (tmpErrorDiff.TotalSeconds > 60)
             {
@@ -376,7 +385,7 @@ namespace Notus.Validator
                     Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) +
                     "queue/node/" + tmpNodeHexStr;
                 (bool worksCorrent, string incodeResponse) = Notus.Communication.Request.PostSync(
-                    urlPath, 
+                    urlPath,
                     new Dictionary<string, string>()
                     {
                         { "data",messageText }
@@ -387,7 +396,7 @@ namespace Notus.Validator
                 );
                 if (worksCorrent == true)
                 {
-                    ErrorNodeList[tmpNodeHexStr] = DefaultTime;
+                    ErrorNodeList[tmpNodeHexStr] = DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
                     NodeList[tmpNodeHexStr].ErrorCount = 0;
                     NodeList[tmpNodeHexStr].Status = NodeStatus.Online;
                     NodeList[tmpNodeHexStr].Time.Error = DefaultTime;
@@ -552,11 +561,16 @@ namespace Notus.Validator
                 }
                 TotalNodeCount_Val = nodeCount;
                 int tmpOnlineNodeCount = 0;
-                foreach (KeyValuePair<string, DateTime> entry in ErrorNodeList)
+                foreach (KeyValuePair<string, string> entry in ErrorNodeList)
                 {
                     if (string.Equals(MyNodeHexKey, entry.Key) == false)
                     {
-                        if (ErrorNodeList[entry.Key] != DefaultTime)
+                        if (
+                            string.Equals(
+                                ErrorNodeList[entry.Key],
+                                DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+                            ) == true
+                        )
                         {
                             tmpOnlineNodeCount++;
                         }
@@ -626,10 +640,11 @@ namespace Notus.Validator
                 NodeOrderList.Add(counter, entry.Value);
             }
 
-            MyTurn = (string.Equals(MyWallet, NodeOrderList[1]));
-            if (MyTurn == true)
+            MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
+            if (MyTurn_Val == true)
             {
-                Notus.Print.Info(Obj_Settings.DebugMode, "My Turn");
+                //Notus.Print.Info(Obj_Settings.DebugMode, "My Turn");
+                Notus.Print.Info(Obj_Settings.InfoMode, "My Turn");
                 CalculateTimeDifference(false);
                 RefreshNtpTime();
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
@@ -651,7 +666,8 @@ namespace Notus.Validator
             }
             else
             {
-                Notus.Print.Info(Obj_Settings.DebugMode, "Waiting For Turn");
+                //Notus.Print.Info(Obj_Settings.DebugMode, "Waiting For Turn");
+                Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Turn");
             }
             NodeList[MyNodeHexKey].Time.Node = DateTime.Now;
             NodeList[MyNodeHexKey].Time.World = NtpTime;
@@ -670,7 +686,7 @@ namespace Notus.Validator
 
             MyIpAddress = (Obj_Settings.LocalNode == true ? Obj_Settings.IpInfo.Local : Obj_Settings.IpInfo.Public);
             MyNodeHexKey = IpPortToKey(MyIpAddress, MyPortNo);
-
+            Console.WriteLine("MyNodeHexKey : " + MyNodeHexKey);
             if (Obj_Settings.LocalNode == true)
             {
                 AddToMainAddressList(Obj_Settings.IpInfo.Local, MyPortNo, false);
