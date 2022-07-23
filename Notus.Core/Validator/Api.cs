@@ -470,7 +470,7 @@ namespace Notus.Validator
             }
 
             // bu veri API class'ı tarafından değil, Queue Class'ı tarafından yorumlanacak
-            if (IncomeData.UrlList.Length > 1)
+            if (IncomeData.UrlList.Length > 2)
             {
                 if (
                     string.Equals(IncomeData.UrlList[0].ToLower(), "queue")

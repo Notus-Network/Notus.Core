@@ -9,9 +9,17 @@ namespace Notus.Validator
 {
     public class Queue : IDisposable
     {
+        public int TotalNodeCount_Val = 0;
+        public int TotalNodeCount
+        {
+            get { return TotalNodeCount_Val; }
+        }
+        public int OnlineNodeCount_Val = 0;
+        public int OnlineNodeCount
+        {
+            get { return OnlineNodeCount_Val; }
+        }
         private Notus.Variable.Common.ClassSetting Obj_Settings;
-        public int TotalNodeCount = 0;
-        public int OnlineNodeCount = 0;
         public Notus.Variable.Common.ClassSetting Settings
         {
             get { return Obj_Settings; }
@@ -278,7 +286,9 @@ namespace Notus.Validator
         }
         public string Process(Notus.Variable.Struct.HttpRequestDetails incomeData)
         {
-            return ProcessIncomeData(incomeData.PostParams["data"]);
+            string reponseText = ProcessIncomeData(incomeData.PostParams["data"]);
+            NodeIsOnline(incomeData.UrlList[2].ToLower());
+            return reponseText;
         }
         private string ProcessIncomeData(string incomeData)
         {
@@ -342,6 +352,19 @@ namespace Notus.Validator
                 }
             }
         }
+        private void NodeIsOnline(string nodeHexText)
+        {
+            if (NodeList.ContainsKey(nodeHexText) == true)
+            {
+                NodeList[nodeHexText].ErrorCount=0;
+                NodeList[nodeHexText].Status = NodeStatus.Online;
+                NodeList[nodeHexText].Time.Error = DefaultTime;
+                if (ErrorNodeList.ContainsKey(nodeHexText) == true)
+                {
+                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error;
+                }
+            }
+        }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
             string tmpNodeHexStr = IpPortToKey(receiverIpAddress, receiverPortNo);
@@ -349,7 +372,9 @@ namespace Notus.Validator
             //Console.WriteLine(tmpErrorDiff);
             if (tmpErrorDiff.TotalSeconds > 60)
             {
-                string urlPath = Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) + "queue/node";
+                string urlPath =
+                    Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) +
+                    "queue/node/" + tmpNodeHexStr;
                 (bool worksCorrent, string incodeResponse) = Notus.Communication.Request.PostSync(
                     urlPath, 
                     new Dictionary<string, string>()
@@ -525,16 +550,19 @@ namespace Notus.Validator
                         }
                     }
                 }
-                TotalNodeCount = nodeCount;
+                TotalNodeCount_Val = nodeCount;
                 int tmpOnlineNodeCount = 0;
                 foreach (KeyValuePair<string, DateTime> entry in ErrorNodeList)
                 {
-                    if (ErrorNodeList[entry.Key] != DefaultTime)
+                    if (string.Equals(MyNodeHexKey, entry.Key) == false)
                     {
-                        tmpOnlineNodeCount++;
+                        if (ErrorNodeList[entry.Key] != DefaultTime)
+                        {
+                            tmpOnlineNodeCount++;
+                        }
                     }
                 }
-                OnlineNodeCount = tmpOnlineNodeCount;
+                OnlineNodeCount_Val = tmpOnlineNodeCount;
                 if (nodeCount == 0)
                 {
                     SyncReady = false;

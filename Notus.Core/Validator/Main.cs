@@ -781,6 +781,9 @@ namespace Notus.Validator
                         else
                         {
                             Console.Write(".");
+                            Console.WriteLine("ValidatorQueueObj.TotalNodeCount : " + ValidatorQueueObj.TotalNodeCount.ToString());
+                            Console.WriteLine("ValidatorQueueObj.OnlineNodeCount : " + ValidatorQueueObj.OnlineNodeCount.ToString());
+
                             // Notus.Print.Basic(DebugModeActive, "Wait For Request");
                         }
                     }

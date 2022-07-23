@@ -593,8 +593,6 @@ namespace Notus.Block
         public void GetLastBlock()
         {
             ControlGenesisBlock();
-            //Console.WriteLine("Press enter to Continue ");
-            //Console.ReadLine();
 
             Notus.Variable.Enum.BlockIntegrityStatus Val_Status = Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain;
             Notus.Variable.Class.BlockData LastBlock = new Notus.Variable.Class.BlockData();
