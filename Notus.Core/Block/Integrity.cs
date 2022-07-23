@@ -506,9 +506,10 @@ namespace Notus.Block
                 if (Notus.Validator.List.Main[Obj_Settings.Layer].ContainsKey(Obj_Settings.Network))
                 {
                     bool exitForLoop = false;
+                    bool weResetTheAllBlock = false;
+                    bool storeBlock = false;
                     for (long blockRowNo = 1; blockRowNo < 3 && exitForLoop == false; blockRowNo++)
                     {
-                        bool weResetTheAllBlock = false;
                         foreach (Variable.Struct.IpInfo item in Notus.Validator.List.Main[Obj_Settings.Layer][Obj_Settings.Network])
                         {
                             if (string.Equals(Obj_Settings.IpInfo.Public, item.IpAddress) == false)
@@ -519,45 +520,62 @@ namespace Notus.Block
                                 );
                                 if (NoError == true)
                                 {
-                                    if (string.Equals(localGenesisSign, tmpBlockData.sign) == false)
+                                    DateTime remoteGenesisTime = DateTime.Now;
+                                    if (tmpBlockData.info.type == 360)
                                     {
-                                        Console.WriteLine("Remote Genesis Block Are Different");
-                                        DateTime remoteGenesisTime = DateTime.Now;
-                                        bool storeBlock = true;
-                                        if (tmpBlockData.info.type == 360)
+                                        if (string.Equals(localGenesisSign, tmpBlockData.sign) == false)
                                         {
+                                            Console.WriteLine("Remote Genesis Block Are Different");
                                             remoteGenesisTime = GetGenesisCreationTimeFromString(tmpBlockData.cipher.data);
                                             if (localGenesisTime > remoteGenesisTime)
                                             {
                                                 Console.WriteLine("Remote Genesis Older Than Me");
+                                                storeBlock = true;
                                             }
                                             else
                                             {
-                                                storeBlock = false;
+                                                Console.WriteLine("Remote Genesis Newer Than Me");
                                             }
                                         }
-
-                                        if (storeBlock == true)
+                                        else
                                         {
-                                            using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
-                                            {
-                                                BS_Storage.Network = Obj_Settings.Network;
-                                                BS_Storage.Layer = Obj_Settings.Layer;
-                                                if (weResetTheAllBlock == false)
-                                                {
-                                                    Console.WriteLine("Current Block Were Deleted");
-                                                    BS_Storage.ClearStorage();
-                                                    weResetTheAllBlock = true;
-                                                }
-                                                BS_Storage.AddSync(tmpBlockData, true);
-                                                Console.WriteLine("Added Block : " + tmpBlockData.info.uID);
-                                            }
-                                            SleepWithoutBlocking(250);
+                                            Console.WriteLine("Remote Genesis Block Sign Are Equal");
                                         }
                                     }
-                                    else
+
+                                    /*
+                                    if (tmpBlockData.info.type == 300)
                                     {
-                                        Console.WriteLine("Remote Genesis Block Sign Are Equal");
+                                        Console.WriteLine("localEmptySign : " + localEmptySign);
+                                        Console.WriteLine("tmpBlockData.sign : " + tmpBlockData.sign);
+                                        if (string.Equals(localEmptySign, tmpBlockData.sign) == true)
+                                        {
+                                            Console.WriteLine("Empty Block Are Equal");
+                                        }
+                                        else
+                                        {
+                                            storeBlock = true;
+                                            Console.WriteLine("Empty Block Are Different");
+                                        }
+                                    }
+                                    */
+
+                                    if (storeBlock == true)
+                                    {
+                                        using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                                        {
+                                            BS_Storage.Network = Obj_Settings.Network;
+                                            BS_Storage.Layer = Obj_Settings.Layer;
+                                            if (weResetTheAllBlock == false)
+                                            {
+                                                Console.WriteLine("Current Block Were Deleted");
+                                                BS_Storage.ClearStorage();
+                                                weResetTheAllBlock = true;
+                                            }
+                                            BS_Storage.AddSync(tmpBlockData, true);
+                                            Console.WriteLine("Added Block : " + tmpBlockData.info.uID);
+                                        }
+                                        SleepWithoutBlocking(250);
                                     }
                                 }
                                 else
@@ -575,6 +593,8 @@ namespace Notus.Block
         public void GetLastBlock()
         {
             ControlGenesisBlock();
+            //Console.WriteLine("Press enter to Continue ");
+            //Console.ReadLine();
 
             Notus.Variable.Enum.BlockIntegrityStatus Val_Status = Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain;
             Notus.Variable.Class.BlockData LastBlock = new Notus.Variable.Class.BlockData();
