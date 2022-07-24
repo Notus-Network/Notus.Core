@@ -544,13 +544,12 @@ namespace Notus.Validator
                 //burada eğer nodeların hashleri farklı ise senkron olacağı kısım
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
                 {
-                    string tmpCheckHex = IpPortToKey(entry.Value.IP.IpAddress, entry.Value.IP.Port);
-
-                    if (string.Equals(MyNodeHexKey, tmpCheckHex) == false)
+                    if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
                     {
-                        if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
+                        nodeCount++;
+                        string tmpCheckHex = IpPortToKey(entry.Value.IP.IpAddress, entry.Value.IP.Port);
+                        if (string.Equals(MyNodeHexKey, tmpCheckHex) == false)
                         {
-                            nodeCount++;
                             if (NodeListHash != entry.Value.NodeHash)
                             {
                                 SyncReady = false;
@@ -563,17 +562,9 @@ namespace Notus.Validator
                 int tmpOnlineNodeCount = 0;
                 foreach (KeyValuePair<string, string> entry in ErrorNodeList)
                 {
-                    if (string.Equals(MyNodeHexKey, entry.Key) == false)
+                    if (string.Equals(ErrorNodeList[entry.Key],DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)) == true)
                     {
-                        if (
-                            string.Equals(
-                                ErrorNodeList[entry.Key],
-                                DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
-                            ) == true
-                        )
-                        {
-                            tmpOnlineNodeCount++;
-                        }
+                        tmpOnlineNodeCount++;
                     }
                 }
                 OnlineNodeCount_Val = tmpOnlineNodeCount;
@@ -640,11 +631,15 @@ namespace Notus.Validator
                 NodeOrderList.Add(counter, entry.Value);
             }
 
+            Console.WriteLine("TotalNodeCount : " + TotalNodeCount_Val.ToString());
+            Console.WriteLine("OnlineNodeCount : " + OnlineNodeCount_Val.ToString());
+
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
             if (MyTurn_Val == true)
             {
                 //Notus.Print.Info(Obj_Settings.DebugMode, "My Turn");
                 Notus.Print.Info(Obj_Settings.InfoMode, "My Turn");
+
                 CalculateTimeDifference(false);
                 RefreshNtpTime();
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
