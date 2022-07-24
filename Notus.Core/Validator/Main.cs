@@ -571,7 +571,6 @@ namespace Notus.Validator
             //Console.Write(JsonSerializer.Serialize(Obj_Settings, new JsonSerializerOptions() { WriteIndented = true }));
             //Console.Write("--------------------------------------------------------------------");
 
-            //Obj_Settings.Layer
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
             Obj_Integrity.GetLastBlock();

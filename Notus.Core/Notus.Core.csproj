@@ -3,7 +3,7 @@
   <PropertyGroup>
 	  <TargetFramework>net6.0</TargetFramework>
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	  <Version>4.1.04</Version>
+	  <Version>4.1.07</Version>
 	  <Authors>Omer GOKSOY</Authors>
 	  <Company>Notus Network</Company>
 	  <Product>Notus.Core</Product>
@@ -19,7 +19,8 @@
 	  <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	  <PackageReleaseNotes>In this release, PostRequest and PostRequestSync functions have been updated.</PackageReleaseNotes>
 	  <RepositoryUrl>https://github.com/Notus-Network/Notus.Core</RepositoryUrl>
-	  <RepositoryType>git</RepositoryType>  </PropertyGroup>
+	  <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Helper\**" />

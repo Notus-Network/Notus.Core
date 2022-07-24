@@ -9,16 +9,12 @@ namespace Notus.Validator
 {
     public class Queue : IDisposable
     {
-        public int TotalNodeCount_Val = 0;
-        public int TotalNodeCount
+        public int ActiveNodeCount_Val = 0;
+        public int ActiveNodeCount
         {
-            get { return TotalNodeCount_Val; }
+            get { return ActiveNodeCount_Val; }
         }
-        public int OnlineNodeCount_Val = 0;
-        public int OnlineNodeCount
-        {
-            get { return OnlineNodeCount_Val; }
-        }
+
         private Notus.Variable.Common.ClassSetting Obj_Settings;
         public Notus.Variable.Common.ClassSetting Settings
         {
@@ -40,7 +36,6 @@ namespace Notus.Validator
         private SortedDictionary<string, IpInfo> MainAddressList = new SortedDictionary<string, IpInfo>();
         private string MainAddressListHash = string.Empty;
 
-        private Dictionary<string, string> ErrorNodeList = new Dictionary<string, string>();
         private Dictionary<string, NodeQueueInfo> PreviousNodeList = new Dictionary<string, NodeQueueInfo>();
         public Dictionary<string, NodeQueueInfo> SyncNodeList
         {
@@ -190,7 +185,6 @@ namespace Notus.Validator
             else
             {
                 NodeList.Add(tmpNodeHexStr, NodeQueueInfo);
-                ErrorNodeList.Add(tmpNodeHexStr, DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
             }
 
             if (Obj_Settings.LocalNode == true)
@@ -344,42 +338,28 @@ namespace Notus.Validator
         }
         private void NodeError(string nodeHexText)
         {
-            //Console.WriteLine("NodeError : " + nodeHexText);
-            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
-            //Console.WriteLine(JsonSerializer.Serialize(ErrorNodeList, new JsonSerializerOptions() { WriteIndented = true }));
             if (NodeList.ContainsKey(nodeHexText) == true)
             {
                 NodeList[nodeHexText].ErrorCount++;
                 NodeList[nodeHexText].Status = NodeStatus.Offline;
                 NodeList[nodeHexText].Time.Error = DateTime.Now;
-                if (ErrorNodeList.ContainsKey(nodeHexText) == true)
-                {
-                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
-                }
             }
         }
         private void NodeIsOnline(string nodeHexText)
         {
-            //Console.WriteLine("NodeIsOnline : " + nodeHexText);
-            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
-            //Console.WriteLine(JsonSerializer.Serialize(ErrorNodeList, new JsonSerializerOptions() { WriteIndented = true }));
             if (NodeList.ContainsKey(nodeHexText) == true)
             {
                 NodeList[nodeHexText].ErrorCount = 0;
                 NodeList[nodeHexText].Status = NodeStatus.Online;
                 NodeList[nodeHexText].Time.Error = DefaultTime;
-                if (ErrorNodeList.ContainsKey(nodeHexText) == true)
-                {
-                    ErrorNodeList[nodeHexText] = NodeList[nodeHexText].Time.Error.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
-                }
             }
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
         {
             string tmpNodeHexStr = IpPortToKey(receiverIpAddress, receiverPortNo);
-            TimeSpan tmpErrorDiff = DateTime.Now - Notus.Date.ToDateTime(ErrorNodeList[tmpNodeHexStr]);
-            //Console.WriteLine(tmpErrorDiff);
-            if (tmpErrorDiff.TotalSeconds > 60)
+            TimeSpan tmpErrorDiff = DateTime.Now - NodeList[tmpNodeHexStr].Time.Error;
+            Console.WriteLine(tmpErrorDiff);
+            if (tmpErrorDiff.TotalSeconds > 60 && tmpErrorDiff.TotalSeconds<1000)
             {
                 string urlPath =
                     Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) +
@@ -396,7 +376,6 @@ namespace Notus.Validator
                 );
                 if (worksCorrent == true)
                 {
-                    ErrorNodeList[tmpNodeHexStr] = DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
                     NodeList[tmpNodeHexStr].ErrorCount = 0;
                     NodeList[tmpNodeHexStr].Status = NodeStatus.Online;
                     NodeList[tmpNodeHexStr].Time.Error = DefaultTime;
@@ -538,6 +517,7 @@ namespace Notus.Validator
                         Message_Node_ViaSocket(entry.Value.IP.IpAddress, entry.Value.IP.Port, tmpCheckHex);
                     }
                 }
+
                 NodeList[MyNodeHexKey].NodeHash = CalculateMyNodeListHash();
                 int nodeCount = 0;
                 SyncReady = true;
@@ -558,16 +538,7 @@ namespace Notus.Validator
                         }
                     }
                 }
-                TotalNodeCount_Val = nodeCount;
-                int tmpOnlineNodeCount = 0;
-                foreach (KeyValuePair<string, string> entry in ErrorNodeList)
-                {
-                    if (string.Equals(ErrorNodeList[entry.Key],DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)) == true)
-                    {
-                        tmpOnlineNodeCount++;
-                    }
-                }
-                OnlineNodeCount_Val = tmpOnlineNodeCount;
+
                 if (nodeCount == 0)
                 {
                     SyncReady = false;
@@ -631,8 +602,18 @@ namespace Notus.Validator
                 NodeOrderList.Add(counter, entry.Value);
             }
 
-            Console.WriteLine("TotalNodeCount : " + TotalNodeCount_Val.ToString());
-            Console.WriteLine("OnlineNodeCount : " + OnlineNodeCount_Val.ToString());
+            int nodeCount = 0;
+            foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+            {
+                if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
+                {
+                    nodeCount++;
+                }
+            }
+
+            ActiveNodeCount_Val = nodeCount;
+
+            Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
 
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
             if (MyTurn_Val == true)

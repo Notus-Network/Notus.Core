@@ -759,6 +759,10 @@ namespace Notus.Validator
                 {
                     if (Console.KeyAvailable == true)
                     {
+                        if(Console.ReadKey().Key== ConsoleKey.Enter)
+                        {
+                            return 0;
+                        }
                         keyExist = true;
                     }
                     else
