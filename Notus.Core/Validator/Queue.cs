@@ -358,8 +358,7 @@ namespace Notus.Validator
         {
             string tmpNodeHexStr = IpPortToKey(receiverIpAddress, receiverPortNo);
             TimeSpan tmpErrorDiff = DateTime.Now - NodeList[tmpNodeHexStr].Time.Error;
-            Console.WriteLine(tmpErrorDiff);
-            if (tmpErrorDiff.TotalSeconds > 60 && tmpErrorDiff.TotalSeconds<1000)
+            if (tmpErrorDiff.TotalSeconds > 60)
             {
                 string urlPath =
                     Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) +
@@ -551,7 +550,8 @@ namespace Notus.Validator
                         CalculateTimeDifference(true);
                         if (NtpTime > NextQueueValidNtpTime)
                         {
-                            OrganizeQueue();
+                            //OrganizeQueue();
+                            CheckNodeCount();
                             Val_Ready = true;
                         }
                         StoreNodeListToDb();
@@ -559,6 +559,24 @@ namespace Notus.Validator
                 }
             }
         }
+        private void CheckNodeCount()
+        {
+            int nodeCount = 0;
+            foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+            {
+                if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
+                {
+                    nodeCount++;
+                }
+            }
+            ActiveNodeCount_Val = nodeCount;
+            Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
+            if (ActiveNodeCount_Val > 1)
+            {
+                OrganizeQueue();
+            }
+        }
+
         private void OrganizeQueue()
         {
             //önce geçerli node listesinin bir yedeği alınıyor ve önceki node listesi değişkeninde tutuluyor.
@@ -601,19 +619,6 @@ namespace Notus.Validator
                 counter++;
                 NodeOrderList.Add(counter, entry.Value);
             }
-
-            int nodeCount = 0;
-            foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
-            {
-                if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
-                {
-                    nodeCount++;
-                }
-            }
-
-            ActiveNodeCount_Val = nodeCount;
-
-            Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
 
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
             if (MyTurn_Val == true)
