@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -9,6 +10,13 @@ namespace Notus.Validator
 {
     public class Queue : IDisposable
     {
+        public DateTime StartingTimeAfterEnoughNode;
+        public bool NotEnoughNode_Printed = false;
+        public bool NotEnoughNode_Val = true;
+        public bool NotEnoughNode
+        {
+            get { return NotEnoughNode_Val; }
+        }
         public int ActiveNodeCount_Val = 0;
         public int ActiveNodeCount
         {
@@ -78,17 +86,16 @@ namespace Notus.Validator
             return Notus.Variable.Enum.ValidatorOrder.Primary;
         }
 
-        private void RefreshNtpTime()
+        private DateTime RefreshNtpTime(ulong MaxMinuteCount)
         {
             DateTime tmpNtpTime = NtpTime;
             const ulong secondPointConst = 1000;
-            const ulong midPointConst = 3;
 
             DateTime afterMiliSecondTime = tmpNtpTime.AddMilliseconds(
                 secondPointConst + (secondPointConst - (Notus.Date.ToLong(NtpTime) % secondPointConst))
             );
-            double secondVal = midPointConst + (midPointConst - (ulong.Parse(afterMiliSecondTime.ToString("ss")) % midPointConst));
-            NextQueueValidNtpTime = afterMiliSecondTime.AddSeconds(secondVal);
+            double secondVal = MaxMinuteCount + (MaxMinuteCount - (ulong.Parse(afterMiliSecondTime.ToString("ss")) % MaxMinuteCount));
+            return afterMiliSecondTime.AddSeconds(secondVal);
         }
 
         private void CalculateTimeDifference(bool useLocalValue)
@@ -289,6 +296,11 @@ namespace Notus.Validator
         }
         private string ProcessIncomeData(string incomeData)
         {
+            if (CheckXmlTag(incomeData, "when"))
+            {
+                StartingTimeAfterEnoughNode = Notus.Date.ToDateTime(GetPureText(incomeData, "when"));
+                return "done";
+            }
             if (CheckXmlTag(incomeData, "hash"))
             {
                 incomeData = GetPureText(incomeData, "hash");
@@ -573,11 +585,67 @@ namespace Notus.Validator
             if (ActiveNodeCount_Val > 1)
             {
                 Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
-                OrganizeQueue();
+                if (NotEnoughNode_Val == true) // ilk aşamada buraya girecek
+                {
+                    SortedDictionary<BigInteger, string> tmpWalletList = new SortedDictionary<BigInteger, string>();
+                    foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+                    {
+                        if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
+                        {
+                            BigInteger walletNo = BigInteger.Parse(
+                                new Notus.Hash().CommonHash("sha1", entry.Value.Wallet),
+                                NumberStyles.AllowHexSpecifier
+                            );
+                            if (tmpWalletList.ContainsKey(walletNo) == false)
+                            {
+                                tmpWalletList.Add(walletNo, entry.Value.Wallet);
+                            }
+                        }
+                    }
+                    string tmpFirstWallet = tmpWalletList.First().Value;
+                    Console.WriteLine("tmpFirstWallet : " + tmpFirstWallet);
+                    if (string.Equals(tmpFirstWallet, MyWallet))
+                    {
+                        StartingTimeAfterEnoughNode = RefreshNtpTime(10);
+                        Console.WriteLine("Send When Time");
+                        foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+                        {
+                            if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0) 
+                            {
+                                SendMessage(
+                                    entry.Value.IP.IpAddress,
+                                    entry.Value.IP.Port,
+                                    "<when>" +
+                                        StartingTimeAfterEnoughNode.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText) +
+                                    "</when>",
+                                    true
+                                );
+                            }
+                        }
+                        //send and wait
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wait When Time");
+                        //listen and wait
+                    }
+                    Console.WriteLine(StartingTimeAfterEnoughNode);
+                }
+                NotEnoughNode_Val = false;
+                if (DateTime.Now > StartingTimeAfterEnoughNode)
+                {
+                    OrganizeQueue();
+                }
+                NotEnoughNode_Printed = true;
             }
             else
             {
-                Console.WriteLine("Not enough node");
+                NotEnoughNode_Val = true;
+                if (NotEnoughNode_Printed == false)
+                {
+                    NotEnoughNode_Printed = true;
+                    Console.WriteLine("Not enough node");
+                }
             }
         }
 
@@ -631,7 +699,7 @@ namespace Notus.Validator
                 Notus.Print.Info(Obj_Settings.InfoMode, "My Turn");
 
                 CalculateTimeDifference(false);
-                RefreshNtpTime();
+                NextQueueValidNtpTime = RefreshNtpTime(3);
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
                 {
                     if (
