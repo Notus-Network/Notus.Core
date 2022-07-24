@@ -570,10 +570,14 @@ namespace Notus.Validator
                 }
             }
             ActiveNodeCount_Val = nodeCount;
-            Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
             if (ActiveNodeCount_Val > 1)
             {
+                Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
                 OrganizeQueue();
+            }
+            else
+            {
+                Console.WriteLine("Not enough node");
             }
         }
 
