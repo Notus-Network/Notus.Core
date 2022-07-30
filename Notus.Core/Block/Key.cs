@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-
 namespace Notus.Block
 {
     public static class Key
     {
-        private static string SubGenerateBlockKey(string SeedForKey = "", string PreText = "")
+        private static string SubGenerateBlockKey(DateTime ExactTimeVal, string SeedForKey = "", string PreText = "")
         {
-            DateTime ExactTimeVal = DateTime.Now;
             string tmpTimeHexStr =
                 int.Parse(ExactTimeVal.ToString("yyyyMMdd")).ToString("x") +
                 int.Parse(ExactTimeVal.ToString("HHmmss")).ToString("x").PadLeft(5, '0') +
@@ -46,9 +42,13 @@ namespace Notus.Block
                 new Notus.Hash().CommonHash("ripemd160", PreText).Substring(0, 10) +
                 RandomHashStr1.Substring(0, 31) + RandomHashStr2.Substring(0, 31);
         }
+        public static string Generate(DateTime currentUtcTime, string nodeWalletKey)
+        {
+            return SubGenerateBlockKey(currentUtcTime, nodeWalletKey, "");
+        }
         public static string Generate()
         {
-            return Generate(false, "", "");
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, "", ""));
         }
         public static string Generate(bool ResultAsHex)
         {
@@ -58,17 +58,17 @@ namespace Notus.Block
         {
             if (ResultAsHex == true)
             {
-                return SubGenerateBlockKey(SeedForKey, PreText);
+                return SubGenerateBlockKey(DateTime.Now, SeedForKey, PreText);
             }
-            return Notus.Convert.ToBase35(SubGenerateBlockKey(SeedForKey, PreText));
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, SeedForKey, PreText));
         }
         public static string Generate(bool ResultAsHex = false, string SeedForKey = "")
         {
             if (ResultAsHex == true)
             {
-                return SubGenerateBlockKey(SeedForKey, "");
+                return SubGenerateBlockKey(DateTime.Now, SeedForKey, "");
             }
-            return Notus.Convert.ToBase35(SubGenerateBlockKey(SeedForKey, ""));
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, SeedForKey, ""));
             //DateTime.Now.ToString("yyyyMMddHHmmssffffff")
         }
         public static int CalculateStorageNumber(string timeKey)

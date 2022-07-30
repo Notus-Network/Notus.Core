@@ -390,8 +390,8 @@ namespace Notus.Validator
                             string tmpPrivateKeyStr = IncomeData.UrlList[2];
                             string tmpReceiverAddress = IncomeData.UrlList[3];
                             string tmpVolume = IncomeData.UrlList[4];
-                            
-                            string tmpSenderWalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr);
+
+                            string tmpSenderWalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr,Obj_Settings.Network);
 
                             Notus.Variable.Struct.CryptoTransactionStruct tmpSignedTrans = Notus.Wallet.Transaction.Sign(new Notus.Variable.Struct.CryptoTransactionBeforeStruct()
                             {
@@ -444,7 +444,7 @@ namespace Notus.Validator
                                         Words = new string[] { },
                                         PrivateKey = tmpPrivateKeyStr,
                                         PublicKey = Notus.Wallet.ID.Generate(tmpPrivateKeyStr),
-                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr)
+                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr, Obj_Settings.Network)
                                     }
                                 );
                             }
@@ -459,7 +459,7 @@ namespace Notus.Validator
                                         Words = new string[] { },
                                         PrivateKey = tmpPrivateKeyStr,
                                         PublicKey = Notus.Wallet.ID.Generate(tmpPrivateKeyStr),
-                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr)
+                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr, Obj_Settings.Network)
                                     }
                                 );
                             }
@@ -716,7 +716,7 @@ namespace Notus.Validator
                 }
 
                 tmpFileObj = JsonSerializer.Deserialize<Notus.Variable.Struct.FileTransferStruct>(tmpFileObjStr);
-                
+
                 int calculatedChunkLength = ((int)Math.Ceiling(System.Convert.ToDouble(tmpFileObj.FileSize / tmpFileObj.ChunkSize))) - 1;
                 string tmpCurrentList = ObjMp_FileList.Get(tmpStorageIdKey + "_chunk", "");
                 Dictionary<int, string> tmpChunkList = new Dictionary<int, string>();
@@ -924,7 +924,7 @@ namespace Notus.Validator
                     tmpFileObj = JsonSerializer.Deserialize<Notus.Variable.Struct.FileTransferStruct>(tmpFileObjStr);
                 }
 
-                
+
                 int calculatedChunkLength = ((int)Math.Ceiling(System.Convert.ToDouble(tmpFileObj.FileSize / tmpFileObj.ChunkSize))) - 1;
                 string tmpCurrentList = ObjMp_FileList.Get(tmpStorageIdKey + "_chunk", "");
                 Dictionary<int, string> tmpChunkList = new Dictionary<int, string>();
@@ -1415,7 +1415,8 @@ namespace Notus.Validator
                 (bool blockFound, Notus.Variable.Class.BlockData tmpResultBlock) = GetBlockWithRowNo(BlockNumber);
                 if (blockFound == true)
                 {
-                    if (Obj_Settings.PrettyJson == true)
+                    bool tmpPrettyJson = Obj_Settings.PrettyJson;
+                    if (tmpPrettyJson == true)
                     {
                         return JsonSerializer.Serialize(tmpResultBlock, new JsonSerializerOptions() { WriteIndented = true });
                     }
@@ -1539,7 +1540,7 @@ namespace Notus.Validator
                         });
                     }
 
-                    string tmpOwnerWalletStr = Notus.Wallet.ID.GetAddressWithPublicKey(tmpTokenObj.Creation.PublicKey);
+                    string tmpOwnerWalletStr = Notus.Wallet.ID.GetAddressWithPublicKey(tmpTokenObj.Creation.PublicKey, Obj_Settings.Network);
                     if (string.Equals(WalletKeyStr, tmpOwnerWalletStr) == false)
                     {
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponseStruct()
@@ -1723,7 +1724,7 @@ namespace Notus.Validator
             if (IncomeData.PostParams.ContainsKey("data") == true)
             {
                 Notus.Variable.Struct.GenericSignStruct signData = JsonSerializer.Deserialize<Notus.Variable.Struct.GenericSignStruct>(IncomeData.PostParams["data"]);
-                string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(signData.PublicKey);
+                string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(signData.PublicKey, Obj_Settings.Network);
 
                 string tmpNftStorageId = IncomeData.UrlList[2];
                 string publicKey = "";

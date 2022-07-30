@@ -12,6 +12,28 @@ namespace Notus.Toolbox
     {
         private static bool Error_TestIpAddress = true;
         private static readonly string DefaultControlTestData = "notus-network-test-result-data";
+        public static (bool,Notus.Variable.Class.BlockData) GetBlockFromNode(string ipAddress,int portNo,long blockNo)
+        {
+            string urlPath = Notus.Network.Node.MakeHttpListenerPath(ipAddress,portNo) + "block/" + blockNo.ToString();
+            string incodeResponse = Notus.Communication.Request.GetSync(urlPath,2,true,false);
+            try
+            {
+                if (incodeResponse != null && incodeResponse != string.Empty && incodeResponse.Length > 0)
+                {
+                    Notus.Variable.Class.BlockData tmpResultBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(incodeResponse);
+                    if (tmpResultBlock != null)
+                    {
+                        return (false,tmpResultBlock);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            return (true, null);
+        }
+            
         public static int GetNetworkPort(Notus.Variable.Common.ClassSetting Obj_Settings)
         {
             if (Obj_Settings.Network == Variable.Enum.NetworkType.TestNet)

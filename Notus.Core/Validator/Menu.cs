@@ -100,6 +100,11 @@ namespace Notus.Validator
                     }
                     if (gwKey.Key == ConsoleKey.U)
                     {
+                        //store public key to DB for every Network
+                        //store public key to DB for every Network
+                        //store public key to DB for every Network
+                        //store public key to DB for every Network
+                        //store public key to DB for every Network
                         MP_NodeList.Set("Node_WalletKey", newWalletKey.WalletKey, true);
                         Node_WalletDefined = true;
                         Node_WalletKey = newWalletKey.WalletKey;
@@ -759,7 +764,12 @@ namespace Notus.Validator
                 {
                     if (Console.KeyAvailable == true)
                     {
-                        if(Console.ReadKey().Key== ConsoleKey.Enter)
+                        var readKeyObj = Console.ReadKey().Key;
+                        if (readKeyObj== ConsoleKey.UpArrow || readKeyObj == ConsoleKey.DownArrow)
+                        {
+                            Console.Clear();
+                        }
+                        if(readKeyObj == ConsoleKey.Enter)
                         {
                             return 0;
                         }
@@ -1060,7 +1070,11 @@ namespace Notus.Validator
             currentSetting.InfoMode = nodeObj.InfoMode;
             currentSetting.LocalNode = nodeObj.LocalMode;
             currentSetting.DevelopmentNode = nodeObj.DevelopmentMode;
-            currentSetting.NodeWallet.WalletKey = nodeObj.Wallet.Key;
+            if (currentSetting.DevelopmentNode == true)
+            {
+                currentSetting.NodeWallet.WalletKey = Notus.Variable.Constant.Prefix_DevelopmentNetwork + nodeObj.Wallet.Key.Substring(2);
+            }
+
             currentSetting.Port = nodeObj.Layer.Port;
             currentSetting.EncryptKey = new Notus.Hash().CommonHash("sha512", currentSetting.NodeWallet.WalletKey);
             return currentSetting;

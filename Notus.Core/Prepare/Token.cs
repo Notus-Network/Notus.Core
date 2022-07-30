@@ -16,6 +16,7 @@ namespace Notus.Prepare
             string whichNodeIpAddress = ""
         )
         {
+            //Notus.Wallet.ID.GetAddressWithPublicKey(PublicKeyHex, currentNetwork)
             Notus.Variable.Struct.BlockStruct_160 Obj_Token = new Notus.Variable.Struct.BlockStruct_160()
             {
                 Version = 1000,
@@ -46,7 +47,7 @@ namespace Notus.Prepare
             };
 
             bool exitInnerLoop = false;
-            string WalletKeyStr = Notus.Wallet.ID.GetAddressWithPublicKey(PublicKeyHex);
+            string WalletKeyStr = Notus.Wallet.ID.GetAddressWithPublicKey(PublicKeyHex, currentNetwork);
             while (exitInnerLoop == false)
             {
                 for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)

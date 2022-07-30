@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -38,8 +39,9 @@ namespace Notus.Validator
         private bool CryptoTransferTimerIsRunning = false;
         private DateTime CryptoTransferTime = DateTime.Now;
 
+        private bool EmptyBlockNotMyTurnPrinted = false;
         private bool EmptyBlockTimerIsRunning = false;
-        private DateTime EmptyBlockTime = DateTime.Now;
+        private DateTime EmptyBlockGeneratedTime = new DateTime(2000, 01, 1, 0, 00, 00);
 
         //private bool ImageWaterMarkTimerIsRunning = false;
         //private DateTime ImageWaterMarkTime = DateTime.Now;
@@ -47,13 +49,15 @@ namespace Notus.Validator
         private bool FileStorageTimerIsRunning = false;
         private DateTime FileStorageTime = DateTime.Now;
 
+        public ConcurrentQueue<Notus.Variable.Class.BlockData> IncomeBlockList = new ConcurrentQueue<Notus.Variable.Class.BlockData>();
         private Notus.Block.Queue Obj_BlockQueue = new Notus.Block.Queue();
         private Notus.Validator.Queue ValidatorQueueObj = new Notus.Validator.Queue();
 
         //private System.Action<string, Notus.Variable.Class.BlockData> OnReadFromChainFuncObj = null;
         public void EmptyBlockTimerFunc()
         {
-            if (Obj_Settings.Genesis.Empty.Active)
+            Console.WriteLine("EmptyBlockTimerFunc - Line");
+            Console.WriteLine(Obj_Settings.Genesis.Empty.Active);
             {
                 Notus.Print.Basic(Obj_Settings, "Timer Has Started");
 
@@ -63,33 +67,40 @@ namespace Notus.Validator
                     if (EmptyBlockTimerIsRunning == false)
                     {
                         EmptyBlockTimerIsRunning = true;
-                        int howManySeconds = (int)Math.Floor((DateTime.Now - EmptyBlockTime).TotalSeconds);
-                        //Notus.Print.Basic(InfoModeActive,"Notus.Validator.Main - Timer Schedule -> " + howManySeconds.ToString());
-                        bool executeEmptyBlock = false;
+                        int howManySeconds = Obj_Settings.Genesis.Empty.Interval.Time;
+
                         if (Obj_Settings.Genesis.Empty.SlowBlock.Count >= Obj_Integrity.EmptyBlockCount)
                         {
-                            executeEmptyBlock = (
-                                (howManySeconds >
-                                    (Obj_Settings.Genesis.Empty.Interval.Time * Obj_Settings.Genesis.Empty.SlowBlock.Multiply)
-                                ) ?
-                                true :
-                                false
-                            );
+                            howManySeconds = (Obj_Settings.Genesis.Empty.Interval.Time * Obj_Settings.Genesis.Empty.SlowBlock.Multiply);
                         }
-                        else
+                        //blok zamanı ve utc zamanı çakışıyor
+                        DateTime tmpLastTime = Notus.Date.ToDateTime(Obj_Settings.LastBlock.info.time).AddSeconds(howManySeconds);
+                        Console.WriteLine(
+                            ValidatorQueueObj.GetUtcTime().ToString(Notus.Variable.Constant.DefaultDateTimeFormatText) + 
+                            " - " + 
+                            tmpLastTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+                        );
+                        // get utc time from validatır Queue
+                        if (ValidatorQueueObj.GetUtcTime() > tmpLastTime)
                         {
-                            executeEmptyBlock = (
-                                (howManySeconds > Obj_Settings.Genesis.Empty.Interval.Time) ?
-                                true :
-                                false
-                            );
-                        }
-
-                        if (executeEmptyBlock == true)
-                        {
-                            Notus.Print.Basic(Obj_Settings, "Empty Block Executed");
-                            Obj_BlockQueue.AddEmptyBlock();
-                            EmptyBlockTime = DateTime.Now;
+                            if (ValidatorQueueObj.MyTurn)
+                            {
+                                if ((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds > 30)
+                                {
+                                    Notus.Print.Basic(Obj_Settings, "Empty Block Executed");
+                                    Obj_BlockQueue.AddEmptyBlock();
+                                    EmptyBlockGeneratedTime = DateTime.Now;
+                                }
+                                EmptyBlockNotMyTurnPrinted = false;
+                            }
+                            else
+                            {
+                                if (EmptyBlockNotMyTurnPrinted == false)
+                                {
+                                    Notus.Print.Basic(Obj_Settings, "Not My Turn For Empty Block");
+                                    EmptyBlockNotMyTurnPrinted = true;
+                                }
+                            }
                         }
                         EmptyBlockTimerIsRunning = false;
                     }
@@ -193,7 +204,7 @@ namespace Notus.Validator
         */
         public void FileStorageTimer()
         {
-            Notus.Print.Basic(Obj_Settings.InfoMode, "File Storage Timer Has Started");
+            Notus.Print.Basic(Obj_Settings, "File Storage Timer Has Started");
 
             Notus.Threads.Timer TimerObj = new Notus.Threads.Timer(2000);
             TimerObj.Start(() =>
@@ -232,7 +243,7 @@ namespace Notus.Validator
                                     string tmpCurrentList = ObjMp_FileList.Get(tmpStorageId + "_chunk", "");
                                     //try
                                     //{
-                                    string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey);
+                                    string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey,Obj_Settings.Network);
                                     string tmpOutputFolder = Notus.IO.GetFolderName(
                                         Obj_Settings.Network,
                                         Obj_Settings.Layer,
@@ -314,7 +325,7 @@ namespace Notus.Validator
                 {
                     CryptoTransferTimerIsRunning = true;
                     bool executedCryptoTransfer = false;
-                    int howManySeconds = (int)Math.Floor((DateTime.Now - EmptyBlockTime).TotalSeconds);
+                    //int howManySeconds = (int)Math.Floor((DateTime.Now - EmptyBlockTime).TotalSeconds);
                     int tmpRequestSend_ListCount = Obj_Api.RequestSend_ListCount();
                     if (tmpRequestSend_ListCount > 0)
                     {
@@ -561,6 +572,38 @@ namespace Notus.Validator
                 }  //if (CryptoTransferTimerIsRunning == false)
             }, true);  //TimerObj.Start(() =>
         }
+        private void SetTimeStatusForBeginSync(bool status)
+        {
+            if (Obj_Settings.GenesisCreated == false)
+            {
+                if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
+                {
+                    if (EmptyTimerActive == true)
+                    {
+                        EmptyBlockTimerIsRunning = status;
+                    }
+                    if (CryptoTimerActive == true)
+                    {
+                        CryptoTransferTimerIsRunning = status;
+                    }
+                }
+                if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer2)
+                {
+                }
+                if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer3)
+                {
+                }
+            }
+        }
+        private void WaitUntilEnoughNode()
+        {
+            SetTimeStatusForBeginSync(true);        // stop timer
+            while (ValidatorQueueObj.WaitForEnoughNode == true)
+            {
+                Thread.Sleep(100);
+            }
+            SetTimeStatusForBeginSync(false);       // release timer
+        }
         public void Start()
         {
             // control-point
@@ -677,18 +720,83 @@ namespace Notus.Validator
             //BlockStatObj = Obj_BlockQueue.CurrentBlockStatus();
             Start_HttpListener();
 
+            Notus.Print.Info(Obj_Settings, "Waiting For Node Sync", false);
             ValidatorQueueObj.Settings = Obj_Settings;
-            ValidatorQueueObj.PreStart();
+            /*
+            Obj_Api.Func_OnReadFromChain = blockKeyIdStr =>
+            {
+                (bool tmpBlockExist, Notus.Variable.Class.BlockData tmpBlockResult) = Obj_BlockQueue.ReadFromChain(blockKeyIdStr);
+                if (tmpBlockExist == true)
+                {
+                    return tmpBlockResult;
+                }
+                return null;
+            };
+            
+            ValidatorQueueObj.Func_NewBlockIncome
+            */
+            ValidatorQueueObj.Func_NewBlockIncome = tmpNewBlockIncome =>
+            {
+                Console.WriteLine("Arrived New Block : " + tmpNewBlockIncome.info.uID);
+                AddedNewBlock(tmpNewBlockIncome);
+                return true;
+            };
+            //Console.ReadLine();
+
+            if (Obj_Settings.GenesisCreated == true)
+            {
+                ValidatorQueueObj.PreStart(0, 
+                    string.Empty,
+                    string.Empty,
+                    string.Empty
+                );
+            }
+            else
+            {
+                ValidatorQueueObj.PreStart(
+                    Obj_Settings.LastBlock.info.rowNo,
+                    Obj_Settings.LastBlock.info.uID,
+                    Obj_Settings.LastBlock.sign,
+                    Obj_Settings.LastBlock.prev
+                );
+            }
             ValidatorQueueObj.Start();
-            Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Node Sync", false);
-            Thread.Sleep(1000);
-            //Console.WriteLine("Waiting For Node Sync");
-            //Console.WriteLine("ValidatorQueueObj.TotalNodeCount : " + ValidatorQueueObj.TotalNodeCount.ToString());
-            //Console.WriteLine("ValidatorQueueObj.OnlineNodeCount : " + ValidatorQueueObj.OnlineNodeCount.ToString());
-
-            // genesisi oluşturulduktan sonra diğer node lar ile iletişime geçip, senkronizasyona başlatılmalı
-
+            Console.WriteLine("Step-Control-1111");
+            while (ValidatorQueueObj.IncomeBlockListDone == false)
+            {
+                Thread.Sleep(50);
+            }
+            Console.WriteLine("Step-Control-2222");
+            bool quitFromWhileLoop = false;
+            while (quitFromWhileLoop == false)
+            {
+                quitFromWhileLoop = true;
+                if (ValidatorQueueObj.IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
+                {
+                    if (retValue != null)
+                    {
+                        IncomeBlockList.Enqueue(retValue);
+                        quitFromWhileLoop = false;
+                    }
+                }
+            }
+            Console.WriteLine("Step-Control-3333");
+            quitFromWhileLoop = false;
+            while (quitFromWhileLoop == false)
+            {
+                quitFromWhileLoop = true;
+                if (IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
+                {
+                    if (retValue != null)
+                    {
+                        AddedNewBlock(retValue);
+                        quitFromWhileLoop = false;
+                    }
+                }
+            }
+            Console.WriteLine("Step-Control-4444");
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
+            /*
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
             {
                 Notus.Variable.Enum.ValidatorOrder EmptyNodeOrder = ValidatorQueueObj.EmptyTimer();
@@ -697,14 +805,14 @@ namespace Notus.Validator
 
                 }
             }
-            //Console.WriteLine(EmptyTimerActive);
-            //Console.WriteLine(EmptyTimerActive);
-            //Console.WriteLine(JsonSerializer.Serialize(Obj_Settings, new JsonSerializerOptions(){WriteIndented = true}));
-            //Console.ReadLine();
+            */
 
-            //Console.WriteLine(EmptyTimerActive);
+            EmptyTimerActive = true;
+            Console.WriteLine("Obj_Settings.GenesisCreated");
+            Console.WriteLine(Obj_Settings.GenesisCreated);
             if (Obj_Settings.GenesisCreated == false)
             {
+                Console.WriteLine(Obj_Settings.Layer.ToString());
                 if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
                 {
                     if (EmptyTimerActive == true)
@@ -727,72 +835,91 @@ namespace Notus.Validator
                     FileStorageTimer();
                 }
             }
+            Notus.Print.Basic(Obj_Settings, "First Synchronization Is Done");
+
             DateTime LastPrintTime = DateTime.Now;
             bool tmpExitMainLoop = false;
             while (tmpExitMainLoop == false)
             {
-                (bool bStatus, Notus.Variable.Struct.PoolBlockRecordStruct TmpBlockStruct) = Obj_BlockQueue.Get();
-                if (bStatus == true)
+                WaitUntilEnoughNode();
+                if (ValidatorQueueObj.MyTurn==true)
                 {
-                    /*
-                    Notus.Print.Basic(
-                        Obj_Settings.DebugMode,
-                        JsonSerializer.Serialize(
-                            TmpBlockStruct,
-                            new JsonSerializerOptions()
+                    // geçerli utc zaman bilgisini alıp block oluşturma işlemi için parametre olarak gönder böylece
+                    // her blok utc zamanı ile oluşturulmuş olsun
+                    DateTime currentUtcTime = ValidatorQueueObj.GetUtcTime();
+                    (bool bStatus, Notus.Variable.Struct.PoolBlockRecordStruct TmpBlockStruct) = Obj_BlockQueue.Get(currentUtcTime);
+                    if (bStatus == true)
+                    {
+                        Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(TmpBlockStruct.data);
+
+                        // oluşturulan blok burada diğer node'lara dağıtılmalı
+                        // oluşturulan blok burada diğer node'lara dağıtılmalı
+                        // oluşturulan blok burada diğer node'lara dağıtılmalı
+                        // oluşturulan blok burada diğer node'lara dağıtılmalı
+                        // omergoksoy
+                        // omergoksoy
+
+                        // omergoksoy
+                        //Notus.Variable.Enum.ValfwidatorOrder NodeOrder = ValidatorQueueObj.Distrubute(PreBlockData);
+
+                        /*
+                        if (NodeOrder == Notus.Variable.Enum.ValidatorOrder.Primary)
+                        {
+
+                        }
+                        */
+
+                        //blok sıra ve önceki değerleri düzenleniyor...
+                        PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
+
+                        //Notus.Print.Basic(Obj_Settings, "NodeOrder : " + NodeOrder.ToString());
+                        Notus.Variable.Class.BlockData PreparedBlockData = new Notus.Block.Generate(Obj_Settings.NodeWallet.WalletKey).Make(PreBlockData, 1000);
+                        AddedNewBlock(PreparedBlockData);
+                        ValidatorQueueObj.Distrubute(PreBlockData);
+                        Thread.Sleep(500);
+                    }
+                    else
+                    {
+                        if ((DateTime.Now - LastPrintTime).TotalSeconds > 20)
+                        {
+                            LastPrintTime = DateTime.Now;
+                            if (Obj_Settings.GenesisCreated == true)
                             {
-                                WriteIndented = true
+                                tmpExitMainLoop = true;
                             }
-                        )
-                    );
-					*/
-                    Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(TmpBlockStruct.data);
+                            else
+                            {
+                                Console.Write(".");
+                                //Console.WriteLine("ValidatorQueueObj.TotalNodeCount : " + ValidatorQueueObj.TotalNodeCount.ToString());
+                                //Console.WriteLine("ValidatorQueueObj.OnlineNodeCount : " + ValidatorQueueObj.OnlineNodeCount.ToString());
 
-                    Notus.Variable.Enum.ValidatorOrder NodeOrder = ValidatorQueueObj.Distrubute(PreBlockData);
-                    if (NodeOrder == Notus.Variable.Enum.ValidatorOrder.Primary)
-                    {
-
-                    }
-
-                    //blok sıra ve önceki değerleri düzenleniyor...
-                    PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
-
-                    Notus.Print.Basic(Obj_Settings, "NodeOrder : " + NodeOrder.ToString());
-                    Notus.Variable.Class.BlockData PreparedBlockData = new Notus.Block.Generate(Obj_Settings.NodeWallet.WalletKey).Make(PreBlockData, 1000);
-                    Obj_BlockQueue.Settings.LastBlock = PreparedBlockData;
-                    Obj_Settings.LastBlock = PreparedBlockData;
-
-                    Obj_Api.Settings.LastBlock = Obj_Settings.LastBlock;
-
-                    Notus.Print.Basic(Obj_Settings, "Block Generated [" + PreparedBlockData.info.type.ToString() + "]: " + PreparedBlockData.info.uID);
-                    OrganizeEachBlock(PreparedBlockData, true);
-                    Thread.Sleep(500);
-                }
-                else
-                {
-                    if ((DateTime.Now - LastPrintTime).TotalSeconds > 20)
-                    {
-                        LastPrintTime = DateTime.Now;
-                        if (Obj_Settings.GenesisCreated == true)
-                        {
-                            tmpExitMainLoop = true;
-                        }
-                        else
-                        {
-                            Console.Write(".");
-                            //Console.WriteLine("ValidatorQueueObj.TotalNodeCount : " + ValidatorQueueObj.TotalNodeCount.ToString());
-                            //Console.WriteLine("ValidatorQueueObj.OnlineNodeCount : " + ValidatorQueueObj.OnlineNodeCount.ToString());
-
-                            // Notus.Print.Basic(DebugModeActive, "Wait For Request");
+                                // Notus.Print.Basic(DebugModeActive, "Wait For Request");
+                                Thread.Sleep(5);
+                            }
                         }
                     }
-                    Thread.Sleep(5);
-                    //Notus.Core.Function.Sleep(5, true);
                 }
             }
-            Notus.Print.Warning(Obj_Settings, "Main Class Ended");
+            if (Obj_Settings.GenesisCreated == true)
+            {
+                Notus.Print.Warning(Obj_Settings, "Main Class Temporary Ended");
+            }
+            else
+            {
+                Notus.Print.Warning(Obj_Settings, "Main Class Ended");
+            }
         }
 
+        private void AddedNewBlock(Notus.Variable.Class.BlockData Obj_BlockData)
+        {
+            Obj_BlockQueue.Settings.LastBlock = Obj_BlockData;
+            Obj_Settings.LastBlock = Obj_BlockData;
+
+            Obj_Api.Settings.LastBlock = Obj_Settings.LastBlock;
+
+            Notus.Print.Basic(Obj_Settings, "Block Generated [" + Obj_BlockData.info.type.ToString() + "]: " + Obj_BlockData.info.uID);
+            OrganizeEachBlock(Obj_BlockData, true);
+        }
         private void OrganizeEachBlock(Notus.Variable.Class.BlockData Obj_BlockData, bool NewBlock)
         {
             if (NewBlock == true)
@@ -855,6 +982,7 @@ namespace Notus.Validator
         }
         private void Start_HttpListener()
         {
+            /*
             if (Obj_Settings.LocalNode == true)
             {
                 Console.WriteLine("Listining : " + Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Local, SelectedPortVal));
@@ -863,6 +991,7 @@ namespace Notus.Validator
             {
                 Console.WriteLine( "Listining : " +Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Public, SelectedPortVal));
             }
+            */
 
             if (Obj_Settings.LocalNode == true)
             {
@@ -888,7 +1017,7 @@ namespace Notus.Validator
             HttpObj.Settings = Obj_Settings;
             HttpObj.StoreUrl = false;
             HttpObj.Start(NodeIpAddress, SelectedPortVal);
-            Notus.Print.Basic(true, "Http Has Started", false);
+            Notus.Print.Basic(Obj_Settings, "Http Has Started", false);
         }
 
         private string Fnc_OnReceiveData(Notus.Variable.Struct.HttpRequestDetails IncomeData)

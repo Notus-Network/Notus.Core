@@ -88,6 +88,7 @@ namespace Notus
             bool PrintAsync
         )
         {
+            PrintAsync = false;
             if (ShowOnScreen == true)
             {
                 if (DetailsStr == "")

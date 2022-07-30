@@ -1,16 +1,25 @@
 ﻿using Notus.Variable.Struct;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 namespace Notus.Validator
 {
     public class Queue : IDisposable
     {
         public DateTime StartingTimeAfterEnoughNode;
+
+        private bool WaitForEnoughNode_Val = true;
+        public bool WaitForEnoughNode
+        {
+            get { return WaitForEnoughNode_Val; }
+        }
+
         public bool NotEnoughNode_Printed = false;
         public bool NotEnoughNode_Val = true;
         public bool NotEnoughNode
@@ -23,13 +32,16 @@ namespace Notus.Validator
             get { return ActiveNodeCount_Val; }
         }
 
+        public bool IncomeBlockListDone = false;
+        public ConcurrentQueue<Notus.Variable.Class.BlockData> IncomeBlockList = new ConcurrentQueue<Notus.Variable.Class.BlockData>();
+
         private Notus.Variable.Common.ClassSetting Obj_Settings;
         public Notus.Variable.Common.ClassSetting Settings
         {
             get { return Obj_Settings; }
             set { Obj_Settings = value; }
         }
-        private bool Val_Ready;
+        private bool Val_Ready = false;
         public bool Ready
         {
             get { return Val_Ready; }
@@ -54,7 +66,6 @@ namespace Notus.Validator
         private Dictionary<string, DateTime> MessageTimeList = new Dictionary<string, DateTime>();
         private Dictionary<int, string> NodeOrderList = new Dictionary<int, string>();
 
-        private readonly DateTime DefaultTime = new DateTime(2000, 01, 1, 0, 00, 00);
         private Notus.Mempool ObjMp_NodeList;
         private bool ExitFromLoop = false;
         private string LastHashForStoreList = "#####";
@@ -74,6 +85,8 @@ namespace Notus.Validator
         private bool NodeTimeAfterNtpTime = false;      // time difference before or after NTP Server
         private DateTime NextQueueValidNtpTime;         // New Queue will be usable after this NTP time
 
+        public System.Func<Notus.Variable.Class.BlockData, bool> Func_NewBlockIncome = null;
+
         //empty blok için kontrolü yapacak olan node'u seçen fonksiyon
         public Notus.Variable.Enum.ValidatorOrder EmptyTimer()
         {
@@ -81,9 +94,23 @@ namespace Notus.Validator
         }
 
         //oluşturulacak blokları kimin oluşturacağını seçen fonksiyon
-        public Notus.Variable.Enum.ValidatorOrder Distrubute(Notus.Variable.Class.BlockData BlockData)
+        public void Distrubute(Notus.Variable.Class.BlockData BlockData)
         {
-            return Notus.Variable.Enum.ValidatorOrder.Primary;
+            foreach (KeyValuePair<string, IpInfo> entry in MainAddressList)
+            {
+                string tmpNodeHexStr = IpPortToKey(entry.Value.IpAddress, entry.Value.Port);
+                if (string.Equals(MyNodeHexKey, tmpNodeHexStr) == false)
+                {
+                    Console.WriteLine(entry.Value.IpAddress + " - " + entry.Value.Port.ToString() + " > " + BlockData.info.rowNo.ToString());
+                    SendMessage(entry.Value.IpAddress, entry.Value.Port,
+                        "<block>" +
+                            BlockData.info.rowNo.ToString() + ":" + Obj_Settings.NodeWallet.WalletKey +
+                        "</block>",
+                        true
+                    );
+                }
+            }
+            //return Notus.Variable.Enum.ValidatorOrder.Primary;
         }
 
         private DateTime RefreshNtpTime(ulong MaxMinuteCount)
@@ -97,7 +124,11 @@ namespace Notus.Validator
             double secondVal = MaxMinuteCount + (MaxMinuteCount - (ulong.Parse(afterMiliSecondTime.ToString("ss")) % MaxMinuteCount));
             return afterMiliSecondTime.AddSeconds(secondVal);
         }
-
+        public DateTime GetUtcTime()
+        {
+            //CalculateTimeDifference(true);
+            return NtpTime;
+        }
         private void CalculateTimeDifference(bool useLocalValue)
         {
             if ((DateTime.Now - NtpCheckTime).TotalMinutes > 10 && useLocalValue == false)
@@ -183,7 +214,6 @@ namespace Notus.Validator
         }
         private void AddToNodeList(NodeQueueInfo NodeQueueInfo)
         {
-
             string tmpNodeHexStr = IpPortToKey(NodeQueueInfo.IP.IpAddress, NodeQueueInfo.IP.Port);
             if (NodeList.ContainsKey(tmpNodeHexStr))
             {
@@ -296,6 +326,68 @@ namespace Notus.Validator
         }
         private string ProcessIncomeData(string incomeData)
         {
+            if (CheckXmlTag(incomeData, "block"))
+            {
+                string incomeDataStr = GetPureText(incomeData, "block");
+                Console.WriteLine("incomeDataStr : " + incomeDataStr);
+                if (incomeDataStr.IndexOf(":") >= 0)
+                {
+                    Console.WriteLine("burada");
+                    string[] tmpArr = incomeDataStr.Split(":");
+                    long tmpBlockNo = long.Parse(tmpArr[0]);
+                    string tmpNodeWalletKey = tmpArr[1];
+                    string tmpIpAddress = string.Empty;
+                    int tmpPortNo = 0;
+                    foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+                    {
+                        if (string.Equals(entry.Value.Wallet, tmpNodeWalletKey))
+                        {
+                            tmpIpAddress = entry.Value.IP.IpAddress;
+                            tmpPortNo = entry.Value.IP.Port;
+                        }
+                        if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
+                        {
+
+                        }
+                    }
+                    if (tmpPortNo > 0)
+                    {
+                        //omergoksoy
+                        //omergoksoy
+                        // burada çekilen block node'un kendi havuzuna eklenecek
+                        // burada çekilen block node'un kendi havuzuna eklenecek
+                        // burada çekilen block node'un kendi havuzuna eklenecek
+                        (bool tmpNoError, Variable.Class.BlockData? tmpBlockData) =
+                            Notus.Toolbox.Network.GetBlockFromNode(tmpIpAddress, tmpPortNo, tmpBlockNo);
+                        if (tmpNoError == true)
+                        {
+                            if (Func_NewBlockIncome != null)
+                            {
+                                bool fncResult = Func_NewBlockIncome(tmpBlockData);
+                                if (fncResult == true)
+                                {
+                                    Console.WriteLine("step-3333");
+                                    return "fncResult-true";
+                                }
+                                Console.WriteLine("step-4444");
+                                return "fncResult-false";
+                            }
+                            else
+                            {
+                                Console.WriteLine("step-1111");
+                            }
+                        }
+                        Console.WriteLine("step-77777");
+                        return "tmpNoError-false";
+                    }
+                    else
+                    {
+                        Console.WriteLine("step-9999");
+                    }
+                }
+                Console.WriteLine("step-0880888088");
+                return "done";
+            }
             if (CheckXmlTag(incomeData, "when"))
             {
                 StartingTimeAfterEnoughNode = Notus.Date.ToDateTime(GetPureText(incomeData, "when"));
@@ -363,7 +455,7 @@ namespace Notus.Validator
             {
                 NodeList[nodeHexText].ErrorCount = 0;
                 NodeList[nodeHexText].Status = NodeStatus.Online;
-                NodeList[nodeHexText].Time.Error = DefaultTime;
+                NodeList[nodeHexText].Time.Error = Notus.Variable.Constant.DefaultTime;
             }
         }
         private string SendMessage(string receiverIpAddress, int receiverPortNo, string messageText, bool executeErrorControl)
@@ -389,7 +481,7 @@ namespace Notus.Validator
                 {
                     NodeList[tmpNodeHexStr].ErrorCount = 0;
                     NodeList[tmpNodeHexStr].Status = NodeStatus.Online;
-                    NodeList[tmpNodeHexStr].Time.Error = DefaultTime;
+                    NodeList[tmpNodeHexStr].Time.Error = Notus.Variable.Constant.DefaultTime;
                     return incodeResponse;
                 }
                 NodeError(tmpNodeHexStr);
@@ -562,7 +654,6 @@ namespace Notus.Validator
                         CalculateTimeDifference(true);
                         if (NtpTime > NextQueueValidNtpTime)
                         {
-                            //OrganizeQueue();
                             CheckNodeCount();
                             Val_Ready = true;
                         }
@@ -570,6 +661,149 @@ namespace Notus.Validator
                     }
                 }
             }
+        }
+        private bool CheckBlockSync_SubRoutine(Dictionary<long, IpInfo> blockRequestList, long orderNumber)
+        {
+            if (blockRequestList.ContainsKey(orderNumber) == false)
+            {
+                IncomeBlockListDone = true;
+                return true;
+            }
+
+            (bool tmpError, Notus.Variable.Class.BlockData tmpResultBlock) =
+            Notus.Toolbox.Network.GetBlockFromNode(
+                blockRequestList[orderNumber].IpAddress,
+                blockRequestList[orderNumber].Port,
+                orderNumber
+            );
+            if (tmpError == false)
+            {
+                IncomeBlockList.Enqueue(tmpResultBlock);
+            }
+            orderNumber++;
+            return CheckBlockSync_SubRoutine(blockRequestList, orderNumber);
+        }
+
+        // omergoksoy
+        // omergoksoy
+        // omergoksoy
+        private void CheckBlockSync()
+        {
+            Dictionary<long, IpInfo> blockRequestList = new Dictionary<long, IpInfo>();
+            //Dictionary<string, long> nodeRowList = new Dictionary<string, long>();
+            int totalActiveNodeCount = 0;
+
+            //Int64 biggestBlockUid = Int64.MaxValue;
+            long biggestRowNo = 0;
+
+            //Int64 shortestBlockUid = Int64.MaxValue;
+            long shortestRowNo = long.MaxValue;
+
+            //Int64 myLastBlockUid = Int64.Parse(Notus.Block.Key.GetTimeFromKey(NodeList[MyNodeHexKey].LastUid));
+            long myLastRowNo = NodeList[MyNodeHexKey].LastRowNo;
+
+            foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+            {
+                
+                if (
+                    string.Equals(MyNodeHexKey, entry.Key)==false &&
+                    entry.Value.Status == NodeStatus.Online &&
+                    entry.Value.ErrorCount == 0
+                )
+                {
+                    totalActiveNodeCount++;
+                    if (entry.Value.LastRowNo > biggestRowNo)
+                    {
+                        biggestRowNo = entry.Value.LastRowNo;
+                        //biggestBlockUid = Int64.Parse(Notus.Block.Key.GetTimeFromKey(entry.Value.LastUid));
+                    }
+
+                    if (shortestRowNo > entry.Value.LastRowNo)
+                    {
+                        shortestRowNo = entry.Value.LastRowNo;
+                        //shortestBlockUid = Int64.Parse(Notus.Block.Key.GetTimeFromKey(entry.Value.LastUid));
+                    }
+                }
+            }
+            long controlNo = myLastRowNo + 1;
+            for (long rStart = controlNo; rStart < (1 + biggestRowNo); rStart++)
+            {
+                blockRequestList.Add(rStart, new IpInfo()
+                {
+                    IpAddress = "",
+                    Port = 0
+                });
+            }
+            //Console.WriteLine(JsonSerializer.Serialize(blockRequestList, new JsonSerializerOptions() { WriteIndented = true }));
+            bool breakInnerWhileLoop = false;
+            while (breakInnerWhileLoop == false)
+            {
+                foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
+                {
+                    if (entry.Value.Status == NodeStatus.Online)
+                    {
+                        if (entry.Value.ErrorCount == 0)
+                        {
+                            if (string.Equals(entry.Key, MyNodeHexKey) == false)
+                            {
+                                if (blockRequestList.ContainsKey(controlNo))
+                                {
+                                    blockRequestList[controlNo].IpAddress = entry.Value.IP.IpAddress;
+                                    blockRequestList[controlNo].Port = entry.Value.IP.Port;
+                                    controlNo++;
+                                }
+                                else
+                                {
+                                    breakInnerWhileLoop = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(JsonSerializer.Serialize(blockRequestList, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
+            Console.WriteLine("totalActiveNodeCount : " + totalActiveNodeCount.ToString());
+            Console.WriteLine("myLastRowNo : " + myLastRowNo.ToString());
+            Console.WriteLine("shortestRowNo : " + shortestRowNo.ToString());
+            Console.WriteLine("controlNo : " + controlNo.ToString());
+            if (myLastRowNo > shortestRowNo)
+            {
+                IncomeBlockListDone = true;
+                Console.WriteLine("ilerideyim");
+            }
+            else
+            {
+                if (shortestRowNo == myLastRowNo)
+                {
+                    Console.WriteLine("Blok sayısı eşit");
+                    Console.ReadLine();
+                    IncomeBlockListDone = true;
+                    /*
+                    if (myLastBlockUid > shortestBlockUid)
+                    {
+                        Console.WriteLine("eskiyim");
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("yeniyim");
+                        Console.ReadLine();
+                        CheckBlockSync_SubRoutine(blockRequestList, 1);
+                    }
+                    */
+                }
+                else
+                {
+                    Console.WriteLine("gerideyim");
+                    controlNo = myLastRowNo + 1;
+                    CheckBlockSync_SubRoutine(blockRequestList, controlNo);
+                }
+            }
+            Console.WriteLine("is done");
+            Console.WriteLine(JsonSerializer.Serialize(NodeList, new JsonSerializerOptions() { WriteIndented = true }));
+            Console.ReadLine();
+            Console.ReadLine();
         }
         private void CheckNodeCount()
         {
@@ -584,9 +818,12 @@ namespace Notus.Validator
             ActiveNodeCount_Val = nodeCount;
             if (ActiveNodeCount_Val > 1)
             {
-                Console.WriteLine("ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
                 if (NotEnoughNode_Val == true) // ilk aşamada buraya girecek
                 {
+                    // sync block
+                    // sync block
+                    CheckBlockSync();
+                    Notus.Print.Basic(Obj_Settings, "ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
                     SortedDictionary<BigInteger, string> tmpWalletList = new SortedDictionary<BigInteger, string>();
                     foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
                     {
@@ -606,11 +843,11 @@ namespace Notus.Validator
                     Console.WriteLine("tmpFirstWallet : " + tmpFirstWallet);
                     if (string.Equals(tmpFirstWallet, MyWallet))
                     {
-                        StartingTimeAfterEnoughNode = RefreshNtpTime(10);
+                        StartingTimeAfterEnoughNode = RefreshNtpTime(20);
                         Console.WriteLine("Send When Time");
                         foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
                         {
-                            if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0) 
+                            if (entry.Value.Status == NodeStatus.Online && entry.Value.ErrorCount == 0)
                             {
                                 SendMessage(
                                     entry.Value.IP.IpAddress,
@@ -631,16 +868,17 @@ namespace Notus.Validator
                     }
                     Console.WriteLine(StartingTimeAfterEnoughNode);
                 }
-                NotEnoughNode_Val = false;
                 if (DateTime.Now > StartingTimeAfterEnoughNode)
                 {
                     OrganizeQueue();
                 }
-                NotEnoughNode_Printed = true;
+                NotEnoughNode_Val = false;
+                NotEnoughNode_Printed = false;
             }
             else
             {
                 NotEnoughNode_Val = true;
+                WaitForEnoughNode_Val = true;
                 if (NotEnoughNode_Printed == false)
                 {
                     NotEnoughNode_Printed = true;
@@ -695,8 +933,7 @@ namespace Notus.Validator
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
             if (MyTurn_Val == true)
             {
-                //Notus.Print.Info(Obj_Settings.DebugMode, "My Turn");
-                Notus.Print.Info(Obj_Settings.InfoMode, "My Turn");
+                Notus.Print.Info(Obj_Settings, "My Turn");
 
                 CalculateTimeDifference(false);
                 NextQueueValidNtpTime = RefreshNtpTime(3);
@@ -719,11 +956,11 @@ namespace Notus.Validator
             }
             else
             {
-                //Notus.Print.Info(Obj_Settings.DebugMode, "Waiting For Turn");
-                Notus.Print.Info(Obj_Settings.InfoMode, "Waiting For Turn");
+                Notus.Print.Info(Obj_Settings, "Waiting For Turn");
             }
             NodeList[MyNodeHexKey].Time.Node = DateTime.Now;
             NodeList[MyNodeHexKey].Time.World = NtpTime;
+            WaitForEnoughNode_Val = false;
         }
         public void Start()
         {
@@ -733,8 +970,14 @@ namespace Notus.Validator
             });
         }
 
-        public void PreStart()
+        public void PreStart(
+            long lastBlockRowNo, 
+            string lastBlockUid, 
+            string lastBlockSign, 
+            string lastBlockPrev
+        )
         {
+            Console.WriteLine("PreStart : " + lastBlockRowNo.ToString() + " - " + lastBlockUid + " - " + lastBlockSign + " - " + lastBlockPrev);
             MyPortNo = Notus.Toolbox.Network.GetNetworkPort(Obj_Settings);
 
             MyIpAddress = (Obj_Settings.LocalNode == true ? Obj_Settings.IpInfo.Local : Obj_Settings.IpInfo.Public);
@@ -777,16 +1020,19 @@ namespace Notus.Validator
                 {
                     Node = NtpCheckTime,
                     World = NtpTime,
-                    Error = DefaultTime
+                    Error = Notus.Variable.Constant.DefaultTime
                 },
                 Wallet = MyWallet,
                 IP = new IpInfo()
                 {
                     IpAddress = MyIpAddress,
                     Port = MyPortNo
-                }
+                },
+                LastRowNo = lastBlockRowNo,
+                LastSign = lastBlockSign,
+                LastUid = lastBlockUid,
+                LastPrev = lastBlockPrev
             });
-
 
             foreach (KeyValuePair<string, IpInfo> entry in MainAddressList)
             {
@@ -799,16 +1045,20 @@ namespace Notus.Validator
                         Status = NodeStatus.Unknown,
                         Time = new NodeQueueInfo_Time()
                         {
-                            Node = DefaultTime,
-                            World = DefaultTime,
-                            Error = DefaultTime
+                            Node = Notus.Variable.Constant.DefaultTime,
+                            World = Notus.Variable.Constant.DefaultTime,
+                            Error = Notus.Variable.Constant.DefaultTime
                         },
                         Wallet = "#",
                         IP = new IpInfo()
                         {
                             IpAddress = entry.Value.IpAddress,
                             Port = entry.Value.Port,
-                        }
+                        },
+                        LastRowNo = 0,
+                        LastSign = string.Empty,
+                        LastPrev = string.Empty,
+                        LastUid = string.Empty
                     });
                 }
             }
@@ -818,9 +1068,9 @@ namespace Notus.Validator
         {
             NodeList.Clear();
             MessageTimeList.Clear();
-            NtpCheckTime = DefaultTime;
-            LastPingTime = DefaultTime;
-            NextQueueValidNtpTime = DefaultTime;
+            NtpCheckTime = Notus.Variable.Constant.DefaultTime;
+            LastPingTime = Notus.Variable.Constant.DefaultTime;
+            NextQueueValidNtpTime = Notus.Variable.Constant.DefaultTime;
             ObjMp_NodeList = new Notus.Mempool("node_pool_list");
             ObjMp_NodeList.AsyncActive = false;
         }

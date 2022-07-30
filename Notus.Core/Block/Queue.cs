@@ -7,6 +7,10 @@ namespace Notus.Block
 {
     public class Queue : IDisposable
     {
+        private DateTime LastNtpTime = Notus.Variable.Constant.DefaultTime;
+        private TimeSpan NtpTimeDifference;
+        private bool NodeTimeAfterNtpTime = false;      // time difference before or after NTP Server
+
         private Notus.Variable.Common.ClassSetting Obj_Settings;
         public Notus.Variable.Common.ClassSetting Settings
         {
@@ -14,7 +18,6 @@ namespace Notus.Block
             set { Obj_Settings = value; }
         }
 
-        private const string Const_DefaultPreText = "notus-block-queue";
         private Notus.Mempool MP_BlockPoolList;
         private Notus.Block.Storage BS_Storage;
         private Queue<Notus.Variable.Struct.List_PoolBlockRecordStruct> Queue_PoolTransaction = new Queue<Notus.Variable.Struct.List_PoolBlockRecordStruct>();
@@ -45,8 +48,9 @@ namespace Notus.Block
 
 
         //bu fonksiyon ile işlem yapılacak aynı türden bloklar sırası ile listeden çekilip geri gönderilecek
-        public (bool, Notus.Variable.Struct.PoolBlockRecordStruct) Get()
+        public (bool, Notus.Variable.Struct.PoolBlockRecordStruct) Get(DateTime currentUtcTime)
         {
+            DateTime startingTime = DateTime.Now;
             if (Queue_PoolTransaction.Count == 0)
             {
                 return (false, null);
@@ -168,11 +172,13 @@ namespace Notus.Block
             }
             else
             {
-                BlockStruct.info.uID = Notus.Block.Key.Generate(
-                    true,
-                    Notus.Variable.Constant.Seed_ForMainNet_BlockKeyGenerate,
-                    Const_DefaultPreText
-                );
+                //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
+                //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
+                //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
+                //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
+                //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
+                // buraya UTC time verisi parametre olarak gönderilecek
+                // böylece blok için alınan zaman bilgisi ortak bir zaman olacak
 
                 if (CurrentBlockType == 240)
                 {
@@ -259,6 +265,31 @@ namespace Notus.Block
         }
         */
 
+        private DateTime GetNtpTime()
+        {
+            if(
+                string.Equals(
+                    LastNtpTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText),
+                    Notus.Variable.Constant.DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+                )
+            )
+            {
+                LastNtpTime = Notus.Time.GetFromNtpServer();
+                DateTime tmpNtpCheckTime = DateTime.Now;
+                NodeTimeAfterNtpTime = (tmpNtpCheckTime > LastNtpTime);
+                NtpTimeDifference = (NodeTimeAfterNtpTime == true ? (tmpNtpCheckTime - LastNtpTime) : (LastNtpTime - tmpNtpCheckTime)) ;
+                return LastNtpTime;
+            }
+
+            if (NodeTimeAfterNtpTime == true)
+            {
+                LastNtpTime = DateTime.Now.Subtract(NtpTimeDifference);
+                return LastNtpTime;
+            }
+            LastNtpTime = DateTime.Now.Add(NtpTimeDifference);
+            return LastNtpTime;
+        }
+
         public (bool, Notus.Variable.Class.BlockData) ReadFromChain(string BlockId)
         {
             return BS_Storage.ReadBlock(BlockId);
@@ -281,21 +312,18 @@ namespace Notus.Block
             MP_BlockPoolList.Clear();
             Queue_PoolTransaction.Clear();
         }
-        public void Add(Notus.Variable.Struct.PoolBlockRecordStruct PreBlockData, string SeedKeyForBlockKey = "")
+        public void Add(Notus.Variable.Struct.PoolBlockRecordStruct PreBlockData)
         {
-            string minerSeedKey = (SeedKeyForBlockKey.Length == 0 ? "miner_seed_key" : SeedKeyForBlockKey);
-            string ySubTransactionKey = Notus.Block.Key.Generate(false, minerSeedKey);
             Queue_PoolTransaction.Enqueue(new Notus.Variable.Struct.List_PoolBlockRecordStruct()
             {
-                key = ySubTransactionKey,
+                key = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey),
                 type = PreBlockData.type,
                 data = PreBlockData.data
             });
 
-            string BlockKeyStr = GiveBlockKey(PreBlockData.data);
 
             MP_BlockPoolList.Set(
-                BlockKeyStr,
+                GiveBlockKey(PreBlockData.data),
                 JsonSerializer.Serialize(
                     PreBlockData
                 ), true
@@ -312,10 +340,7 @@ namespace Notus.Block
         }
         public string GiveBlockKey(string BlockDataStr)
         {
-            string BlockKeyStr =
-                new Notus.Hash().CommonHash("md5", BlockDataStr) +
-                new Notus.Hash().CommonHash("sha1", BlockDataStr);
-            return BlockKeyStr;
+            return new Notus.Hash().CommonHash("md5", BlockDataStr) + new Notus.Hash().CommonHash("sha1", BlockDataStr);
         }
         public void Start()
         {

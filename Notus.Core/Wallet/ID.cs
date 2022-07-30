@@ -94,7 +94,7 @@ namespace Notus.Wallet
             PrivateKey yPrivKey;
             if (curveName == "secp256k1")
             {
-                
+
                 yPrivKey = new PrivateKey("secp256k1", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             else
@@ -184,32 +184,11 @@ namespace Notus.Wallet
         /// Returns wallet key via given public key.
         /// </summary>
         /// <param name="publicKey">Public Key <see cref="string"/></param>
-        /// <returns>Returns Wallet Address</returns>
-        public static string GetAddressWithPublicKey(string publicKey)
-        {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey),Notus.Variable.Constant.Default_EccCurveName, true ), Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Constant.Default_EccCurveName);
-        }
-
-        /// <summary>
-        /// Returns wallet key via given public key.
-        /// </summary>
-        /// <param name="publicKey">Public Key <see cref="string"/></param>
-        /// <param name="CurveName">Current curve.</param>
-        /// <returns>Returns Wallet Address</returns>
-        public static string GetAddressWithPublicKey(string publicKey, string CurveName)
-        {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey),CurveName,true), Notus.Variable.Enum.NetworkType.MainNet,CurveName);
-        }
-
-        /// <summary>
-        /// Returns wallet key via given public key.
-        /// </summary>
-        /// <param name="publicKey">Public Key <see cref="string"/></param>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), Notus.Variable.Constant.Default_EccCurveName, true), WhichNetworkFor,Notus.Variable.Constant.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), Notus.Variable.Constant.Default_EccCurveName, true), WhichNetworkFor, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -221,28 +200,7 @@ namespace Notus.Wallet
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor,CurveName);
-        }
-
-        /// <summary>
-        /// Returns public key via given private key.
-        /// </summary>
-        /// <param name="privateKey">Private Key <see cref="string"/></param>
-        /// <returns>Returns Public Address</returns>
-        public static string GetAddress(string privateKey)
-        {
-            return GetAddress_SubFunction(privateKey, Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Constant.Default_EccCurveName);
-        }
-
-        /// <summary>
-        /// Returns wallet address via given private key.
-        /// </summary>
-        /// <param name="privateKey">Private Key <see cref="string"/></param>
-        /// <param name="CurveName">Current curve,</param>
-        /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress(string privateKey, string CurveName)
-        {
-            return GetAddress_SubFunction(privateKey, Notus.Variable.Enum.NetworkType.MainNet, CurveName);
+            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor, CurveName);
         }
 
         /// <summary>
@@ -283,7 +241,12 @@ namespace Notus.Wallet
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
 
             string keyPrefix = Notus.Variable.Constant.Prefix_MainNetwork;
-            string networkByteStr = "10";
+            string networkByteStr = "00";
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.MainNet)
+            {
+                keyPrefix = Notus.Variable.Constant.Prefix_MainNetwork;
+                networkByteStr = "10";
+            }
             if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
             {
                 keyPrefix = Notus.Variable.Constant.Prefix_TestNetwork;
