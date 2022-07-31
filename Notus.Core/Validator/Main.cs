@@ -73,13 +73,27 @@ namespace Notus.Validator
                         {
                             howManySeconds = (Obj_Settings.Genesis.Empty.Interval.Time * Obj_Settings.Genesis.Empty.SlowBlock.Multiply);
                         }
-                        //blok zamanı ve utc zamanı çakışıyor
-                        DateTime tmpLastTime = Notus.Date.ToDateTime(Obj_Settings.LastBlock.info.time).AddSeconds(howManySeconds);
-                        Console.WriteLine(
-                            ValidatorQueueObj.GetUtcTime().ToString(Notus.Variable.Constant.DefaultDateTimeFormatText) + 
-                            " - " + 
-                            tmpLastTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+
+                        /*
+                        Console.Write(JsonSerializer.Serialize(
+                            Obj_Settings.LastBlock.info, new JsonSerializerOptions() { WriteIndented = true })
                         );
+                        */
+                        //blok zamanı ve utc zamanı çakışıyor
+                        DateTime tmpLastTime = Notus.Date.ToDateTime(
+                            Obj_Settings.LastBlock.info.time
+                        ).AddSeconds(howManySeconds);
+
+                        Int64 kalanSure=
+                            Int64.Parse(ValidatorQueueObj.GetUtcTime().ToString(Notus.Variable.Constant.DefaultDateTimeFormatText))
+                            -
+                            Int64.Parse(tmpLastTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
+
+                        Console.WriteLine("kalanSure : "+ kalanSure.ToString());
+                        /*
+                        2022 07 30 23 50 53 472 - 
+                        2022 07 31 02 57 31 008
+                        */
                         // get utc time from validatır Queue
                         if (ValidatorQueueObj.GetUtcTime() > tmpLastTime)
                         {
@@ -243,7 +257,7 @@ namespace Notus.Validator
                                     string tmpCurrentList = ObjMp_FileList.Get(tmpStorageId + "_chunk", "");
                                     //try
                                     //{
-                                    string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey,Obj_Settings.Network);
+                                    string tmpWalletKey = Notus.Wallet.ID.GetAddressWithPublicKey(tmpFileObj.PublicKey, Obj_Settings.Network);
                                     string tmpOutputFolder = Notus.IO.GetFolderName(
                                         Obj_Settings.Network,
                                         Obj_Settings.Layer,
@@ -597,12 +611,15 @@ namespace Notus.Validator
         }
         private void WaitUntilEnoughNode()
         {
-            SetTimeStatusForBeginSync(true);        // stop timer
-            while (ValidatorQueueObj.WaitForEnoughNode == true)
+            if (Obj_Settings.GenesisCreated == false)
             {
-                Thread.Sleep(100);
+                SetTimeStatusForBeginSync(true);        // stop timer
+                while (ValidatorQueueObj.WaitForEnoughNode == true)
+                {
+                    Thread.Sleep(100);
+                }
+                SetTimeStatusForBeginSync(false);       // release timer
             }
-            SetTimeStatusForBeginSync(false);       // release timer
         }
         public void Start()
         {
@@ -745,11 +762,13 @@ namespace Notus.Validator
 
             if (Obj_Settings.GenesisCreated == true)
             {
-                ValidatorQueueObj.PreStart(0, 
+                /*
+                ValidatorQueueObj.PreStart(0,
                     string.Empty,
                     string.Empty,
                     string.Empty
                 );
+                */
             }
             else
             {
@@ -761,40 +780,44 @@ namespace Notus.Validator
                 );
             }
             ValidatorQueueObj.Start();
-            Console.WriteLine("Step-Control-1111");
-            while (ValidatorQueueObj.IncomeBlockListDone == false)
+            if (Obj_Settings.GenesisCreated == false)
             {
-                Thread.Sleep(50);
-            }
-            Console.WriteLine("Step-Control-2222");
-            bool quitFromWhileLoop = false;
-            while (quitFromWhileLoop == false)
-            {
-                quitFromWhileLoop = true;
-                if (ValidatorQueueObj.IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
+                Console.WriteLine("Step-Control-1111");
+                while (ValidatorQueueObj.IncomeBlockListDone == false)
                 {
-                    if (retValue != null)
+                    Thread.Sleep(50);
+                }
+                Console.WriteLine("Step-Control-2222");
+                bool quitFromWhileLoop = false;
+                while (quitFromWhileLoop == false)
+                {
+                    quitFromWhileLoop = true;
+                    if (ValidatorQueueObj.IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
                     {
-                        IncomeBlockList.Enqueue(retValue);
-                        quitFromWhileLoop = false;
+                        if (retValue != null)
+                        {
+                            IncomeBlockList.Enqueue(retValue);
+                            quitFromWhileLoop = false;
+                        }
                     }
                 }
-            }
-            Console.WriteLine("Step-Control-3333");
-            quitFromWhileLoop = false;
-            while (quitFromWhileLoop == false)
-            {
-                quitFromWhileLoop = true;
-                if (IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
+                Console.WriteLine("Step-Control-3333");
+                quitFromWhileLoop = false;
+                while (quitFromWhileLoop == false)
                 {
-                    if (retValue != null)
+                    quitFromWhileLoop = true;
+                    if (IncomeBlockList.TryDequeue(out Variable.Class.BlockData? retValue))
                     {
-                        AddedNewBlock(retValue);
-                        quitFromWhileLoop = false;
+                        if (retValue != null)
+                        {
+                            AddedNewBlock(retValue);
+                            quitFromWhileLoop = false;
+                        }
                     }
                 }
+                Console.WriteLine("Step-Control-4444");
             }
-            Console.WriteLine("Step-Control-4444");
+
             //burada hangi node'un empty timer'dan sorumlu olacağı seçiliyor...
             /*
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
@@ -808,11 +831,13 @@ namespace Notus.Validator
             */
 
             EmptyTimerActive = true;
-            Console.WriteLine("Obj_Settings.GenesisCreated");
-            Console.WriteLine(Obj_Settings.GenesisCreated);
             if (Obj_Settings.GenesisCreated == false)
             {
-                Console.WriteLine(Obj_Settings.Layer.ToString());
+                //burada block senronizasyonu tamamlanmalı
+                ValidatorQueueObj.CheckNodeGenesis();
+                Console.ReadLine();
+                Console.ReadLine();
+
                 if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
                 {
                     if (EmptyTimerActive == true)
@@ -834,15 +859,15 @@ namespace Notus.Validator
                 {
                     FileStorageTimer();
                 }
+                Notus.Print.Basic(Obj_Settings, "First Synchronization Is Done");
             }
-            Notus.Print.Basic(Obj_Settings, "First Synchronization Is Done");
 
             DateTime LastPrintTime = DateTime.Now;
             bool tmpExitMainLoop = false;
             while (tmpExitMainLoop == false)
             {
                 WaitUntilEnoughNode();
-                if (ValidatorQueueObj.MyTurn==true)
+                if (ValidatorQueueObj.MyTurn == true || Obj_Settings.GenesisCreated == true)
                 {
                     // geçerli utc zaman bilgisini alıp block oluşturma işlemi için parametre olarak gönder böylece
                     // her blok utc zamanı ile oluşturulmuş olsun
@@ -972,7 +997,8 @@ namespace Notus.Validator
                     }
                         },
                         Obj_Settings.Network,
-                        Notus.Variable.Enum.NetworkLayer.Layer3
+                        Notus.Variable.Enum.NetworkLayer.Layer3,
+                        Obj_Settings
                     );
                     Console.WriteLine(responseData);
                 }
@@ -1012,8 +1038,6 @@ namespace Notus.Validator
             {
                 NodeIpAddress = IPAddress.Parse(Obj_Settings.IpInfo.Local);
             }
-            HttpObj.DebugMode = Obj_Settings.DebugMode;
-            HttpObj.InfoMode = Obj_Settings.InfoMode;
             HttpObj.Settings = Obj_Settings;
             HttpObj.StoreUrl = false;
             HttpObj.Start(NodeIpAddress, SelectedPortVal);

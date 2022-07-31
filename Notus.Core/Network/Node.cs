@@ -69,7 +69,8 @@ namespace Notus.Network
             string UrlText,
             Notus.Variable.Enum.NetworkType currentNetwork,
             Notus.Variable.Enum.NetworkLayer networkLayer,
-            bool showError=true
+            bool showError=true,
+            Notus.Variable.Common.ClassSetting objSettings = null
         )
         {
             string MainResultStr = string.Empty;
@@ -81,10 +82,12 @@ namespace Notus.Network
                     try
                     {
                         MainResultStr = Notus.Communication.Request.GetSync(
-                            MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a], GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 
+                            MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a], 
+                            GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 
                             10, 
                             true,
-                            showError
+                            showError,
+                            objSettings
                         );
                     }
                     catch (Exception err)
@@ -101,7 +104,8 @@ namespace Notus.Network
             string UrlText,
             Dictionary<string, string> PostData,
             Notus.Variable.Enum.NetworkType currentNetwork,
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            Notus.Variable.Common.ClassSetting objSettings = null
         )
         {
             string MainResultStr = string.Empty;

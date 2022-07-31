@@ -89,16 +89,6 @@ namespace Notus.Block
                 StorageHashVal = string.Join(";", tmp_hashList.ToArray());
             }
         }
-        public void ClearStorage()
-        {
-            DirectoryInfo d = new DirectoryInfo(Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block));
-            FileInfo[] Files = d.GetFiles("*.zip");
-            foreach (FileInfo file in Files)
-            {
-                File.Delete(file.FullName);
-            }
-
-        }
         public (bool, Notus.Variable.Class.BlockData) ReadBlock(string BlockUid)
         {
             try

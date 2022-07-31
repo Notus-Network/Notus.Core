@@ -81,7 +81,13 @@ namespace Notus.Communication
             }
             return string.Empty;
         }
-        public static string GetSync(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true, bool showOnError = true)
+        public static string GetSync(
+            string UrlAddress, 
+            int TimeOut = 0, 
+            bool UseTimeoutAsSecond = true, 
+            bool showOnError = true,
+            Notus.Variable.Common.ClassSetting objSettings = null
+        )
         {
             try
             {
@@ -101,7 +107,14 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 80 -> " + err.Message);
+                if (objSettings == null)
+                {
+                    Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 112 -> " + err.Message);
+                }
+                else
+                {
+                    Notus.Print.Danger(objSettings, "Notus.Core.Function.Get -> Line 116 -> " + err.Message);
+                }
             }
             return string.Empty;
         }

@@ -163,6 +163,8 @@ namespace Notus.Block
             string LongNonceText;
 
             BlockStruct.cipher.ver = "NE";
+            BlockStruct.info.uID = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
+
             if (CurrentBlockType == 360)
             {
                 LongNonceText = TempPoolTransactionList[0].data;
@@ -308,7 +310,7 @@ namespace Notus.Block
 
         public void Reset()
         {
-            BS_Storage.ClearStorage();
+            Notus.IO.ClearBlocks(Obj_Settings.Network, Obj_Settings.Layer);
             MP_BlockPoolList.Clear();
             Queue_PoolTransaction.Clear();
         }

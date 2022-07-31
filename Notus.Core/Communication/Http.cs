@@ -68,30 +68,6 @@ namespace Notus.Communication
                 return Val_DefaultResult_ERR;
             }
         }
-        private bool DebugModeActivated = false;
-        public bool DebugMode
-        {
-            set
-            {
-                DebugModeActivated = value;
-            }
-            get
-            {
-                return DebugModeActivated;
-            }
-        }
-        private bool InfoModeActivated = false;
-        public bool InfoMode
-        {
-            set
-            {
-                InfoModeActivated = value;
-            }
-            get
-            {
-                return InfoModeActivated;
-            }
-        }
 
         private bool Value_ServerStarted = false;
         public bool Started
@@ -167,11 +143,11 @@ namespace Notus.Communication
             string ResponseStr = Val_DefaultResult_OK;
             if (OnReceiveFunctionDefined == false)
             {
-                Notus.Print.Basic(DebugModeActivated, "Url Doesn't Exist -> " + incomeData.Url);
+                Notus.Print.Danger(Obj_Settings, "Url Doesn't Exist -> " + incomeData.Url);
             }
             else
             {
-                Notus.Print.Basic(DebugModeActivated, "Url Call : " + incomeData.RawUrl);
+                Notus.Print.Basic(Obj_Settings.DebugMode, "Url Call : " + incomeData.RawUrl);
                 ResponseStr = OnReceiveFunction(incomeData);
             }
             byte[] headerArray = Encoding.ASCII.GetBytes(
@@ -201,8 +177,8 @@ namespace Notus.Communication
                 Mp_UrlList = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                     "url_visit"
                 );
-                Mp_UrlList.DebugMode = DebugModeActivated;
-                Mp_UrlList.InfoMode = InfoModeActivated;
+                Mp_UrlList.DebugMode = Obj_Settings.DebugMode;
+                Mp_UrlList.InfoMode = Obj_Settings.InfoMode;
             }
 
             Val_NodeIPAddress = NodeIPAddress;
@@ -217,19 +193,19 @@ namespace Notus.Communication
                 ListenerObj.SynchronousSocketIsActive = Obj_Settings.SynchronousSocketIsActive;
                 ListenerObj.PortNo = PortNo;
                 ListenerObj.IPAddress = NodeIPAddress.ToString();
-                ListenerObj.DebugMode = DebugModeActivated;
+                ListenerObj.DebugMode = Obj_Settings.DebugMode;
                 ListenerObj.ReturnByteArray = true;
                 ListenerObj.Begin(true);
                 ListenerObj.OnError((int errorCode, string errorText) =>
                 {
-                    Notus.Print.Basic(DebugModeActivated, "Error Code : " + errorCode.ToString());
-                    Notus.Print.Basic(DebugModeActivated, "Error Text : " + errorText);
+                    Notus.Print.Danger(Obj_Settings, "Error Code : " + errorCode.ToString());
+                    Notus.Print.Danger(Obj_Settings, "Error Text : " + errorText);
                 });
                 ListenerObj.OnReceive(IncomeTextFunction);
             }
             catch (Exception e)
             {
-                Notus.Print.Basic(DebugModeActivated, "An Exception Occurred while Listening :" + e.ToString());
+                Notus.Print.Danger(Obj_Settings, "An Exception Occurred while Listening :" + e.ToString());
             }
         }
 
@@ -369,7 +345,7 @@ namespace Notus.Communication
                 }
             }
 
-            Notus.Print.Basic(DebugModeActivated, urlLine);
+            //Notus.Print.Basic(Obj_Settings.DebugMode, urlLine);
 
             return new Notus.Variable.Struct.HttpRequestDetails()
             {

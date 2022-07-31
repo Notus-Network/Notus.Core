@@ -44,6 +44,26 @@ namespace Notus
         }
      
         */
+        public static void ClearBlocks(
+            Notus.Variable.Enum.NetworkType networkType,
+            Notus.Variable.Enum.NetworkLayer networkLayer
+        )
+        {
+            DirectoryInfo d = new DirectoryInfo(
+                Notus.IO.GetFolderName(
+                    networkType,
+                    networkLayer,
+                    Notus.Variable.Constant.StorageFolderName.Block
+                )
+            );
+            FileInfo[] filesList = d.GetFiles("*.zip");
+            foreach (FileInfo fileObj in filesList)
+            {
+                File.Delete(fileObj.FullName);
+            }
+
+        }
+
         public static string GetFolderName(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer, string folderName)
         {
             return
