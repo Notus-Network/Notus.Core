@@ -286,8 +286,8 @@ namespace Notus.Wallet
                 //Console.ReadLine();
             }
 
-            Console.WriteLine("Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString());
-            Console.WriteLine("Balance.Cs -> " + tmpBlockForBalance.info.rowNo.ToString());
+            Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString());
+            Notus.Print.Basic(Obj_Settings, "Balance.Cs -> " + tmpBlockForBalance.info.rowNo.ToString());
 
             if (tmpBlockForBalance.info.type == 120)
             {

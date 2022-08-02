@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Notus.Block
 {
     public static class Key

@@ -41,6 +41,23 @@ namespace Notus
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }
-
+        public static void SleepWithoutBlocking(int SleepTime, bool UseAsSecond = false)
+        {
+            DateTime NextTime = (UseAsSecond == true ? DateTime.Now.AddSeconds(SleepTime) : DateTime.Now.AddMilliseconds(SleepTime));
+            while (NextTime > DateTime.Now)
+            {
+            }
+        }
+        public static DateTime GetGenesisCreationTimeFromString(Notus.Variable.Class.BlockData blockData)
+        {
+            Notus.Variable.Genesis.GenesisBlockData currentGenesisData = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
+                System.Text.Encoding.ASCII.GetString(
+                    System.Convert.FromBase64String(
+                        blockData.cipher.data
+                    )
+                )
+            );
+            return currentGenesisData.Info.Creation;
+        }
     }
 }

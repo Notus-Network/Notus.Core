@@ -49,7 +49,7 @@ namespace Notus.Validator
                 }
                 else
                 {
-                    SleepWithoutBlocking(5, false);
+                    Notus.Date.SleepWithoutBlocking(5, false);
                     Console.Write(".");
                 }
             }
@@ -150,7 +150,7 @@ namespace Notus.Validator
                             if (MN_LastBlockRowNo == tmpLastBlockInfo.RowNo)
                             {
                                 Notus.Print.Basic(Obj_Settings, "Chain Could Not Change");
-                                SleepWithoutBlocking(5, false);
+                                Notus.Date.SleepWithoutBlocking(5, false);
                             }
                             else
                             {
@@ -161,7 +161,7 @@ namespace Notus.Validator
                         else
                         {
                             Notus.Print.Basic(Obj_Settings, "Last Block Row Number Could Not Get");
-                            SleepWithoutBlocking(2, false);
+                            Notus.Date.SleepWithoutBlocking(2, false);
                         }
                     }
                     else
@@ -181,28 +181,12 @@ namespace Notus.Validator
                                 GetBlockFromNode(NodeAddress, tmpNextBlockRowNo, true);
                             }
                         }
-                        SleepWithoutBlocking(5, false);
+                        Notus.Date.SleepWithoutBlocking(5, false);
                     }
                 }
             }
         }
 
-        private void SleepWithoutBlocking(int SleepTime, bool Milisecond)
-        {
-            DateTime Sonraki;
-            if (Milisecond == true)
-            {
-                Sonraki = DateTime.Now.AddMilliseconds(SleepTime);
-            }
-            else
-            {
-                Sonraki = DateTime.Now.AddSeconds(SleepTime);
-            }
-            while (Sonraki > DateTime.Now)
-            {
-
-            }
-        }
         public Replicant()
         {
         }

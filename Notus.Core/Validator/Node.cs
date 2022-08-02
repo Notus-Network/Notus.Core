@@ -42,11 +42,11 @@ namespace Notus.Validator
         {
             if (NodeSettings.LocalNode == true)
             {
-                Notus.Print.Info(NodeSettings.InfoMode, "LocalNode Activated");
+                Notus.Print.Info(NodeSettings, "LocalNode Activated");
             }
             Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
 
-            Notus.Print.Info(NodeSettings.InfoMode, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
+            Notus.Print.Info(NodeSettings, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
             NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);
             switch (NodeSettings.NodeType)
             {

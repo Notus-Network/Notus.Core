@@ -26,7 +26,7 @@ namespace Notus.Network
                     catch (Exception err)
                     {
                         Console.WriteLine(err.Message);
-                        SleepWithoutBlocking(5, true);
+                        Notus.Date.SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
                 }
@@ -57,7 +57,7 @@ namespace Notus.Network
                     catch (Exception err)
                     {
                         Console.WriteLine(err.Message);
-                        SleepWithoutBlocking(5, true);
+                        Notus.Date.SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
                 }
@@ -93,7 +93,7 @@ namespace Notus.Network
                     catch (Exception err)
                     {
                         Notus.Print.Danger(showError, "Notus.Network.Node.FindAvailableSync -> Line 92 -> " + err.Message);
-                        SleepWithoutBlocking(5, true);
+                        Notus.Date.SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
                 }
@@ -129,7 +129,7 @@ namespace Notus.Network
                     catch (Exception err)
                     {
                         Console.WriteLine(err.Message);
-                        SleepWithoutBlocking(5, true);
+                        Notus.Date.SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);
                 }
@@ -140,14 +140,6 @@ namespace Notus.Network
         public static int GetNetworkPort(Notus.Variable.Enum.NetworkType currentNetwork, Notus.Variable.Enum.NetworkLayer currentLayer)
         {
             return Notus.Variable.Constant.PortNo[currentLayer][currentNetwork];
-        }
-        public static void SleepWithoutBlocking(int SleepTime, bool UseAsSecond = false)
-        {
-            DateTime NextTime = (UseAsSecond == true ? DateTime.Now.AddMilliseconds(SleepTime) : DateTime.Now.AddSeconds(SleepTime));
-            while (NextTime > DateTime.Now)
-            {
-
-            }
         }
         public static string MakeHttpListenerPath(string IpAddress, int PortNo, bool UseSSL = false)
         {

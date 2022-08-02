@@ -1,12 +1,12 @@
-﻿using System;
-using Notus.Variable.Struct;
+﻿using Notus.Variable.Struct;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using System.Text.Json;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Notus.Validator
 {
@@ -690,91 +690,9 @@ namespace Notus.Validator
             return CheckBlockSync_SubRoutine(blockRequestList, orderNumber);
         }
 
-        // omergoksoy
-        // omergoksoy
-        // omergoksoy
-        public void CheckNodeGenesis()
-        {
-            Dictionary<string, Int64> genesisTimeList = new Dictionary<string, long>()
-            {
-                {
-                    MyNodeHexKey,
-                    Int64.Parse(
-                        Obj_Settings.Genesis.Info.Creation.ToString(
-                            Notus.Variable.Constant.DefaultDateTimeFormatText
-                        )
-                    )
-                }
-            };
-            /*
-            Console.WriteLine(MyNodeHexKey + " - " +
-                Obj_Settings.Genesis.Info.Creation.ToString(
-                    Notus.Variable.Constant.DefaultDateTimeFormatText
-                )
-            );
-            */
-
-            foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
-            {
-                if (string.Equals(MyNodeHexKey, entry.Key) == false)
-                {
-                    if (entry.Value.ErrorCount == 0 && entry.Value.Status == NodeStatus.Online)
-                    {
-                        (bool tmpError, Variable.Class.BlockData? tmpBlockData) =
-                            Notus.Toolbox.Network.GetBlockFromNode(
-                                entry.Value.IP.IpAddress,
-                                entry.Value.IP.Port,
-                                1,
-                                Obj_Settings
-                            );
-                        if (tmpError == false)
-                        {
-                            Variable.Genesis.GenesisBlockData? tmpGenesis = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
-                                System.Convert.FromBase64String(
-                                    tmpBlockData.cipher.data
-                                )
-                            );
-                            /*
-                            Console.WriteLine(entry.Key + " - " +
-                                tmpGenesis.Info.Creation.ToString(
-                                    Notus.Variable.Constant.DefaultDateTimeFormatText
-                                )
-                            );
-                            */
-
-                            genesisTimeList.Add(
-                                entry.Key,
-                                Int64.Parse(
-                                    tmpGenesis.Info.Creation.ToString(
-                                        Notus.Variable.Constant.DefaultDateTimeFormatText
-                                    )
-                                )
-                            );
-                        }
-                    }
-                }
-            }
-
-            //Notus.Print.Basic(Obj_Settings, JsonSerializer.Serialize(genesisTimeList, new JsonSerializerOptions() { WriteIndented = true }));
-
-            foreach (KeyValuePair<string, Int64> entry in genesisTimeList)
-            {
-                if (string.Equals(entry.Key, MyNodeHexKey) == false)
-                {
-                    if (entry.Value > genesisTimeList[MyNodeHexKey])
-                    {
-                        Console.WriteLine("Genesis daha yeni");
-                        //Notus.IO.ClearBlocks(Obj_Settings.Network, Obj_Settings.Layer);
-                    }
-                }
-            }
-            Console.ReadLine();
-        }
         private void CheckBlockSync()
         {
-            //CheckNodeGenesis();
             Dictionary<long, IpInfo> blockRequestList = new Dictionary<long, IpInfo>();
-            //Dictionary<string, long> nodeRowList = new Dictionary<string, long>();
             int totalActiveNodeCount = 0;
 
             //Int64 biggestBlockUid = Int64.MaxValue;
@@ -905,14 +823,14 @@ namespace Notus.Validator
             {
                 if (NotEnoughNode_Val == true) // ilk aşamada buraya girecek
                 {
-                    // sync block
-                    // sync block
-                    // omergoksoy
-                    // omergoksoy
-                    // şu an için beklemeye alındı
-                    // şu an için beklemeye alındı
-                    // şu an için beklemeye alındı
-                    CheckBlockSync();
+                    Notus.Print.Basic(Obj_Settings, "Notus.Validator.Queue -> Line 820");
+                    Notus.Print.Basic(Obj_Settings, "Notus.Validator.Queue -> Line 821");
+
+                    Notus.Print.Basic(Obj_Settings, "Node Blocks Are Checking For Sync");
+                    Notus.Print.Basic(Obj_Settings, "Node Blocks Are Checking For Sync");
+                    Notus.Sync.Block(Obj_Settings);
+                    //Console.ReadLine();
+                    //CheckBlockSync();
                     Notus.Print.Basic(Obj_Settings, "ActiveNodeCount : " + ActiveNodeCount_Val.ToString());
                     SortedDictionary<BigInteger, string> tmpWalletList = new SortedDictionary<BigInteger, string>();
                     foreach (KeyValuePair<string, NodeQueueInfo> entry in NodeList)
