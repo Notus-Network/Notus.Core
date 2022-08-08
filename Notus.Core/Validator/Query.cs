@@ -5,14 +5,13 @@ namespace Notus.Validator
 {
     public class Query
     {
-        public static (bool, Notus.Variable.Class.BlockData) GetBlock(
+        public static (bool, Notus.Variable.Class.BlockData?) GetBlock(
             string nodeAdress, 
             Int64 BlockRowNo,
             bool showOnError=true,
-            Notus.Variable.Common.ClassSetting objSettings = null
+            Notus.Variable.Common.ClassSetting? objSettings = null
         )
         {
-            //string mainAddressStr = Notus.Core.Function.MakeHttpListenerPath(nodeAdress, Notus.Variable.Struct.PortNo_HttpListener);
             try
             {
                 string MainResultStr = Notus.Communication.Request.GetSync(
@@ -22,21 +21,7 @@ namespace Notus.Validator
                     showOnError,
                     objSettings
                 );
-                Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
-                return (true, PreBlockData);
-            }
-            catch
-            {
-
-            }
-            return (false, null);
-        }
-        public static (bool, Notus.Variable.Class.BlockData) GetLastBlock(string NodeAddress)
-        {
-            try
-            {
-                string MainResultStr = Notus.Communication.Request.Get(NodeAddress + "block/last", 10, true).GetAwaiter().GetResult();
-                Notus.Variable.Class.BlockData PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
+                Notus.Variable.Class.BlockData? PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                 return (true, PreBlockData);
             }
             catch

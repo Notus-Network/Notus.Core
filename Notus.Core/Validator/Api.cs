@@ -317,7 +317,7 @@ namespace Notus.Validator
 
                         if (string.Equals(IncomeData.UrlList[1].ToLower(), "last"))
                         {
-                            return Request_BlockLast();
+                            return Request_BlockLast(IncomeData);
                         }
                         if (IncomeData.UrlList.Length > 2)
                         {
@@ -1466,9 +1466,18 @@ namespace Notus.Validator
             }
             return JsonSerializer.Serialize(false);
         }
-        private string Request_BlockLast()
+        private string Request_BlockLast(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (Obj_Settings.PrettyJson == true)
+            bool prettyJson = Obj_Settings.PrettyJson;
+            if (IncomeData.UrlList.Length > 2)
+            {
+                if (string.Equals(IncomeData.UrlList[2].ToLower(), "raw"))
+                {
+                    prettyJson = false;
+                }
+            }
+
+            if (prettyJson == true)
             {
                 return JsonSerializer.Serialize(Obj_Settings.LastBlock, new JsonSerializerOptions() { WriteIndented = true });
             }

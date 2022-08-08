@@ -469,6 +469,7 @@ namespace Notus.Variable.Struct
     public class NodeQueueInfo
     {
         public bool InTheCode { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
+        public bool Ready { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
         public IpInfo IP { get; set; }
         public NodeStatus Status { get; set; }
         public string Wallet { get; set; }                  // node'un cüzdan adresi

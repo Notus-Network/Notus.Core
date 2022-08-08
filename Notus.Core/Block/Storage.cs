@@ -126,17 +126,6 @@ namespace Notus.Block
             }
 
         }
-        private void DeleteBlockFromArchive(string ZipFileName, string BlockJsonFileName)
-        {
-            using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Update))
-            {
-                ZipArchiveEntry entry = archive.GetEntry(BlockJsonFileName);
-                if (entry != null)
-                {
-                    entry.Delete();
-                }
-            }
-        }
         public void AddSync(Notus.Variable.Class.BlockData NewBlock, bool UpdateBlock = false)
         {
             string BlockFileName = Notus.Block.Key.GetBlockStorageFileName(NewBlock.info.uID, true);
@@ -163,7 +152,7 @@ namespace Notus.Block
             string blockFileName = NewBlock.info.uID + ".json";
             if (UpdateBlock == true)
             {
-                DeleteBlockFromArchive(ZipFileName, blockFileName);
+                Notus.Archive.DeleteFromInside(ZipFileName, blockFileName);
             }
             FileMode fileModeObj = FileMode.Open;
             ZipArchiveMode zipModeObj = ZipArchiveMode.Update;

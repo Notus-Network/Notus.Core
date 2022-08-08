@@ -1,31 +1,9 @@
-﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
-using System.IO;
+﻿using System.IO;
 
 namespace Notus
 {
     public static class IO
     {
-        public static void ClearBlocks(
-            Notus.Variable.Enum.NetworkType networkType,
-            Notus.Variable.Enum.NetworkLayer networkLayer
-        )
-        {
-            DirectoryInfo d = new DirectoryInfo(
-                Notus.IO.GetFolderName(
-                    networkType,
-                    networkLayer,
-                    Notus.Variable.Constant.StorageFolderName.Block
-                )
-            );
-            FileInfo[] filesList = d.GetFiles("*.zip");
-            foreach (FileInfo fileObj in filesList)
-            {
-                File.Delete(fileObj.FullName);
-            }
-
-        }
         public static string[] GetZipFiles(
             Notus.Variable.Enum.NetworkType networkType,
             Notus.Variable.Enum.NetworkLayer networkLayer

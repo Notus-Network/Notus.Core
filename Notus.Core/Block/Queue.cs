@@ -310,7 +310,7 @@ namespace Notus.Block
 
         public void Reset()
         {
-            Notus.IO.ClearBlocks(Obj_Settings.Network, Obj_Settings.Layer);
+            Notus.Archive.ClearBlocks(Obj_Settings);
             MP_BlockPoolList.Clear();
             Queue_PoolTransaction.Clear();
         }

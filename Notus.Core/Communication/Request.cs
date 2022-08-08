@@ -86,7 +86,7 @@ namespace Notus.Communication
             int TimeOut = 0, 
             bool UseTimeoutAsSecond = true, 
             bool showOnError = true,
-            Notus.Variable.Common.ClassSetting objSettings = null
+            Notus.Variable.Common.ClassSetting? objSettings = null
         )
         {
             try

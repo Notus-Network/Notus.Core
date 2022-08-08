@@ -10,6 +10,11 @@ namespace Notus
 {
     public static class Print
     {
+        public static void ReadLine()
+        {
+            Info(true, "Press Enter To Continue");
+            Console.ReadLine();
+        }
         public static void Info(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.Cyan, DetailsStr, PrintAsync);
