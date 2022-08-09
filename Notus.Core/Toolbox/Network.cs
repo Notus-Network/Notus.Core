@@ -169,7 +169,7 @@ namespace Notus.Toolbox
         {
             try
             {
-                String address = "";
+                string address = "";
                 WebRequest request = WebRequest.Create("https://api.ipify.org");
                 using (WebResponse response = request.GetResponse())
                 using (StreamReader stream = new StreamReader(response.GetResponseStream()))
@@ -182,7 +182,7 @@ namespace Notus.Toolbox
             {
                 try
                 {
-                    String address = "";
+                    string address = "";
                     WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
                     using (WebResponse response = request.GetResponse())
                     using (StreamReader stream = new StreamReader(response.GetResponseStream()))

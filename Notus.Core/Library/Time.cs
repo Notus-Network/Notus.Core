@@ -9,6 +9,15 @@ namespace Notus
 {
     public class Time
     {
+        public static Notus.Variable.Struct.UTCTimeStruct GetNtpTime()
+        {
+            Notus.Variable.Struct.UTCTimeStruct tmpReturn=new Notus.Variable.Struct.UTCTimeStruct();
+            tmpReturn.UtcTime = Notus.Time.GetFromNtpServer();
+            tmpReturn.Now = DateTime.Now;
+            tmpReturn.After = (tmpReturn.Now > tmpReturn.UtcTime);
+            tmpReturn.Difference = (tmpReturn.After == true ? (tmpReturn.Now - tmpReturn.UtcTime ) : (tmpReturn.UtcTime - tmpReturn.Now));
+            return tmpReturn;
+        }
         public static DateTime GetFromNtpServer()
         {
             return GetExactTime();

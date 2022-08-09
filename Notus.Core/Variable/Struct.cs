@@ -481,5 +481,13 @@ namespace Notus.Variable.Struct
         public string LastUid { get; set; }                 // node'un sahip olduğu son blok numarası
         public string LastSign { get; set; }                 // node'un sahip olduğu son blok numarası
     }
+
+    public class UTCTimeStruct
+    {
+        public DateTime UtcTime { get; set; }
+        public bool After { get; set; }
+        public TimeSpan Difference { get; set; }
+        public DateTime Now { get; set; }
+    }
 }
 

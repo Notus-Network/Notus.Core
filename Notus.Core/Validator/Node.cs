@@ -12,6 +12,20 @@ namespace Notus.Validator
             bool CryptoTimerActive = true;
             Notus.Variable.Common.ClassSetting NodeSettings = new Notus.Variable.Common.ClassSetting();
 
+            /*
+            
+            burada ntp zaman bilgisi çekilecek
+            burada ntp zaman bilgisi çekilecek
+
+            Console.WriteLine(
+                JsonSerializer.Serialize(
+                    Notus.Time.GetNtpTime()
+                )
+            );
+            Console.WriteLine("Control-Point-Notus.Validator.Node.Start() -> Line 19");
+            Console.ReadLine();
+            */
+
             using (Notus.Validator.Menu menuObj = new Notus.Validator.Menu())
             {
                 NodeSettings = menuObj.PreStart(argsFromCLI);
