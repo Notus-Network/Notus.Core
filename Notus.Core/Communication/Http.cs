@@ -147,7 +147,7 @@ namespace Notus.Communication
             }
             else
             {
-                Notus.Print.Basic(Obj_Settings.DebugMode, "Url Call : " + incomeData.RawUrl);
+                //Notus.Print.Basic(Obj_Settings.DebugMode, "Url Call : " + incomeData.RawUrl);
                 ResponseStr = OnReceiveFunction(incomeData);
             }
             byte[] headerArray = Encoding.ASCII.GetBytes(

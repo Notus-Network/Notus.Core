@@ -93,6 +93,7 @@ namespace Notus.Toolbox
                 Obj_Settings.NodeType = Notus.Variable.Enum.NetworkNodeType.Main;
                 return Obj_Settings;
             }
+            Obj_Settings.UTCTime = Notus.Time.GetNtpTime();
 
             if (Notus.Variable.Constant.ListMainNodeIp.IndexOf(Obj_Settings.IpInfo.Public) >= 0)
             {
@@ -241,7 +242,7 @@ namespace Notus.Toolbox
             return "127.0.0.1";
         }
 
-        private static bool PublicIpIsConnectable(Notus.Variable.Common.ClassSetting Obj_Settings, int Timeout)
+        private static bool PublicIpIsConnectable(Notus.Variable.Common.ClassSetting objSettings, int Timeout)
         {
             Error_TestIpAddress = false;
             try
@@ -254,9 +255,9 @@ namespace Notus.Toolbox
                     tmp_HttpObj.Timeout = 5;
                     tmp_HttpObj.DefaultResult_OK = DefaultControlTestData;
                     tmp_HttpObj.DefaultResult_ERR = DefaultControlTestData;
-                    tmp_HttpObj.Settings = Obj_Settings;
+                    tmp_HttpObj.Settings = objSettings;
                     tmp_HttpObj.OnReceive(Fnc_TestLinkData);
-                    IPAddress testAddress = IPAddress.Parse(Obj_Settings.IpInfo.Public);
+                    IPAddress testAddress = IPAddress.Parse(objSettings.IpInfo.Public);
                     tmp_HttpObj.Start(testAddress, ControlPortNo);
                     DateTime twoSecondsLater = DateTime.Now.AddSeconds(Timeout);
                     while (twoSecondsLater > DateTime.Now && tmp_HttpObj.Started == false)
@@ -264,14 +265,14 @@ namespace Notus.Toolbox
                         try
                         {
                             string MainResultStr = Notus.Communication.Request.Get(
-                                Notus.Network.Node.MakeHttpListenerPath(Obj_Settings.IpInfo.Public, ControlPortNo) + "block/hash/1",
+                                Notus.Network.Node.MakeHttpListenerPath(objSettings.IpInfo.Public, ControlPortNo) + "block/hash/1",
                                 5,
                                 true
                             ).GetAwaiter().GetResult();
                         }
                         catch (Exception errInner)
                         {
-                            Notus.Print.Basic(Obj_Settings.DebugMode, "Error [75fde6374]: " + errInner.Message);
+                            Notus.Print.Basic(objSettings, "Error [75fde6374]: " + errInner.Message);
                         }
                     }
                     if (tmp_HttpObj.Started == false)
@@ -283,7 +284,7 @@ namespace Notus.Toolbox
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(Obj_Settings.DebugMode, "Error [065]: " + err.Message);
+                Notus.Print.Danger(objSettings, "Error [065]: " + err.Message);
                 Error_TestIpAddress = true;
             }
             if (Error_TestIpAddress == true)

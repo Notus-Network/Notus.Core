@@ -58,7 +58,7 @@ namespace Notus.Block
                     catch (Exception err)
                     {
 
-                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [7abc63]: " + err.Message);
+                        Notus.Print.Danger(Obj_Settings, "Error Text [7abc63]: " + err.Message);
                     }
                 }
             }
@@ -73,7 +73,7 @@ namespace Notus.Block
 
             if (ZipFileList.Length == 0)
             {
-                Notus.Print.Info(Obj_Settings, "Genesis Block Needs");
+                Notus.Print.Success(Obj_Settings, "Genesis Block Needs");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.GenesisNeed, null);
             }
             SortedDictionary<long, string> BlockOrderList = new SortedDictionary<long, string>();
@@ -112,14 +112,14 @@ namespace Notus.Block
                                         bool Val_BlockVerify = BlockValidateObj.Verify(ControlBlock);
                                         if (Val_BlockVerify == false)
                                         {
-                                            Notus.Print.Basic(Obj_Settings, "Block Integrity = NonValid");
+                                            Notus.Print.Danger(Obj_Settings, "Block Integrity = NonValid");
                                             tmpDeleteFileList.Add(entry.FullName);
                                         }
                                         else
                                         {
                                             if (BlockOrderList.ContainsKey(ControlBlock.info.rowNo))
                                             {
-                                                Notus.Print.Basic(Obj_Settings, "Block Integrity = MultipleHeight -> " + ControlBlock.info.rowNo.ToString());
+                                                Notus.Print.Danger(Obj_Settings, "Block Integrity = MultipleHeight -> " + ControlBlock.info.rowNo.ToString());
                                                 tmpDeleteFileList.Add(entry.FullName);
                                                 returnForCheckAgain = true;
                                             }
@@ -127,7 +127,7 @@ namespace Notus.Block
                                             {
                                                 if (BlockPreviousList.ContainsKey(ControlBlock.info.uID))
                                                 {
-                                                    Notus.Print.Basic(Obj_Settings, "Block Integrity = MultipleId -> " + ControlBlock.info.uID);
+                                                    Notus.Print.Danger(Obj_Settings, "Block Integrity = MultipleId -> " + ControlBlock.info.uID);
                                                     tmpDeleteFileList.Add(entry.FullName);
                                                     returnForCheckAgain = true;
                                                 }
@@ -163,7 +163,7 @@ namespace Notus.Block
                                     }
                                     catch (Exception err)
                                     {
-                                        Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [235abc]: " + err.Message);
+                                        Notus.Print.Danger(Obj_Settings, "Error Text [235abc]: " + err.Message);
                                     }
                                 }
                             }
@@ -174,7 +174,7 @@ namespace Notus.Block
                 if (tmpDeleteFileList.Count > 0)
                 {
                     Notus.Archive.DeleteFromInside(fileName, tmpDeleteFileList);
-                    Notus.Print.Info(Obj_Settings, "Repair Block Integrity = Contains Wrong / Extra Data");
+                    Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Contains Wrong / Extra Data");
                     if (returnForCheckAgain == true)
                     {
                         return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
@@ -184,7 +184,7 @@ namespace Notus.Block
 
             if (SmallestBlockHeight > 1)
             {
-                Notus.Print.Info(Obj_Settings, "Repair Block Integrity = Missing Block Available");
+                Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Missing Block Available");
                 bool exitInnerLoop = false;
                 while (exitInnerLoop == false)
                 {
@@ -200,7 +200,7 @@ namespace Notus.Block
                             Obj_Settings.NodeType != Notus.Variable.Enum.NetworkNodeType.Master
                         )
                         {
-                            Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
+                            Notus.Print.Info(Obj_Settings, "Getting Block Row No : " + SmallestBlockHeight.ToString());
                             StoreBlockWithRowNo(SmallestBlockHeight);
                         }
                         else
@@ -226,7 +226,7 @@ namespace Notus.Block
                         Obj_Settings.NodeType != Notus.Variable.Enum.NetworkNodeType.Master
                     )
                     {
-                        Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + SmallestBlockHeight.ToString());
+                        Notus.Print.Info(Obj_Settings, "Getting Block Row No : " + SmallestBlockHeight.ToString());
                         StoreBlockWithRowNo(controlNumber);
                     }
                     else

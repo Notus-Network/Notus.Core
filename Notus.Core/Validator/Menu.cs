@@ -755,7 +755,9 @@ namespace Notus.Validator
             }
             if (useTimerForStart == true)
             {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("Press any key for setup");
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine("Please wait for auto-start");
                 bool keyExist = false;
                 byte iCounter = 0;
@@ -1276,7 +1278,6 @@ namespace Notus.Validator
                 if (NodeSettings.Layer != Notus.Variable.Enum.NetworkLayer.Layer1)
                 {
                     //CryptoTimerActive = false;
-                    //EmptyTimerActive = false;
                 }
             }
             else

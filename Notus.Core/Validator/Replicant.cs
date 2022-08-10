@@ -28,7 +28,7 @@ namespace Notus.Validator
 
         private void GetBlockFromNode(string NodeAddress, Int64 BlockRowNo, bool AssingToLastBlockVar)
         {
-            Notus.Print.Basic(Obj_Settings.DebugMode, "Getting Block Row No : " + BlockRowNo.ToString());
+            Notus.Print.Info(Obj_Settings, "Getting Block Row No : " + BlockRowNo.ToString());
             bool exitWhileLoop = false;
             while (exitWhileLoop == false)
             {

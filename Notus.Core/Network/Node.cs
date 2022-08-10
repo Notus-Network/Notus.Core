@@ -92,7 +92,7 @@ namespace Notus.Network
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Danger(showError, "Notus.Network.Node.FindAvailableSync -> Line 92 -> " + err.Message);
+                        Notus.Print.Danger(objSettings, "Notus.Network.Node.FindAvailableSync -> Line 92 -> " + err.Message);
                         Notus.Date.SleepWithoutBlocking(5, true);
                     }
                     exitInnerLoop = (MainResultStr.Length > 0);

@@ -2227,22 +2227,22 @@ namespace Notus.HashLib
     public sealed class CryptoHashException : Exception
     {
         public string Origin { get; set; }
-        public CryptoHashException(String Message) :
+        public CryptoHashException(string Message) :
             base(Message)
         {
         }
 
-        public CryptoHashException(String Message, Exception InnerException) :
+        public CryptoHashException(string Message, Exception InnerException) :
             base(Message, InnerException)
         {
         }
-        public CryptoHashException(String Origin, String Message) :
+        public CryptoHashException(string Origin, string Message) :
             base(Message)
         {
             this.Origin = Origin;
         }
 
-        public CryptoHashException(String Origin, String Message, Exception InnerException) :
+        public CryptoHashException(string Origin, string Message, Exception InnerException) :
             base(Message, InnerException)
         {
             this.Origin = Origin;

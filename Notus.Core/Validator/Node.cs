@@ -9,7 +9,6 @@ namespace Notus.Validator
         public static void Start(string[] argsFromCLI)
         {
             bool LightNodeActive = false;
-            bool CryptoTimerActive = true;
             Notus.Variable.Common.ClassSetting NodeSettings = new Notus.Variable.Common.ClassSetting();
 
             /*
@@ -40,15 +39,15 @@ namespace Notus.Validator
             if (NodeSettings.DevelopmentNode == true)
             {
                 NodeSettings.Network = Notus.Variable.Enum.NetworkType.DevNet;
-                Notus.Validator.Node.Start(NodeSettings, CryptoTimerActive, LightNodeActive);
+                Notus.Validator.Node.Start(NodeSettings, LightNodeActive);
             }
             else
             {
                 NodeSettings.Network = Notus.Variable.Enum.NetworkType.MainNet;
-                Notus.Validator.Node.Start(NodeSettings, CryptoTimerActive, LightNodeActive);
+                Notus.Validator.Node.Start(NodeSettings, LightNodeActive);
             }
         }
-        public static void Start(Notus.Variable.Common.ClassSetting NodeSettings, bool CryptoTimerActive, bool LightNodeActive)
+        public static void Start(Notus.Variable.Common.ClassSetting NodeSettings, bool LightNodeActive)
         {
             if (NodeSettings.LocalNode == true)
             {
@@ -62,7 +61,7 @@ namespace Notus.Validator
             {
                 // if IP and port node written in the code
                 case Notus.Variable.Enum.NetworkNodeType.Main:
-                    StartAsMain(NodeSettings, CryptoTimerActive);
+                    StartAsMain(NodeSettings);
                     break;
 
                 // if node join the network
@@ -82,9 +81,20 @@ namespace Notus.Validator
         }
         private static void StartAsMaster(Notus.Variable.Common.ClassSetting NodeSettings)
         {
+            bool exitOuterLoop = false;
+            while (exitOuterLoop == false)
+            {
+                using (Notus.Validator.Main MainObj = new Notus.Validator.Main())
+                {
+                    MainObj.Settings = NodeSettings;
+                    MainObj.Start();
+                }
 
+                Notus.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
+                Thread.Sleep(2500);
+            }
         }
-        private static void StartAsMain(Notus.Variable.Common.ClassSetting NodeSettings, bool CryptoTimerActive)
+        private static void StartAsMain(Notus.Variable.Common.ClassSetting NodeSettings)
         {
             bool exitOuterLoop = false;
             while (exitOuterLoop == false)
@@ -92,7 +102,6 @@ namespace Notus.Validator
                 using (Notus.Validator.Main MainObj = new Notus.Validator.Main())
                 {
                     MainObj.Settings = NodeSettings;
-                    MainObj.CryptoTimerActive = CryptoTimerActive;
                     MainObj.Start();
                 }
 

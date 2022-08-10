@@ -12,18 +12,46 @@ namespace Notus
         public static Notus.Variable.Struct.UTCTimeStruct GetNtpTime()
         {
             Notus.Variable.Struct.UTCTimeStruct tmpReturn=new Notus.Variable.Struct.UTCTimeStruct();
-            tmpReturn.UtcTime = Notus.Time.GetFromNtpServer();
+            tmpReturn.UtcTime = Notus.Time.GetFromNtpServer(true);
             tmpReturn.Now = DateTime.Now;
             tmpReturn.After = (tmpReturn.Now > tmpReturn.UtcTime);
             tmpReturn.Difference = (tmpReturn.After == true ? (tmpReturn.Now - tmpReturn.UtcTime ) : (tmpReturn.UtcTime - tmpReturn.Now));
             return tmpReturn;
         }
-        public static DateTime GetFromNtpServer()
+        public static Notus.Variable.Struct.UTCTimeStruct RefreshNtpTime(Notus.Variable.Struct.UTCTimeStruct currentUtcTime)
         {
-            return GetExactTime();
+            currentUtcTime.Now = DateTime.Now;
+            if (currentUtcTime.After == true)
+            {
+                currentUtcTime.Now = DateTime.Now.Subtract(currentUtcTime.Difference);
+            }
+            else
+            {
+                currentUtcTime.Now = DateTime.Now.Add(currentUtcTime.Difference);
+            }
+            return currentUtcTime;
         }
-        public static DateTime GetExactTime()
+        public static DateTime GetFromNtpServer(bool WaitUntilGetFromServer=false)
         {
+            return GetExactTime(WaitUntilGetFromServer);
+        }
+        public static DateTime GetExactTime(bool WaitUntilGetFromServer=false)
+        {
+            if (WaitUntilGetFromServer == true)
+            {
+                long exactTimeLong = 0;
+                int count = 0;
+                while (exactTimeLong == 0)
+                {
+                    exactTimeLong=(long)GetExactTime_Int();
+                    if (exactTimeLong == 0)
+                    {
+                        Thread.Sleep((count > 10 ? 5000 : 500));
+                        count++;
+                    }
+                }
+                return new DateTime(1900, 1, 1).AddMilliseconds(exactTimeLong);
+            }
             return new DateTime(1900, 1, 1).AddMilliseconds((long)GetExactTime_Int());
         }
         public static ulong BlockIdToUlong(string blockUid)

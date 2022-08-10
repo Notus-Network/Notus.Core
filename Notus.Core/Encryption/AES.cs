@@ -206,7 +206,7 @@ namespace Notus.Encryption
             rijndael.GenerateIV();
         }
 
-        public AES(String base64key, String base64iv)
+        public AES(string base64key, string base64iv)
         {
             InitializeRijndael();
 

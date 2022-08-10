@@ -625,7 +625,7 @@ namespace Notus.Communication
                 }
                 else
                 {
-                    String content = String.Empty;
+                    string content = string.Empty;
                     state.sb.Append(Encoding.UTF8.GetString(state.buffer, 0, bytesRead));
                     content = state.sb.ToString();
                     bool processIncomeData = true;
@@ -673,7 +673,7 @@ namespace Notus.Communication
                 }
             }
         }
-        private void Send(System.Net.Sockets.Socket handler, String data)
+        private void Send(System.Net.Sockets.Socket handler, string data)
         {
             Send_ByteArray(handler, Encoding.UTF8.GetBytes(data + ScktDataEndText));
         }
