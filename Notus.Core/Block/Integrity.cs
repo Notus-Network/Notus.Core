@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
+using System;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Threading;
@@ -232,7 +232,7 @@ namespace Notus.Block
                     else
                     {
 
-                        Notus.Print.Danger(Obj_Settings, "Block Order Error > " + controlNumber.ToString() + " > " + item.Value);
+                        Notus.Print.Danger(Obj_Settings, "Block Order Error > " + controlNumber.ToString() + " / "+ item.Key + " > " + item.Value);
                         Notus.Archive.DeleteFromInside(item.Value , Obj_Settings);
                     }
 

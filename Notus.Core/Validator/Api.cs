@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.IO;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 using System.Text.Json;
 
@@ -372,10 +372,7 @@ namespace Notus.Validator
                     }
                 }
 
-                if (
-                    string.Equals(IncomeData.UrlList[0].ToLower(), "send") && 
-                    IncomeData.PostParams.ContainsKey("data") == true
-                )
+                if (string.Equals(IncomeData.UrlList[0].ToLower(), "send") && IncomeData.PostParams.ContainsKey("data") == true)
                 {
                     return Request_Send(IncomeData);
                 }
@@ -1229,7 +1226,11 @@ namespace Notus.Validator
             }
 
             // if wallet wants to send coin then control only coin balance
-            Int64 transferFee = Notus.Wallet.Fee.Calculate(Notus.Variable.Enum.Fee.CryptoTransfer);
+            Int64 transferFee = Notus.Wallet.Fee.Calculate(
+                Notus.Variable.Enum.Fee.CryptoTransfer,
+                Obj_Settings.Network,
+                Obj_Settings.Layer
+            );
             if (string.Equals(tmpTransfer.Currency, Obj_Settings.Genesis.CoinInfo.Tag))
             {
                 BigInteger RequiredBalanceInt = BigInteger.Parse(tmpTransfer.Volume) + transferFee;

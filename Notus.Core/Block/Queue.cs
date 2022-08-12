@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.IO;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 
 namespace Notus.Block
@@ -207,7 +207,7 @@ namespace Notus.Block
                     );
                 }
 
-                LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
+                LongNonceText = String.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
             BlockStruct.prev = "";
             BlockStruct.info.prevList.Clear();

@@ -1,10 +1,10 @@
-﻿using System;
-using Notus.Variable.Struct;
+﻿using System.Threading;
+using System;
 using System.Collections.Generic;
+using Notus.Variable.Struct;
 using System.Globalization;
 using System.Numerics;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 
@@ -1047,8 +1047,8 @@ namespace Notus.Validator
                     "<ready>" + NodeList[MyNodeHexKey].Wallet + "</ready>",
                     true
                 );
-                Console.WriteLine("_ipAddress / _portNo: " + _ipAddress + " : "+ _portNo.ToString());
-                Console.WriteLine("responseStr : " + responseStr);
+                //Console.WriteLine("_ipAddress / _portNo: " + _ipAddress + " : "+ _portNo.ToString());
+                //Console.WriteLine("responseStr : " + responseStr);
                 if (string.Equals("done", responseStr.Trim()) == true)
                 {
                     ProcessIncomeData(responseStr);

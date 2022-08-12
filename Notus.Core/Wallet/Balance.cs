@@ -286,7 +286,14 @@ namespace Notus.Wallet
                 //Console.ReadLine();
             }
 
-            Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString() + " -> "+ tmpBlockForBalance.info.rowNo.ToString() );
+            if (
+                tmpBlockForBalance.info.type != 300 
+                &&
+                tmpBlockForBalance.info.type != 360
+            )
+            {
+                Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString() + " -> "+ tmpBlockForBalance.info.rowNo.ToString() );
+            }
 
             if (tmpBlockForBalance.info.type == 120)
             {
@@ -295,7 +302,16 @@ namespace Notus.Wallet
                         tmpBlockForBalance.cipher.data
                     )
                 );
-                Notus.Variable.Class.BlockStruct_120 tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(tmpRawDataStr);
+                //Console.WriteLine(tmpRawDataStr);
+                //Console.ReadLine();
+
+                Notus.Variable.Class.BlockStruct_120? tmpBalanceVal = 
+                    JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(
+                        tmpRawDataStr
+                    );
+                //Console.WriteLine(JsonSerializer.Serialize( tmpBalanceVal));
+                //Console.WriteLine(tmpBalanceVal);
+                //Console.ReadLine();
 
                 foreach (KeyValuePair<string, Dictionary<string, Dictionary<ulong, string>>> entry in tmpBalanceVal.Out)
                 {

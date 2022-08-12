@@ -20,7 +20,11 @@ namespace Notus.Wallet
                     (RawObj.Info.Logo.Base64.Length==0 ? 1 : RawObj.Info.Logo.Base64.Length)
                 );
         }
-        public static Int64 Calculate(Notus.Variable.Enum.Fee FeeType, Notus.Variable.Enum.NetworkType networkType = Notus.Variable.Enum.NetworkType.MainNet, Notus.Variable.Enum.NetworkLayer networkLayer = Notus.Variable.Enum.NetworkLayer.Layer1)
+        public static Int64 Calculate(
+            Notus.Variable.Enum.Fee FeeType, 
+            Notus.Variable.Enum.NetworkType networkType, 
+            Notus.Variable.Enum.NetworkLayer networkLayer
+        )
         {
             return ReadFeeData(FeeType, networkType, networkLayer);
         }
@@ -74,14 +78,26 @@ namespace Notus.Wallet
         private static string FeeDataStorageDbName(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
             return 
-                Notus.IO.GetFolderName(networkType, networkLayer,Notus.Variable.Constant.StorageFolderName.Common) +
-                "price_data";
+                Notus.IO.GetFolderName(
+                    networkType, 
+                    networkLayer,Notus.Variable.Constant.StorageFolderName.Common
+                ) + "price_data";
         }
-        public static Int64 ReadFeeData(Notus.Variable.Enum.Fee FeeConstant, Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
+        public static Int64 ReadFeeData(
+            Notus.Variable.Enum.Fee FeeConstant, 
+            Notus.Variable.Enum.NetworkType networkType,
+            Notus.Variable.Enum.NetworkLayer networkLayer
+        )
         {
             Notus.Variable.Genesis.GenesisBlockData Obj_Genesis = null;
 
-            using (Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(FeeDataStorageDbName(networkType, networkLayer)))
+            using (
+                Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(
+                    FeeDataStorageDbName(
+                        networkType, networkLayer
+                    )
+                )
+            )
             {
                 string tmpReturnVal = ObjMp_BlockOrder.Get("genesis_block", "");
                 if (tmpReturnVal.Length > 0)

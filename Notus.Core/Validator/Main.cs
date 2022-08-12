@@ -1,10 +1,10 @@
-﻿using System;
+﻿using System.Threading;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Numerics;
 using System.Text.Json;
-using System.Threading;
+using System.IO;
 
 namespace Notus.Validator
 {
@@ -86,7 +86,7 @@ namespace Notus.Validator
                         {
                             if ((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds > 30)
                             {
-                                Console.WriteLine((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds);
+                                //Console.WriteLine((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds);
                                 EmptyBlockGeneratedTime = DateTime.Now;
                                 Notus.Print.Success(Obj_Settings, "Empty Block Executed");
                                 Obj_BlockQueue.AddEmptyBlock();
@@ -267,7 +267,11 @@ namespace Notus.Validator
                         Dictionary<string, Notus.Variable.Struct.MempoolDataList> tmpTransactionList = Obj_Api.RequestSend_DataList();
 
                         // wallet balances are assigned
-                        Int64 transferFee = Notus.Wallet.Fee.Calculate(Notus.Variable.Enum.Fee.CryptoTransfer);
+                        Int64 transferFee = Notus.Wallet.Fee.Calculate(
+                            Notus.Variable.Enum.Fee.CryptoTransfer,
+                            Obj_Settings.Network,
+                            Obj_Settings.Layer
+                        );
                         ulong transactionCount = 0;
                         foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in tmpTransactionList)
                         {
@@ -745,7 +749,14 @@ namespace Notus.Validator
         {
             if (blockSource == 1)
             {
-                Notus.Print.Status(Obj_Settings, "Block Came From The Loading DB");
+                if (
+                    blockData.info.type != 300
+                    &&
+                    blockData.info.type != 360
+                )
+                {
+                    Notus.Print.Status(Obj_Settings, "Block Came From The Loading DB");
+                }
             }
             if (blockSource == 2)
             {
