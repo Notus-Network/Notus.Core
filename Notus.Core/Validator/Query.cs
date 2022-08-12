@@ -30,20 +30,26 @@ namespace Notus.Validator
             }
             return (false, null);
         }
-        public static (bool, Notus.Variable.Struct.LastBlockInfo) GetLastBlockInfo(string NodeAddress)
+        public static Notus.Variable.Struct.LastBlockInfo? GetLastBlockInfo(string NodeAddress, Notus.Variable.Common.ClassSetting? Obj_Settings=null)
         {
             try
             {
                 //string mainAddressStr = Notus.Core.Function.MakeHttpListenerPath(NodeAddress, Notus.Variable.Struct.PortNo_HttpListener);
-                string MainResultStr = Notus.Communication.Request.Get(NodeAddress + "block/summary", 10, true).GetAwaiter().GetResult();
+                string MainResultStr = Notus.Communication.Request.GetSync(
+                    NodeAddress + "block/summary", 
+                    10, 
+                    true,
+                    true,
+                    Obj_Settings
+                );
                 Notus.Variable.Struct.LastBlockInfo PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Struct.LastBlockInfo>(MainResultStr);
-                return (true, PreBlockData);
+                return PreBlockData;
             }
             catch
             {
 
             }
-            return (false, null);
+            return null;
         }
         public static (bool, Dictionary<string, Notus.Variable.Class.BlockData>) LastBlockList(
             Notus.Variable.Enum.NetworkNodeType nodeType, 

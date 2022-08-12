@@ -8,7 +8,13 @@ namespace Notus.Communication
 {
     public static class Request
     {
-        public static async Task<string> Post(string UrlAddress, Dictionary<string, string> PostData, int TimeOut = 0, bool UseTimeoutAsSecond = true)
+        public static async Task<string> Post(
+            string UrlAddress, 
+            Dictionary<string, string> PostData, 
+            int TimeOut = 0, 
+            bool UseTimeoutAsSecond = true,
+            bool showOnError = true
+        )
         {
             using (HttpClient client = new HttpClient())
             {

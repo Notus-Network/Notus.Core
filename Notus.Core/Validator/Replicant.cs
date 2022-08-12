@@ -144,8 +144,8 @@ namespace Notus.Validator
                     if (Obj_Settings.LastBlock.info.rowNo == MN_LastBlockRowNo)
                     {
                         Notus.Print.Basic(Obj_Settings, "Checking Block Height");
-                        (bool tmpNoError, Notus.Variable.Struct.LastBlockInfo tmpLastBlockInfo) = Notus.Validator.Query.GetLastBlockInfo(NodeAddress);
-                        if (tmpNoError == true)
+                        Notus.Variable.Struct.LastBlockInfo? tmpLastBlockInfo = Notus.Validator.Query.GetLastBlockInfo(NodeAddress,Obj_Settings);
+                        if (tmpLastBlockInfo!=null)
                         {
                             if (MN_LastBlockRowNo == tmpLastBlockInfo.RowNo)
                             {

@@ -66,7 +66,9 @@ namespace Notus.Validator
 
                 // if node join the network
                 case Notus.Variable.Enum.NetworkNodeType.Master:
-                    StartAsMaster(NodeSettings);
+                    //StartAsMaster(NodeSettings);
+                    StartAsMain(NodeSettings);
+                    //StartAsMaster(NodeSettings);
                     break;
 
                 // if node only store the data

@@ -50,15 +50,21 @@ namespace Notus.Toolbox
             }
             return null;
         }
-        public static Notus.Variable.Class.BlockData? GetLastBlock(Notus.Variable.Struct.IpInfo NodeIp)
+        public static Notus.Variable.Class.BlockData? GetLastBlock(Notus.Variable.Struct.IpInfo NodeIp, Notus.Variable.Common.ClassSetting? objSettings=null)
         {
-            return GetLastBlock(Notus.Network.Node.MakeHttpListenerPath(NodeIp.IpAddress, NodeIp.Port));
+            return GetLastBlock(Notus.Network.Node.MakeHttpListenerPath(NodeIp.IpAddress, NodeIp.Port), objSettings);
         }
-        public static Notus.Variable.Class.BlockData? GetLastBlock(string NodeAddress)
+        public static Notus.Variable.Class.BlockData? GetLastBlock(string NodeAddress, Notus.Variable.Common.ClassSetting? objSettings = null)
         {
             try
             {
-                string MainResultStr = Notus.Communication.Request.Get(NodeAddress + "block/last/raw", 10, true).GetAwaiter().GetResult();
+                string MainResultStr = Notus.Communication.Request.GetSync(
+                    NodeAddress + "block/last/raw", 
+                    10, 
+                    true,
+                    true,
+                    objSettings
+                );
                 Notus.Variable.Class.BlockData? PreBlockData =
                     JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                 //Console.WriteLine(JsonSerializer.Serialize(PreBlockData));
@@ -69,7 +75,14 @@ namespace Notus.Toolbox
             }
             catch(Exception err)
             {
-                Console.WriteLine("err : " + err.Message);
+                if (objSettings == null)
+                {
+                    Console.WriteLine("err : " + err.Message);
+                }
+                else
+                {
+                    Notus.Print.Danger(objSettings, "Error Point (GetLastBlock) : " + err.Message);
+                }
             }
             return null;
         }

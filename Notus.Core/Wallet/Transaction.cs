@@ -65,8 +65,7 @@ namespace Notus.Wallet
         {
             try
             {
-                bool tmpTransactionVerified = Verify(preTransfer);
-                if (tmpTransactionVerified == false)
+                if (Verify(preTransfer) == false)
                 {
                     return new Notus.Variable.Struct.CryptoTransactionResult()
                     {
@@ -80,30 +79,34 @@ namespace Notus.Wallet
                 {
                     for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                     {
-                        string nodeIpAddress = "";
-                        if (whichNodeIpAddress == "")
-                        {
-                            nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
-                        }
-                        else
-                        {
-                            nodeIpAddress = whichNodeIpAddress;
-                        }
                         try
                         {
                             bool RealNetwork = preTransfer.Network == Notus.Variable.Enum.NetworkType.MainNet;
                             string fullUrlAddress =
                                 Notus.Network.Node.MakeHttpListenerPath(
-                                    nodeIpAddress,
-                                    Notus.Network.Node.GetNetworkPort(currentNetwork, Notus.Variable.Enum.NetworkLayer.Layer1)
+                                    (
+                                        whichNodeIpAddress == "" 
+                                            ? 
+                                        Notus.Variable.Constant.ListMainNodeIp[a] 
+                                            : 
+                                        whichNodeIpAddress
+                                    ),
+                                    Notus.Network.Node.GetNetworkPort(
+                                        currentNetwork, 
+                                        Notus.Variable.Enum.NetworkLayer.Layer1
+                                    )
                                 ) + "send/";
 
-                            string MainResultStr = await Notus.Communication.Request.Post(fullUrlAddress,
+                            string MainResultStr = await Notus.Communication.Request.Post(
+                                fullUrlAddress,
                                 new System.Collections.Generic.Dictionary<string, string>()
                                 {
                                     { "data" , JsonSerializer.Serialize(preTransfer) }
-                                }
+                                },
+                                10,true,
+                                true
                             );
+                            Notus.Print.Basic(true, "Request Response : " + MainResultStr);
                             Notus.Variable.Struct.CryptoTransactionResult tmpTransferResult = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(MainResultStr);
                             exitInnerLoop = true;
                             return tmpTransferResult;
@@ -111,7 +114,7 @@ namespace Notus.Wallet
                         catch (Exception err)
                         {
                             Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
-                            Thread.Sleep(1000);
+                            Thread.Sleep(2000);
                         }
                         if (whichNodeIpAddress != "")
                         {

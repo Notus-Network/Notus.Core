@@ -64,46 +64,53 @@ namespace Notus.Block
             {
                 if (Queue_PoolTransaction.Count > 0)
                 {
-                    Notus.Variable.Struct.List_PoolBlockRecordStruct TmpPoolRecord = Queue_PoolTransaction.Peek();
-                    if (CurrentBlockType == -1)
+                    Notus.Variable.Struct.List_PoolBlockRecordStruct? TmpPoolRecord = Queue_PoolTransaction.Peek();
+                    if (TmpPoolRecord == null)
                     {
-                        CurrentBlockType = TmpPoolRecord.type;
-                    }
-
-                    if (CurrentBlockType == TmpPoolRecord.type)
-                    {
-                        bool addToList = true;
-                        /*
-                        if (List_PoolTransaction[0].type == 100)
-                        {
-                            Notus.Variable.Block.TempTransactionPoolStruct TempPaymentObj = JsonSerializer.Deserialize<Notus.Variable.Block.TempTransactionPoolStruct>(List_PoolTransaction[0].data);
-                            if (BigInteger.Parse(TempPaymentObj.volume) == 0 && BigInteger.Parse(TempPaymentObj.fee) == 0)
-                            {
-                                MP_BlockPoolList.Remove(TempPaymentObj.poolKey);
-                                addToList = false;
-                            }
-                        }
-                        */
-
-                        if (addToList == true)
-                        {
-                            TempPoolTransactionList.Add(TmpPoolRecord);
-                            TempBlockList.Add(TmpPoolRecord.data);
-                        }
-                        Queue_PoolTransaction.Dequeue();
-                        if (
-                            TempPoolTransactionList.Count == 1000 ||
-                            CurrentBlockType == 240 || // layer1 - > dosya ekleme isteği
-                            CurrentBlockType == 250 || // layer3 - > dosya içeriği
-                            CurrentBlockType == 300
-                        )
-                        {
-                            exitLoop = true;
-                        }
+                        exitLoop = true;
                     }
                     else
                     {
-                        exitLoop = true;
+                        if (CurrentBlockType == -1)
+                        {
+                            CurrentBlockType = TmpPoolRecord.type;
+                        }
+
+                        if (CurrentBlockType == TmpPoolRecord.type)
+                        {
+                            bool addToList = true;
+                            /*
+                            if (List_PoolTransaction[0].type == 100)
+                            {
+                                Notus.Variable.Block.TempTransactionPoolStruct TempPaymentObj = JsonSerializer.Deserialize<Notus.Variable.Block.TempTransactionPoolStruct>(List_PoolTransaction[0].data);
+                                if (BigInteger.Parse(TempPaymentObj.volume) == 0 && BigInteger.Parse(TempPaymentObj.fee) == 0)
+                                {
+                                    MP_BlockPoolList.Remove(TempPaymentObj.poolKey);
+                                    addToList = false;
+                                }
+                            }
+                            */
+
+                            if (addToList == true)
+                            {
+                                TempPoolTransactionList.Add(TmpPoolRecord);
+                                TempBlockList.Add(TmpPoolRecord.data);
+                            }
+                            Queue_PoolTransaction.Dequeue();
+                            if (
+                                TempPoolTransactionList.Count == 1000 ||
+                                CurrentBlockType == 240 || // layer1 - > dosya ekleme isteği
+                                CurrentBlockType == 250 || // layer3 - > dosya içeriği
+                                CurrentBlockType == 300
+                            )
+                            {
+                                exitLoop = true;
+                            }
+                        }
+                        else
+                        {
+                            exitLoop = true;
+                        }
                     }
                 }
                 else
@@ -200,7 +207,7 @@ namespace Notus.Block
                     );
                 }
 
-                LongNonceText = String.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
+                LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
             BlockStruct.prev = "";
             BlockStruct.info.prevList.Clear();

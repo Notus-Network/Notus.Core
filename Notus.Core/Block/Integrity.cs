@@ -206,7 +206,7 @@ namespace Notus.Block
                         else
                         {
                             Notus.Archive.DeleteFromInside(BlockOrderList[BiggestBlockHeight - 1], Obj_Settings);
-                            Notus.Print.Info(Obj_Settings, "Repair Block Integrity = Missing Block [45abcfe713]");
+                            Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Missing Block [45abcfe713]");
 
                         }
                     }
@@ -294,10 +294,10 @@ namespace Notus.Block
             }
             if (prevBlockRownNumberError == true)
             {
-                Notus.Print.Info(Obj_Settings, "Repair Block Integrity = Wrong Block Order");
+                Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Wrong Block Order");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
-            Notus.Print.Info(Obj_Settings, "Block Integrity Valid");
+            Notus.Print.Success(Obj_Settings, "Block Integrity Valid");
 
             using (Notus.Mempool ObjMp_BlockOrder =
                 new Notus.Mempool(
@@ -336,14 +336,16 @@ namespace Notus.Block
                     string nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
                     try
                     {
-                        string MainResultStr = Notus.Communication.Request.Get(
+                        string MainResultStr = Notus.Communication.Request.GetSync(
                             Notus.Network.Node.MakeHttpListenerPath(
                                 nodeIpAddress,
                                 Notus.Network.Node.GetNetworkPort(Obj_Settings.Network, Obj_Settings.Layer)
                             ) + "block/hash/" + BlockRowNo.ToString(),
                             10,
-                            true
-                        ).GetAwaiter().GetResult();
+                            true,
+                            true,
+                            Obj_Settings
+                        );
                         if (MainResultStr.Length > 90)
                         {
                             exitInnerLoop = true;
@@ -377,14 +379,16 @@ namespace Notus.Block
                     try
                     {
 
-                        MainResultStr = Notus.Communication.Request.Get(
+                        MainResultStr = Notus.Communication.Request.GetSync(
                             Notus.Network.Node.MakeHttpListenerPath(
                                 nodeIpAddress,
                                 Notus.Network.Node.GetNetworkPort(Obj_Settings.Network, Obj_Settings.Layer)
                             ) + "block/" + BlockRowNo.ToString(),
                             10,
-                            true
-                        ).GetAwaiter().GetResult();
+                            true,
+                            true,
+                            Obj_Settings
+                        );
                         Notus.Variable.Class.BlockData tmpEmptyBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                         using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
                         {
@@ -491,7 +495,7 @@ namespace Notus.Block
             }
             else
             {
-                Notus.Print.Basic(Obj_Settings, "We Do Not Have Any Block");
+                //Notus.Print.Basic(Obj_Settings, "We Do Not Have Any Block");
             }
 
             //there is no layer on constant
@@ -575,7 +579,7 @@ namespace Notus.Block
                     {
                         BS_Storage.Network = Obj_Settings.Network;
                         BS_Storage.Layer = Obj_Settings.Layer;
-                        Notus.Print.Basic(Obj_Settings, "Current Block Were Deleted");
+                        Notus.Print.Warning(Obj_Settings, "Current Block Were Deleted");
                         Notus.Archive.ClearBlocks(Obj_Settings);
                         BS_Storage.AddSync(signBlock[tmpBiggestSign], true);
                         Notus.Print.Basic(Obj_Settings, "Added Block : " + signBlock[tmpBiggestSign].info.uID);

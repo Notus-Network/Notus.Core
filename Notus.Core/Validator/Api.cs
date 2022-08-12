@@ -224,6 +224,10 @@ namespace Notus.Validator
 
             if (IncomeData.UrlList.Length > 0)
             {
+                if (IncomeData.UrlList[0].ToLower() == "ping")
+                {
+                    return "pong";
+                }
                 if (IncomeData.UrlList[0].ToLower() == "metrics")
                 {
                     return Request_Metrics(IncomeData);
@@ -368,7 +372,10 @@ namespace Notus.Validator
                     }
                 }
 
-                if (string.Equals(IncomeData.UrlList[0].ToLower(), "send") && IncomeData.PostParams.ContainsKey("data") == true)
+                if (
+                    string.Equals(IncomeData.UrlList[0].ToLower(), "send") && 
+                    IncomeData.PostParams.ContainsKey("data") == true
+                )
                 {
                     return Request_Send(IncomeData);
                 }
