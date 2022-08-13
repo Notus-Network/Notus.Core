@@ -890,13 +890,13 @@ namespace Notus.Validator
                 NodeOrderList.Add(counter, entry.Value);
             }
             //Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
-            Console.WriteLine(JsonSerializer.Serialize(NodeOrderList));
+            //Console.WriteLine(JsonSerializer.Serialize(NodeOrderList));
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
             //Console.WriteLine(MyTurn_Val);
             //Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
             if (MyTurn_Val == true)
             {
-                Notus.Print.Info(Obj_Settings, "My Turn");
+                //Notus.Print.Info(Obj_Settings, "My Turn");
                 CalculateTimeDifference(false);
                 NextQueueValidNtpTime = RefreshNtpTime(3);
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
@@ -919,7 +919,7 @@ namespace Notus.Validator
             }
             else
             {
-                Notus.Print.Info(Obj_Settings, "Waiting For Turn");
+                //Notus.Print.Info(Obj_Settings, "Waiting For Turn");
                 //Console.WriteLine("Control-Point-4");
             }
             NodeList[MyNodeHexKey].Time.Node = DateTime.Now;

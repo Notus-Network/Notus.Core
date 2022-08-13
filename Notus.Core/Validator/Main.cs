@@ -97,7 +97,7 @@ namespace Notus.Validator
                         {
                             if (EmptyBlockNotMyTurnPrinted == false)
                             {
-                                Notus.Print.Warning(Obj_Settings, "Not My Turn For Empty Block");
+                                //Notus.Print.Warning(Obj_Settings, "Not My Turn For Empty Block");
                                 EmptyBlockNotMyTurnPrinted = true;
                             }
                         }
@@ -728,9 +728,23 @@ namespace Notus.Validator
                             }
                             else
                             {
-                                Console.Write(".");
+                                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                Console.Write("+");
                                 Thread.Sleep(1);
                             }
+                        }
+                    }
+                }
+                else
+                {
+                    if(Obj_Settings.GenesisCreated == false)
+                    {
+                        if ((DateTime.Now - LastPrintTime).TotalSeconds > 20)
+                        {
+                            LastPrintTime = DateTime.Now;
+                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                            Console.Write(".");
+                            Thread.Sleep(1);
                         }
                     }
                 }
