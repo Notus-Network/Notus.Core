@@ -1,10 +1,10 @@
-﻿using System.Threading;
-using System;
+﻿using System;
+using System.Threading;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Numerics;
 using System.Text.Json;
-using System.IO;
 
 namespace Notus.Validator
 {

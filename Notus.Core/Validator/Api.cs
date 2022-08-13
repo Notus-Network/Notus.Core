@@ -1,6 +1,6 @@
-﻿using System.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using System.Text.Json;
 
@@ -583,7 +583,15 @@ namespace Notus.Validator
                     Console.WriteLine("Error Text [ba09c83fe] : " + err.Message);
                 }
             }
-            return JsonSerializer.Serialize(Notus.Variable.Enum.BlockStatusCode.Unknown);
+            return JsonSerializer.Serialize(
+                new Notus.Variable.Struct.CryptoTransferStatus()
+                {
+                    Code = Variable.Enum.BlockStatusCode.Unknown,
+                    RowNo = 0,
+                    Text = "Unknown",
+                    UID = string.Empty
+                }
+            );
         }
 
         private string Request_Layer3_StoreFileNew(Notus.Variable.Struct.HttpRequestDetails IncomeData)

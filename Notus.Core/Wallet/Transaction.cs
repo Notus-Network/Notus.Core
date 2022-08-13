@@ -25,11 +25,30 @@ namespace Notus.Wallet
         /// </summary>
         public static Notus.Variable.Enum.BlockStatusCode Status(
             string TransferId, 
-            Notus.Variable.Enum.NetworkType WhichNetwork = Notus.Variable.Enum.NetworkType.MainNet, 
-            Notus.Variable.Enum.NetworkLayer WhichLayer = Notus.Variable.Enum.NetworkLayer.Layer1
+            Notus.Variable.Enum.NetworkType WhichNetwork,
+            Notus.Variable.Enum.NetworkLayer WhichLayer
         )
         {
-            using(
+            string requestResult=Notus.Network.Node.FindAvailableSync(
+                "transaction/status/" + TransferId,
+                WhichNetwork,
+                WhichLayer
+            );
+            if (requestResult.Length == 0)
+            {
+                return Notus.Variable.Enum.BlockStatusCode.Unknown;
+            }
+            try
+            {
+                return JsonSerializer.Deserialize<Notus.Variable.Enum.BlockStatusCode>(requestResult);
+            }
+            catch (Exception err)
+            {
+                return Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred;
+            }
+
+            /*
+            using (
                 Notus.Mempool ObjMp_CryptoTranStatus= new Notus.Mempool(
                     Notus.IO.GetFolderName(
                         WhichNetwork, WhichLayer, Notus.Variable.Constant.StorageFolderName.Common 
@@ -52,6 +71,7 @@ namespace Notus.Wallet
                 }
             }
             return Notus.Variable.Enum.BlockStatusCode.Unknown;
+            */
         }
 
         /// <summary>
