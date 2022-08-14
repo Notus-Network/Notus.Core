@@ -359,13 +359,13 @@ namespace Notus.Validator
                         if ((DateTime.Now - ffb_CurrencyList_LastCheck).TotalMinutes > 1)
                         {
                             ffb_CurrencyList_LastCheck = DateTime.Now;
-                            ffb_CurrencyList = Notus.Wallet.Currency.GetList(Obj_Settings.Network, Obj_Settings.Layer);
+                            ffb_CurrencyList = Notus.Wallet.Block.GetList(Obj_Settings.Network, Obj_Settings.Layer);
                         }
                         else
                         {
                             if (Obj_Settings.Network != ffb_CurrencyList_Network || Obj_Settings.Layer != ffb_CurrencyList_Layer)
                             {
-                                ffb_CurrencyList = Notus.Wallet.Currency.GetList(Obj_Settings.Network, Obj_Settings.Layer);
+                                ffb_CurrencyList = Notus.Wallet.Block.GetList(Obj_Settings.Network, Obj_Settings.Layer);
                             }
                         }
                         return JsonSerializer.Serialize(ffb_CurrencyList);
@@ -1554,7 +1554,7 @@ namespace Notus.Validator
 
                     Notus.Variable.Struct.BlockStruct_160 tmpTokenObj = JsonSerializer.Deserialize<Notus.Variable.Struct.BlockStruct_160>(tmpTokenStr);
 
-                    if (Notus.Wallet.Currency.Exist(Obj_Settings.Network, Obj_Settings.Layer, tmpTokenObj.Info.Tag) == true)
+                    if (Notus.Wallet.Block.Exist(Obj_Settings.Network, Obj_Settings.Layer, tmpTokenObj.Info.Tag) == true)
                     {
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponseStruct()
                         {

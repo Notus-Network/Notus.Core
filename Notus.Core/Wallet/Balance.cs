@@ -181,9 +181,9 @@ namespace Notus.Wallet
                 ulong coinStartingTime = Notus.Time.BlockIdToUlong(tmpBlockForBalance.info.uID);
 
 
-                Notus.Wallet.Currency.ClearList(Obj_Settings.Network, Obj_Settings.Layer);
+                Notus.Wallet.Block.ClearList(Obj_Settings.Network, Obj_Settings.Layer);
 
-                Notus.Wallet.Currency.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
+                Notus.Wallet.Block.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
                 {
                     Detail = new Notus.Variable.Struct.CurrencyList()
                     {
@@ -384,7 +384,7 @@ namespace Notus.Wallet
                 }
                 );
 
-                Notus.Wallet.Currency.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
+                Notus.Wallet.Block.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
                 {
                     Uid = tmpBlockForBalance.info.uID,
                     Detail = new Notus.Variable.Struct.CurrencyList()

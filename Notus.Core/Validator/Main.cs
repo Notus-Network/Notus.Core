@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Numerics;
 using System.Text.Json;
+using System.Threading;
 
 namespace Notus.Validator
 {
@@ -23,6 +24,7 @@ namespace Notus.Validator
 
         //bu nesnenin görevi network'e bağlı nodeların listesini senkronize etmek
         //private Notus.Network.Controller ControllerObj = new Notus.Network.Controller();
+        private Notus.Reward.Block RewardBlockObj = new Notus.Reward.Block();
         private Notus.Communication.Http HttpObj = new Notus.Communication.Http(true);
         private Notus.Block.Integrity Obj_Integrity;
         private Notus.Validator.Api Obj_Api;
@@ -30,6 +32,7 @@ namespace Notus.Validator
         //private Notus.Token.Storage Obj_TokenStorage;
 
         //blok durumlarını tutan değişken
+
         private Dictionary<string, Notus.Variable.Struct.BlockStatus> Obj_BlockStatusList = new Dictionary<string, Notus.Variable.Struct.BlockStatus>();
         public Dictionary<string, Notus.Variable.Struct.BlockStatus> BlockStatusList
         {
@@ -607,11 +610,11 @@ namespace Notus.Validator
             {
                 Notus.Print.Basic(Obj_Settings, "Main Validator Started");
             }
-            Obj_BlockQueue.Settings.LastBlock = Obj_Settings.LastBlock;
+            Obj_BlockQueue.Settings = Obj_Settings;
             //BlockStatObj = Obj_BlockQueue.CurrentBlockStatus();
             Start_HttpListener();
             ValidatorQueueObj.Settings = Obj_Settings;
-           
+
             // her gelen blok bir listeye eklenmeli ve o liste ile sıra ile eklenmeli
             ValidatorQueueObj.Func_NewBlockIncome = tmpNewBlockIncome =>
             {
@@ -669,6 +672,23 @@ namespace Notus.Validator
                     FileStorageTimer();
                 }
                 Notus.Print.Success(Obj_Settings, "First Synchronization Is Done");
+            }
+            
+            if (Obj_Settings.GenesisCreated == false)
+            {
+                //private Queue<KeyValuePair<string, string>> BlockRewardList = new Queue<KeyValuePair<string, string>>();
+                RewardBlockObj.Execute(Obj_Settings, tmpPreBlockIncome =>
+                {
+                    //Console.WriteLine(JsonSerializer.Serialize(BlockRewardList));
+                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
+                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
+                    Console.ReadLine();
+                    Obj_BlockQueue.Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
+                    {
+                        type = 255, // empty block ödülleri
+                        data = JsonSerializer.Serialize(tmpPreBlockIncome)
+                    });
+                });
             }
 
             DateTime LastPrintTime = DateTime.Now;
@@ -737,13 +757,13 @@ namespace Notus.Validator
                 }
                 else
                 {
-                    if(Obj_Settings.GenesisCreated == false)
+                    if (Obj_Settings.GenesisCreated == false)
                     {
                         if ((DateTime.Now - LastPrintTime).TotalSeconds > 20)
                         {
                             LastPrintTime = DateTime.Now;
                             Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                            Console.Write(".");
+                            Console.Write("-");
                             Thread.Sleep(1);
                         }
                     }
@@ -759,7 +779,7 @@ namespace Notus.Validator
             }
         }
 
-        private bool ProcessBlock(Notus.Variable.Class.BlockData blockData, int blockSource)
+        private void ProcessBlock_PrintSection(Notus.Variable.Class.BlockData blockData, int blockSource)
         {
             if (blockSource == 1)
             {
@@ -788,6 +808,30 @@ namespace Notus.Validator
             {
                 Notus.Print.Status(Obj_Settings, "Block Came From The Dictionary List");
             }
+
+            if (blockData.info.type == 255)
+            {
+                RewardBlockObj.RewardList.Clear();
+                RewardBlockObj.LastTypeUid = blockData.info.uID;
+            }
+            if (blockData.info.type == 300)
+            {
+                RewardBlockObj.RewardList.Enqueue(
+                    new KeyValuePair<string, string>(
+                        blockData.info.uID,
+                        blockData.miner.count.First().Key
+                    )
+                );
+
+                if(RewardBlockObj.LastTypeUid.Length == 0)
+                {
+                    RewardBlockObj.LastTypeUid = blockData.info.uID;
+                }
+                RewardBlockObj.LastBlockUid = blockData.info.uID;
+            }
+        }
+        private bool ProcessBlock(Notus.Variable.Class.BlockData blockData, int blockSource)
+        {
             if (blockData.info.rowNo > CurrentBlockRowNo)
             {
                 Notus.Variable.Class.BlockData? tmpBlockData =
@@ -797,12 +841,18 @@ namespace Notus.Validator
                 if (tmpBlockData != null)
                 {
                     IncomeBlockList.Add(blockData.info.rowNo, tmpBlockData);
+                    ProcessBlock_PrintSection(blockData, blockSource);
                     Notus.Print.Status(Obj_Settings, "Insert Block To Temporary Block List");
+                }
+                else
+                {
+                    ProcessBlock_PrintSection(blockData, blockSource);
                 }
                 return true;
             }
             if (CurrentBlockRowNo > blockData.info.rowNo)
             {
+                ProcessBlock_PrintSection(blockData, blockSource);
                 Notus.Print.Warning(Obj_Settings, "We Already Processed The Block");
                 return true;
             }
@@ -814,10 +864,9 @@ namespace Notus.Validator
                     EmptyBlockGeneratedTime = Notus.Date.ToDateTime(blockData.info.time);
                 }
 
-                Obj_BlockQueue.Settings.LastBlock = blockData;
                 Obj_Settings.LastBlock = blockData;
-
-                Obj_Api.Settings.LastBlock = Obj_Settings.LastBlock;
+                Obj_BlockQueue.Settings = Obj_Settings;
+                Obj_Api.Settings = Obj_Settings;
 
                 Obj_BlockQueue.AddToChain(blockData);
                 if (blockData.info.type == 250)
@@ -871,7 +920,12 @@ namespace Notus.Validator
                     );
                     Console.WriteLine(responseData);
                 }
+                ProcessBlock_PrintSection(blockData, blockSource);
                 Notus.Print.Success(Obj_Settings, "Generated Last Block UID  [" + blockData.info.type.ToString() + "] : " + Obj_Settings.LastBlock.info.uID.Substring(0, 10) + "...." + Obj_Settings.LastBlock.info.uID.Substring(80) + " -> " + Obj_Settings.LastBlock.info.rowNo.ToString());
+            }
+            else
+            {
+                ProcessBlock_PrintSection(blockData, blockSource);
             }
 
             Obj_Api.AddForCache(blockData);

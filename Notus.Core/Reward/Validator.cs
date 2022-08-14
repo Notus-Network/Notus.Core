@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Notus.Wallet
+namespace Notus.Reward
 {
-    public static class Block
+    public static class Validator
     {
         private static Notus.Mempool GiveCurrencyListDb(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
