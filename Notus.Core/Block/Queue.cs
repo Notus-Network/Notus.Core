@@ -302,7 +302,7 @@ namespace Notus.Block
             return LastNtpTime;
         }
 
-        public (bool, Notus.Variable.Class.BlockData) ReadFromChain(string BlockId)
+        public Notus.Variable.Class.BlockData? ReadFromChain(string BlockId)
         {
             return BS_Storage.ReadBlock(BlockId);
         }

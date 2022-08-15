@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Linq;
 
 namespace Notus.Reward
 {
@@ -26,28 +27,53 @@ namespace Notus.Reward
                 if (TimerIsRunning == false)
                 {
                     TimerIsRunning = true;
-
-                    Console.WriteLine("LastTypeUid : " + LastTypeUid);
-                    Console.WriteLine("LastBlockUid : " + LastBlockUid);
-                    Console.WriteLine("RewardList.Count : " + RewardList.Count.ToString());
-
                     if (LastBlockUid.Length > 0 && LastTypeUid.Length > 0)
                     {
-                        DateTime tmpLastTypeStr =Notus.Date.ToDateTime(Notus.Block.Key.GetTimeFromKey(LastTypeUid));
+                        DateTime tmpLastTypeStr = Notus.Date.ToDateTime(Notus.Block.Key.GetTimeFromKey(LastTypeUid));
                         DateTime tmpLastBlockStr = Notus.Date.ToDateTime(Notus.Block.Key.GetTimeFromKey(LastBlockUid));
                         TimeSpan ts = tmpLastBlockStr - tmpLastTypeStr;
                         int dayAsSecond = 24 * 60 * 60;
                         int howManySecondAgo = (int)ts.TotalSeconds;
 
-                        Console.WriteLine("tmpLastTypeStr : " + ((int)ts.TotalSeconds).ToString());
-                        Console.WriteLine("tmpLastTypeStr : " + tmpLastTypeStr);
-                        Console.WriteLine("tmpLastBlockStr : " + tmpLastBlockStr);
+                        //Console.WriteLine("tmpLastTypeStr : " + ((int)ts.TotalSeconds).ToString());
+                        //Console.WriteLine("tmpLastTypeStr : " + tmpLastTypeStr);
+                        //Console.WriteLine("tmpLastBlockStr : " + tmpLastBlockStr);
 
-                        if (howManySecondAgo> dayAsSecond)
+                        if (howManySecondAgo > dayAsSecond)
                         {
-                            Console.WriteLine("Calculate Empty Block Reward");
-                            Console.WriteLine("Calculate Empty Block Reward");
-                            Console.WriteLine("Calculate Empty Block Reward");
+                            List<long> blockRowNo = new List<long>();
+                            Dictionary<string, int> minerCount = new Dictionary<string, int>();
+                            Notus.Block.Storage storageObj = new Notus.Block.Storage(false);
+                            storageObj.Network = objSettings.Network;
+                            storageObj.Layer = objSettings.Layer;
+                            bool tmpExitLoop = false;
+                            while (tmpExitLoop == false)
+                            {
+                                Notus.Variable.Class.BlockData? tmpBlockData = storageObj.ReadBlock(LastBlockUid);
+                                if (tmpBlockData != null)
+                                {
+                                    string blockValidator = tmpBlockData.miner.count.First().Key;
+                                    if (minerCount.ContainsKey(blockValidator) == false)
+                                    {
+                                        minerCount.Add(blockValidator, 0);
+                                    }
+                                    minerCount[blockValidator] = minerCount[blockValidator] + 1;
+                                    blockRowNo.Add(tmpBlockData.info.rowNo);
+
+                                    LastBlockUid = tmpBlockData.prev.Substring(0, 90);
+                                    if (string.Equals(LastTypeUid, LastBlockUid) == true)
+                                    {
+                                        tmpExitLoop = true;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("tmpBlockData = NULL;");
+                                }
+                            }
+                            Console.WriteLine("Reward Distribution");
+                            Console.WriteLine(JsonSerializer.Serialize(minerCount, new JsonSerializerOptions() { WriteIndented = true }));
+                            Console.WriteLine(JsonSerializer.Serialize(blockRowNo));
                         }
                     }
                     /*

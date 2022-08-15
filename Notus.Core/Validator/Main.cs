@@ -536,8 +536,8 @@ namespace Notus.Validator
 
             Obj_Api.Func_OnReadFromChain = blockKeyIdStr =>
             {
-                (bool tmpBlockExist, Notus.Variable.Class.BlockData tmpBlockResult) = Obj_BlockQueue.ReadFromChain(blockKeyIdStr);
-                if (tmpBlockExist == true)
+                Notus.Variable.Class.BlockData? tmpBlockResult = Obj_BlockQueue.ReadFromChain(blockKeyIdStr);
+                if (tmpBlockResult != null)
                 {
                     return tmpBlockResult;
                 }
@@ -575,8 +575,8 @@ namespace Notus.Validator
                             {
                                 Obj_Storage.Network = Obj_Settings.Network;
                                 Obj_Storage.Layer = Obj_Settings.Layer;
-                                (bool tmpBlockExist, Notus.Variable.Class.BlockData tmpBlockData) = Obj_Storage.ReadBlock(BlockOrder.Key);
-                                if (tmpBlockExist == true)
+                                Notus.Variable.Class.BlockData? tmpBlockData = Obj_Storage.ReadBlock(BlockOrder.Key);
+                                if (tmpBlockData != null)
                                 {
                                     ProcessBlock(tmpBlockData, 1);
                                 }
@@ -864,11 +864,39 @@ namespace Notus.Validator
                     EmptyBlockGeneratedTime = Notus.Date.ToDateTime(blockData.info.time);
                 }
 
+
+                Notus.Print.Info(Obj_Settings,
+                    "[Obj_Settings.LastBlock] Before Last Block UID  [" + 
+                    Obj_Settings.LastBlock.info.type.ToString() + 
+                    "] : " + 
+                    Obj_Settings.LastBlock.info.uID.Substring(0, 10) + 
+                    "...." + 
+                    Obj_Settings.LastBlock.info.uID.Substring(80,10) + 
+                    " -> " + 
+                    Obj_Settings.LastBlock.info.rowNo.ToString()
+                );
+
+                /*
                 Obj_Settings.LastBlock = blockData;
+                */
+                Obj_Settings.LastBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(
+                    JsonSerializer.Serialize(blockData)
+                );
+                Notus.Print.Basic(Obj_Settings,
+                    "[Obj_Settings.LastBlock] After Set Last Block UID  [" +
+                    Obj_Settings.LastBlock.info.type.ToString() +
+                    "] : " +
+                    Obj_Settings.LastBlock.prev.Substring(0, 10) +
+                    "...." +
+                    Obj_Settings.LastBlock.prev.Substring(80,10) +
+                    " -> " +
+                    Obj_Settings.LastBlock.info.rowNo.ToString()
+                );
                 Obj_BlockQueue.Settings = Obj_Settings;
                 Obj_Api.Settings = Obj_Settings;
 
                 Obj_BlockQueue.AddToChain(blockData);
+                
                 if (blockData.info.type == 250)
                 {
                     Obj_Api.Layer3_StorageFileDone(blockData.info.uID);
@@ -920,8 +948,18 @@ namespace Notus.Validator
                     );
                     Console.WriteLine(responseData);
                 }
+                
                 ProcessBlock_PrintSection(blockData, blockSource);
-                Notus.Print.Success(Obj_Settings, "Generated Last Block UID  [" + blockData.info.type.ToString() + "] : " + Obj_Settings.LastBlock.info.uID.Substring(0, 10) + "...." + Obj_Settings.LastBlock.info.uID.Substring(80) + " -> " + Obj_Settings.LastBlock.info.rowNo.ToString());
+
+                Notus.Print.Success(Obj_Settings, 
+                    "Generated Last Block UID  [" + 
+                    blockData.info.type.ToString() + 
+                    "] : " + 
+                    Obj_Settings.LastBlock.info.uID.Substring(0, 10) + 
+                    "...." + 
+                    Obj_Settings.LastBlock.info.uID.Substring(80) + 
+                    " -> " + Obj_Settings.LastBlock.info.rowNo.ToString()
+                );
             }
             else
             {

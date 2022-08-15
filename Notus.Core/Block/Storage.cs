@@ -89,42 +89,39 @@ namespace Notus.Block
                 StorageHashVal = string.Join(";", tmp_hashList.ToArray());
             }
         }
-        public (bool, Notus.Variable.Class.BlockData) ReadBlock(string BlockUid)
+        public Notus.Variable.Class.BlockData? ReadBlock(string BlockUid)
         {
             try
             {
-                bool BlockExist = false;
                 string BlockFileName = Notus.Block.Key.GetBlockStorageFileName(BlockUid, true);
                 string ZipFileName = Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
                 if (File.Exists(ZipFileName) == true)
                 {
-                    Notus.Variable.Class.BlockData NewBlock = null;
                     using (ZipArchive archive = ZipFile.OpenRead(ZipFileName))
                     {
-                        ZipArchiveEntry zipEntry = archive.GetEntry(BlockUid + ".json");
+                        ZipArchiveEntry? zipEntry = archive.GetEntry(BlockUid + ".json");
                         if (zipEntry != null)
                         {
                             using (StreamReader zipEntryStream = new StreamReader(zipEntry.Open()))
                             {
-                                string BlockText = zipEntryStream.ReadToEnd();
-                                NewBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(BlockText);
-                                BlockExist = true;
+                                Notus.Variable.Class.BlockData? NewBlock = 
+                                    JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(
+                                        zipEntryStream.ReadToEnd()
+                                    );
+                                if (NewBlock != null)
+                                {
+                                    return NewBlock;
+                                }
                             }
                         }
                     }
-                    if (BlockExist == true)
-                    {
-                        return (true, NewBlock);
-                    }
                 }
-                return (false, null);
             }
             catch (Exception err)
             {
                 Notus.Print.Basic(DebugModeActivated, "Storage Error Text : " + err.Message);
-                return (false, null);
             }
-
+            return null;
         }
         public void AddSync(Notus.Variable.Class.BlockData NewBlock, bool UpdateBlock = false)
         {

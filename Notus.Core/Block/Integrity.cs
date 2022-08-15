@@ -482,8 +482,8 @@ namespace Notus.Block
                 {
                     BS_Storage.Network = Obj_Settings.Network;
                     BS_Storage.Layer = Obj_Settings.Layer;
-                    (bool blockExist, Notus.Variable.Class.BlockData blockData) = BS_Storage.ReadBlock(Notus.Variable.Constant.GenesisBlockUid);
-                    if (blockExist == true)
+                    Notus.Variable.Class.BlockData? blockData = BS_Storage.ReadBlock(Notus.Variable.Constant.GenesisBlockUid);
+                    if (blockData != null)
                     {
                         if (blockData.info.type == 360)
                         {
