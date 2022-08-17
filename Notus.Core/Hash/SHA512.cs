@@ -21,7 +21,7 @@ namespace Notus.HashLib
         /// <returns>Returns SHA512 Hash <see cref="string"/>.</returns>
         public string Calculate(byte[] inputData)
         {
-            using (System.Security.Cryptography.SHA512 shaM = new SHA512Managed())
+            using (System.Security.Cryptography.SHA512 shaM = System.Security.Cryptography.SHA512.Create())
             {
                 return Notus.Convert.Byte2Hex(
                     shaM.ComputeHash(

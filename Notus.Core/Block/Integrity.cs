@@ -64,7 +64,7 @@ namespace Notus.Block
             }
             return (false, null);
         }
-        private (Notus.Variable.Enum.BlockIntegrityStatus, Notus.Variable.Class.BlockData) ControlBlockIntegrity()
+        private (Notus.Variable.Enum.BlockIntegrityStatus, Notus.Variable.Class.BlockData?) ControlBlockIntegrity()
         {
             Notus.Wallet.Fee.ClearFeeData(Obj_Settings.Network, Obj_Settings.Layer);
 
@@ -75,6 +75,26 @@ namespace Notus.Block
             {
                 Notus.Print.Success(Obj_Settings, "Genesis Block Needs");
                 return (Notus.Variable.Enum.BlockIntegrityStatus.GenesisNeed, null);
+            }
+            bool tmpGetListAgain = false;
+            foreach (string fileName in ZipFileList)
+            {
+                int fileCountInZip = 0;
+                using (ZipArchive archive = ZipFile.OpenRead(fileName))
+                {
+                    fileCountInZip = archive.Entries.Count;
+                }
+                if (fileCountInZip == 0)
+                {
+                    tmpGetListAgain = true;
+                    Thread.Sleep(1);
+                    Console.WriteLine("Delete Zip : " + fileName);
+                    File.Delete(fileName);
+                }
+            }
+            if (tmpGetListAgain == true)
+            {
+                return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
             SortedDictionary<long, string> BlockOrderList = new SortedDictionary<long, string>();
             Dictionary<string, int> BlockTypeList = new Dictionary<string, int>();
@@ -170,7 +190,6 @@ namespace Notus.Block
                         }
                     }
                 }
-
                 if (tmpDeleteFileList.Count > 0)
                 {
                     Notus.Archive.DeleteFromInside(fileName, tmpDeleteFileList);
@@ -207,16 +226,19 @@ namespace Notus.Block
                         {
                             Notus.Archive.DeleteFromInside(BlockOrderList[BiggestBlockHeight - 1], Obj_Settings);
                             Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Missing Block [45abcfe713]");
-
                         }
                     }
                 }
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
 
+
+            //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.ReadLine();
+
+
             long controlNumber = 1;
             bool rowNumberError = false;
-            bool prevBlockRownNumberError = false;
             foreach (KeyValuePair<long, string> item in BlockOrderList)
             {
                 if (item.Key != controlNumber)
@@ -232,8 +254,8 @@ namespace Notus.Block
                     else
                     {
 
-                        Notus.Print.Danger(Obj_Settings, "Block Order Error > " + controlNumber.ToString() + " / "+ item.Key + " > " + item.Value);
-                        Notus.Archive.DeleteFromInside(item.Value , Obj_Settings);
+                        Notus.Print.Danger(Obj_Settings, "Block Order Error > " + controlNumber.ToString() + " / "+ item.Key + " > " + item.Value.Substring(0,10)+".."+ item.Value.Substring(80));
+                        Notus.Archive.DeleteFromInside(item.Value , Obj_Settings,true);
                     }
 
                     controlNumber = item.Key;
@@ -246,6 +268,7 @@ namespace Notus.Block
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
 
+            bool prevBlockRownNumberError = false;
             bool whileExit = false;
             while (whileExit == false)
             {
@@ -271,7 +294,11 @@ namespace Notus.Block
                         ) == false
                     )
                     {
-                        Notus.Archive.DeleteFromInside(BlockOrderList[BiggestBlockHeight - 1],Obj_Settings);
+                        Notus.Archive.DeleteFromInside(
+                            BlockOrderList[BiggestBlockHeight - 1],
+                            Obj_Settings,
+                            true
+                        );
                         prevBlockRownNumberError = true;
                         whileExit = true;
                     }
@@ -615,13 +642,16 @@ namespace Notus.Block
         }
         public void GetLastBlock()
         {
-
             Notus.Variable.Enum.BlockIntegrityStatus Val_Status = Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain;
             Notus.Variable.Class.BlockData LastBlock = new Notus.Variable.Class.BlockData();
             bool exitInnerLoop = false;
             while (exitInnerLoop == false)
             {
-                (Notus.Variable.Enum.BlockIntegrityStatus tmpStatus, Notus.Variable.Class.BlockData tmpLastBlock) = ControlBlockIntegrity();
+                (
+                    Notus.Variable.Enum.BlockIntegrityStatus tmpStatus, 
+                    Notus.Variable.Class.BlockData tmpLastBlock
+                ) = ControlBlockIntegrity();
+
                 if (tmpStatus != Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain)
                 {
                     Val_Status = tmpStatus;

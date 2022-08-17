@@ -10,8 +10,9 @@ namespace Notus
             System.Action<Notus.Variable.Class.BlockData>? Func_NewBlockIncome = null
         )
         {
+            bool waitForOtherNodes = false;
             long smallestBlockRow = long.MaxValue;
-            bool weFindOtherNode = false;
+            //bool weFindOtherNode = false;
             foreach (Variable.Struct.IpInfo? tmpEntry in nodeList)
             {
                 if (tmpEntry != null)
@@ -19,7 +20,7 @@ namespace Notus
                     Notus.Variable.Class.BlockData? nodeLastBlock = Notus.Toolbox.Network.GetLastBlock(tmpEntry, objSettings);
                     if (nodeLastBlock != null)
                     {
-                        weFindOtherNode = true;
+                        //weFindOtherNode = true;
                         if (smallestBlockRow > nodeLastBlock.info.rowNo)
                         {
                             smallestBlockRow = nodeLastBlock.info.rowNo;
@@ -70,6 +71,7 @@ namespace Notus
                                 );
                             if (nodeLastBlock != null)
                             {
+                                waitForOtherNodes = true;
                                 if (Func_NewBlockIncome != null)
                                 {
                                     Func_NewBlockIncome(nodeLastBlock);
@@ -84,7 +86,7 @@ namespace Notus
                     }
                 }
             }
-            return true;
+            return waitForOtherNodes;
         }
 
 

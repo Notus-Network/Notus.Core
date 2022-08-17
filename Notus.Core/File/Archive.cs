@@ -28,24 +28,30 @@ namespace Notus
                 File.Delete(fileObj.FullName);
             }
         }
-        public static void DeleteFromInside(string blockUid, Notus.Variable.Common.ClassSetting objSettings)
+        public static void DeleteFromInside(
+            string blockUid, 
+            Notus.Variable.Common.ClassSetting objSettings,
+            bool deleteZipIfEmpty=false
+        )
         {
-            DeleteFromInside(blockUid, objSettings.Network, objSettings.Layer);
+            DeleteFromInside(blockUid, objSettings.Network, objSettings.Layer, deleteZipIfEmpty );
         }
         public static void DeleteFromInside(
             string blockUid,
             Notus.Variable.Enum.NetworkType networkType,
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            bool deleteZipIfEmpty = false
         )
         {
             string ZipFileName = Notus.IO.GetFolderName(
                 networkType, networkLayer,
                 Notus.Variable.Constant.StorageFolderName.Block
             ) + Notus.Block.Key.GetBlockStorageFileName(blockUid, true) + ".zip";
-            DeleteFromInside(ZipFileName, blockUid);
+            DeleteFromInside(ZipFileName, blockUid, deleteZipIfEmpty);
         }
-        public static void DeleteFromInside(string ZipFileName, List<string> insideFileList)
+        public static void DeleteFromInside(string ZipFileName, List<string> insideFileList, bool deleteZipIfEmpty = false)
         {
+            bool removeFile = false;
             using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Update))
             {
                 for (int i = 0; i < insideFileList.Count; i++)
@@ -56,10 +62,23 @@ namespace Notus
                         entry.Delete();
                     }
                 }
+                if (deleteZipIfEmpty == true)
+                {
+                    if (archive.Entries.Count == 0)
+                    {
+                        removeFile = true;
+                    }
+                }
+            }
+            if (removeFile == true)
+            {
+                Thread.Sleep(1);
+                File.Delete(ZipFileName);
             }
         }
-        public static void DeleteFromInside(string ZipFileName, string insideFileName)
+        public static void DeleteFromInside(string ZipFileName, string insideFileName, bool deleteZipIfEmpty = false)
         {
+            bool removeFile = false;
             using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Update))
             {
                 ZipArchiveEntry? entry = archive.GetEntry(AddExtensionToBlockUid(insideFileName));
@@ -67,6 +86,18 @@ namespace Notus
                 {
                     entry.Delete();
                 }
+                if(deleteZipIfEmpty == true)
+                {
+                    if (archive.Entries.Count == 0)
+                    {
+                        removeFile = true;
+                    }
+                }
+            }
+            if (removeFile == true)
+            {
+                Thread.Sleep(1);
+                File.Delete(ZipFileName);
             }
         }
         private static string AddExtensionToBlockUid(string blockUid)

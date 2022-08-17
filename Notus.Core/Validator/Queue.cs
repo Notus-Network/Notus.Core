@@ -59,6 +59,7 @@ namespace Notus.Validator
             get { return PreviousNodeList; }
             set { PreviousNodeList = value; }
         }
+        private Dictionary<string, int> NodeTurnCount = new Dictionary<string, int>();
         private Dictionary<string, NodeQueueInfo> NodeList = new Dictionary<string, NodeQueueInfo>();
         private Dictionary<string, DateTime> MessageTimeList = new Dictionary<string, DateTime>();
         private Dictionary<int, string> NodeOrderList = new Dictionary<int, string>();
@@ -753,7 +754,7 @@ namespace Notus.Validator
                 }
             }
             ActiveNodeCount_Val = nodeCount;
-            if (ActiveNodeCount_Val > 1)
+            if (ActiveNodeCount_Val > 1 && Val_Ready == true)
             {
                 if (NodeList[MyNodeHexKey].Ready == false)
                 {
@@ -889,11 +890,54 @@ namespace Notus.Validator
                 counter++;
                 NodeOrderList.Add(counter, entry.Value);
             }
-            //Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
-            //Console.WriteLine(JsonSerializer.Serialize(NodeOrderList));
+
+            NodeTurnCount.Clear();
+            foreach (KeyValuePair<int, string> entry in NodeOrderList)
+            {
+                if (NodeTurnCount.ContainsKey(entry.Value) == false)
+                {
+                    NodeTurnCount.Add(entry.Value, 0);
+                }
+            }
+            /*
+
+            empty blok sayısı toplanacak
+
+
+            empty blok + transaction sayısı + blok sayısı
+            ---------------------------------------------= İşlem başına ödül miktarı
+                             ödül miktarı
+
+
+            toplam ödül miktarından vakıf payı çıkarılacak ( % 2 )
+            ayrıca 10 blok ödülü seçilecek bir kişiye verilecek
+
+
+            */
+            int myRewardCount = NodeTurnCount[NodeOrderList[1]];
+            int minRewardCount = int.MaxValue;
+            int maxRewardCount = 0;
+            foreach (KeyValuePair<string, int> entry in NodeTurnCount)
+            {
+                if (entry.Value > maxRewardCount)
+                {
+                    maxRewardCount = entry.Value;
+                }
+                if (minRewardCount> entry.Value)
+                {
+                    minRewardCount = entry.Value;
+                }
+            }
+
+
+            // Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
+            // Console.WriteLine(JsonSerializer.Serialize(NodeOrderList));
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
-            //Console.WriteLine(MyTurn_Val);
-            //Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
+
+
+            // if(NodeTurnCount)
+            // Console.WriteLine(MyTurn_Val);
+            // Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
             if (MyTurn_Val == true)
             {
                 //Notus.Print.Info(Obj_Settings, "My Turn");
@@ -1063,14 +1107,12 @@ namespace Notus.Validator
                 //Console.WriteLine("Ready Signal Were Sended Before");
             }
         }
-
         public void MyNodeIsReady()
         {
             if (ActiveNodeCount_Val > 1)
             {
                 Notus.Print.Info(Obj_Settings, "Sending Ready Signal To Other Nodes");
                 NodeList[MyNodeHexKey].Ready = true;
-                Val_Ready = true;
                 foreach (KeyValuePair<string, IpInfo> entry in MainAddressList)
                 {
                     string tmpNodeHexStr = IpPortToKey(entry.Value.IpAddress, entry.Value.Port);
