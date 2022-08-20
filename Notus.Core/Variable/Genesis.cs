@@ -18,6 +18,9 @@ namespace Notus.Variable.Genesis
     public class EmptyBlockType
     {
         public bool Active { get; set; }
+        public ulong LuckyReward { get; set; }           // daily lucky node reward
+        public ulong TotalSupply { get; set; }           // total reward supply
+        public ulong Reward { get; set; }           // total reward supply
         public IntervalType Interval { get; set; }
         public SlowBlockType SlowBlock { get; set; }
         public EmptyBlockNonceType Nonce { get; set; }

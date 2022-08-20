@@ -10,6 +10,10 @@ namespace Notus
 {
     public static class Date
     {
+        public static ulong ToLong(string convertTime)
+        {
+            return ulong.Parse(convertTime.PadRight(17, '0').Substring(0, 17));
+        }
         public static ulong ToLong(DateTime convertTime)
         {
             return ulong.Parse(convertTime.ToString(Variable.Constant.DefaultDateTimeFormatText));

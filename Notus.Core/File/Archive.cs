@@ -56,10 +56,18 @@ namespace Notus
             {
                 for (int i = 0; i < insideFileList.Count; i++)
                 {
-                    ZipArchiveEntry? entry = archive.GetEntry(AddExtensionToBlockUid(insideFileList[i]));
-                    if (entry != null)
+                    bool fileDeleted = false;
+                    while(fileDeleted == false)
                     {
-                        entry.Delete();
+                        ZipArchiveEntry? entry = archive.GetEntry(AddExtensionToBlockUid(insideFileList[i]));
+                        if (entry == null)
+                        {
+                            fileDeleted = true;
+                        }
+                        else
+                        {
+                            entry.Delete();
+                        }
                     }
                 }
                 if (deleteZipIfEmpty == true)

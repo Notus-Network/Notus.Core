@@ -137,6 +137,10 @@ namespace Notus.Network
             return MainResultStr;
         }
 
+        public static int GetNetworkPort(Notus.Variable.Common.ClassSetting objSetting)
+        {
+            return GetNetworkPort(objSetting.Network, objSetting.Layer);
+        }
         public static int GetNetworkPort(Notus.Variable.Enum.NetworkType currentNetwork, Notus.Variable.Enum.NetworkLayer currentLayer)
         {
             return Notus.Variable.Constant.PortNo[currentLayer][currentNetwork];

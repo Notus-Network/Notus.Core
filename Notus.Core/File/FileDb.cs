@@ -5,9 +5,13 @@
 // The code is provided in mbdavid's repo and the repo can be found here:
 // https://github.com/mbdavid/FileDB
 
+using System;
 using System.Text;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Notus
 {

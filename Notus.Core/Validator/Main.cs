@@ -1,6 +1,11 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Text.Json;
+using System.Linq;
+using System.IO;
+using System.Threading;
 
 namespace Notus.Validator
 {
@@ -622,6 +627,9 @@ namespace Notus.Validator
 
             if (Obj_Settings.GenesisCreated == false)
             {
+                ValidatorQueueObj.GetUtcTimeFromServer();
+                //Console.ReadLine();
+
                 ValidatorQueueObj.PreStart(
                     Obj_Settings.LastBlock.info.rowNo,
                     Obj_Settings.LastBlock.info.uID,
@@ -629,7 +637,6 @@ namespace Notus.Validator
                     Obj_Settings.LastBlock.prev
                 );
 
-                Notus.Print.Info(Obj_Settings, "Waiting For Node Sync", false);
                 ValidatorQueueObj.PingOtherNodes();
                 //burada ping ve pong yaparak bekleyecek
             }
@@ -637,8 +644,74 @@ namespace Notus.Validator
             ValidatorQueueObj.Start();
 
 
+            // kontrol noktası
+            // burada dışardan gelen blok datalarının tamamlandığı durumda node hazırım sinyalini diğer
+            // nodelara gönderecek
+            // node hazır olmadan HAZIR sinyalini gönderdiği için
+            // senkronizasyon hatası oluyor ve gelen bloklar hatalı birşekilde kaydediliyor.
+            // sonrasında gelen bloklar explorer'da aranırken hata oluşturuyor.
+            //Console.WriteLine("Control-Point-4-GHJJ");
             if (Obj_Settings.GenesisCreated == false)
             {
+                //Console.WriteLine("Control-Point-4-WRET");
+                Notus.Print.Info(Obj_Settings, "Node Blocks Are Checking For Sync");
+                bool waitForOtherNodes = Notus.Sync.Block(
+                    Obj_Settings, ValidatorQueueObj.GiveMeNodeList(),
+                    tmpNewBlockIncome =>
+                    {
+                        ProcessBlock(tmpNewBlockIncome, 3);
+                        //Notus.Print.Info(Obj_Settings, "Temprorary Arrived New Block : " + tmpNewBlockIncome.info.uID);
+                    }
+                );
+
+                //Console.WriteLine(waitForOtherNodes);
+                //Console.WriteLine(FirstSyncIsDone);
+                //Console.WriteLine(MyReadyMessageSended);
+                //Console.WriteLine(IncomeBlockList.Count);
+                if (MyReadyMessageSended == false && waitForOtherNodes == false)
+                {
+                    //Console.WriteLine("Control-Point-1");
+                    FirstSyncIsDone = true;
+                    MyReadyMessageSended = true;
+                    ValidatorQueueObj.MyNodeIsReady();
+                }
+                else
+                {
+                    if (FirstSyncIsDone == false && MyReadyMessageSended == false)
+                    {
+                        if (IncomeBlockList.Count == 0)
+                        {
+                            FirstSyncIsDone = true;
+                            MyReadyMessageSended = true;
+                            //Console.WriteLine("Control-Point-1-DDDD");
+                            ValidatorQueueObj.MyNodeIsReady();
+                        }
+                    }
+                }
+            }
+
+
+            if (Obj_Settings.GenesisCreated == false)
+            {
+                //Console.WriteLine("Control-Point-4-4564654");
+                //private Queue<KeyValuePair<string, string>> BlockRewardList = new Queue<KeyValuePair<string, string>>();
+                /*
+                RewardBlockObj.Execute(Obj_Settings);
+                */
+                RewardBlockObj.Execute(Obj_Settings, tmpPreBlockIncome =>
+                {
+                    //Console.WriteLine(JsonSerializer.Serialize(BlockRewardList));
+                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
+                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
+                    Console.ReadLine();
+                    Obj_BlockQueue.Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
+                    {
+                        type = 255, // empty block ödülleri
+                        data = JsonSerializer.Serialize(tmpPreBlockIncome)
+                    });
+                });
+                //Console.WriteLine("Control-Point-4-99665588");
+
                 if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
                 {
                     EmptyBlockTimerFunc();
@@ -652,67 +725,6 @@ namespace Notus.Validator
                     FileStorageTimer();
                 }
                 Notus.Print.Success(Obj_Settings, "First Synchronization Is Done");
-            }
-
-            if (Obj_Settings.GenesisCreated == false)
-            {
-                //private Queue<KeyValuePair<string, string>> BlockRewardList = new Queue<KeyValuePair<string, string>>();
-                RewardBlockObj.Execute(Obj_Settings, tmpPreBlockIncome =>
-                {
-                    //Console.WriteLine(JsonSerializer.Serialize(BlockRewardList));
-                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
-                    Console.WriteLine(JsonSerializer.Serialize(tmpPreBlockIncome));
-                    Console.ReadLine();
-                    Obj_BlockQueue.Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
-                    {
-                        type = 255, // empty block ödülleri
-                        data = JsonSerializer.Serialize(tmpPreBlockIncome)
-                    });
-                });
-            }
-
-
-            // kontrol noktası
-            // burada dışardan gelen blok datalarının tamamlandığı durumda node hazırım sinyalini diğer
-            // nodelara gönderecek
-            // node hazır olmadan HAZIR sinyalini gönderdiği için
-            // senkronizasyon hatası oluyor ve gelen bloklar hatalı birşekilde kaydediliyor.
-            // sonrasında gelen bloklar explorer'da aranırken hata oluşturuyor.
-
-            if (Obj_Settings.GenesisCreated == false)
-            {
-                Notus.Print.Info(Obj_Settings, "Node Blocks Are Checking For Sync");
-                bool waitForOtherNodes = Notus.Sync.Block(
-                    Obj_Settings, ValidatorQueueObj.GiveMeNodeList(),
-                    tmpNewBlockIncome =>
-                    {
-                        ProcessBlock(tmpNewBlockIncome, 3);
-                        //Notus.Print.Info(Obj_Settings, "Temprorary Arrived New Block : " + tmpNewBlockIncome.info.uID);
-                    }
-                );
-
-                Console.WriteLine(waitForOtherNodes);
-                Console.WriteLine(FirstSyncIsDone);
-                Console.WriteLine(MyReadyMessageSended);
-                Console.WriteLine(IncomeBlockList.Count);
-                if (MyReadyMessageSended == false && waitForOtherNodes == false)
-                {
-                    Console.WriteLine("Control-Point-1");
-                    ValidatorQueueObj.MyNodeIsReady();
-                    FirstSyncIsDone = true;
-                    MyReadyMessageSended = true;
-                }
-                else
-                {
-                    if (FirstSyncIsDone == false && MyReadyMessageSended == false)
-                    {
-                        if (IncomeBlockList.Count == 0)
-                        {
-                            Console.WriteLine("Control-Point-1-AAA");
-                            ValidatorQueueObj.MyNodeIsReady();
-                        }
-                    }
-                }
             }
 
             DateTime LastPrintTime = DateTime.Now;
@@ -803,8 +815,14 @@ namespace Notus.Validator
             }
         }
 
+        private string fixedRowNoLength(Notus.Variable.Class.BlockData blockData)
+        {
+            string tmpStr=blockData.info.rowNo.ToString();
+            return tmpStr.PadLeft(15, '_');
+        }
         private void ProcessBlock_PrintSection(Notus.Variable.Class.BlockData blockData, int blockSource)
         {
+            
             if (blockSource == 1)
             {
                 if (
@@ -813,26 +831,28 @@ namespace Notus.Validator
                     blockData.info.type != 360
                 )
                 {
-                    Notus.Print.Status(Obj_Settings, "Block Came From The Loading DB");
+                    Notus.Print.Status(Obj_Settings, "Block Came From The Loading DB [ "+ fixedRowNoLength(blockData) + " ]");
                 }
             }
             if (blockSource == 2)
             {
-                Notus.Print.Status(Obj_Settings, "Block Came From The Validator Queue");
+                Notus.Print.Status(Obj_Settings, "Block Came From The Validator Queue [ " + fixedRowNoLength(blockData) + " ]");
             }
             if (blockSource == 3)
             {
-                Notus.Print.Status(Obj_Settings, "Block Came From The Block Sync");
+                Notus.Print.Status(Obj_Settings, "Block Came From The Block Sync [ " + fixedRowNoLength(blockData) + " ]");
             }
             if (blockSource == 4)
             {
-                Notus.Print.Status(Obj_Settings, "Block Came From The Main Loop");
+                Notus.Print.Status(Obj_Settings, "Block Came From The Main Loop [ " + fixedRowNoLength(blockData) + " ]");
             }
             if (blockSource == 5)
             {
-                Notus.Print.Status(Obj_Settings, "Block Came From The Dictionary List");
+                Notus.Print.Status(Obj_Settings, "Block Came From The Dictionary List [ " + fixedRowNoLength(blockData) + " ]");
             }
+            /*
 
+*/
             if (blockData.info.type == 360)
             {
                 RewardBlockObj.RewardList.Clear();
@@ -892,7 +912,7 @@ namespace Notus.Validator
                     EmptyBlockGeneratedTime = Notus.Date.ToDateTime(blockData.info.time);
                 }
 
-
+                /*
                 Notus.Print.Info(Obj_Settings,
                     "[Obj_Settings.LastBlock] Before Last Block UID  [" +
                     Obj_Settings.LastBlock.info.type.ToString() +
@@ -903,6 +923,7 @@ namespace Notus.Validator
                     " -> " +
                     Obj_Settings.LastBlock.info.rowNo.ToString()
                 );
+                */
 
                 Obj_Settings.LastBlock = blockData;
 
@@ -910,7 +931,6 @@ namespace Notus.Validator
                 Obj_Settings.LastBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(
                     JsonSerializer.Serialize(blockData)
                 );
-                */
                 Notus.Print.Basic(Obj_Settings,
                     "[Obj_Settings.LastBlock] After Set Last Block UID  [" +
                     Obj_Settings.LastBlock.info.type.ToString() +
@@ -921,6 +941,7 @@ namespace Notus.Validator
                     " -> " +
                     Obj_Settings.LastBlock.info.rowNo.ToString()
                 );
+                */
                 Obj_BlockQueue.Settings = Obj_Settings;
                 Obj_Api.Settings = Obj_Settings;
 
@@ -979,7 +1000,7 @@ namespace Notus.Validator
                 }
 
                 ProcessBlock_PrintSection(blockData, blockSource);
-
+                /*
                 Notus.Print.Success(Obj_Settings,
                     "Generated Last Block UID  [" +
                     blockData.info.type.ToString() +
@@ -989,6 +1010,7 @@ namespace Notus.Validator
                     Obj_Settings.LastBlock.info.uID.Substring(80) +
                     " -> " + Obj_Settings.LastBlock.info.rowNo.ToString()
                 );
+                */
             }
             else
             {

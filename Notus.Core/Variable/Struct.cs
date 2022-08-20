@@ -489,5 +489,17 @@ namespace Notus.Variable.Struct
         public TimeSpan Difference { get; set; }
         public DateTime Now { get; set; }
     }
+
+    public class EmptyBlockRewardStruct
+    {
+        //public ulong TotalSupply { get; set; }
+        public ulong Count { get; set; }
+        public ulong Order { get; set; }
+        public ulong Spend { get; set; }
+        public ulong Left { get; set; }
+        public Dictionary<string, Dictionary<ulong, string>> LuckyNode { get; set; }  // after 
+        public Dictionary<string, Dictionary<ulong, string>> Addition { get; set; }  // after 
+        public Dictionary<string,List<long>> List { get; set; }
+    }
 }
 
