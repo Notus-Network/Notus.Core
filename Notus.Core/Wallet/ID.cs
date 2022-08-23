@@ -152,7 +152,7 @@ namespace Notus.Wallet
         {
             if (walletAddress != null)
             {
-                if (walletAddress.Length == 38)
+                if (walletAddress.Length == Notus.Variable.Constant.WalletTextLength)
                 {
                     if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
                     {

@@ -22,8 +22,6 @@ namespace Notus.Reward
             System.Action<Notus.Variable.Struct.EmptyBlockRewardStruct> Func_NewBlockIncome
         )
         {
-            //Console.WriteLine("Control-Point-7-774455");
-            //Console.WriteLine(LastBlockUid + " - " + LastTypeUid);
             TimerObj = new Notus.Threads.Timer(60000);
             TimerObj.Start(() =>
             {
@@ -64,7 +62,6 @@ namespace Notus.Reward
                                     Notus.Variable.Class.BlockData? tmpBlockData = storageObj.ReadBlock(LastBlockUid);
                                     if (tmpBlockData != null)
                                     {
-                                        //Console.WriteLine("Row No : " + tmpBlockData.info.rowNo.ToString());
                                         if (tmpBlockData.info.type == 300)
                                         {
                                             string blockValidator = tmpBlockData.miner.count.First().Key;
@@ -188,13 +185,13 @@ namespace Notus.Reward
                                         luckyReward.ToString() 
                                     }
                                 });
-                                Console.WriteLine();
-                                Console.WriteLine(JsonSerializer.Serialize(rewardBlock));
-                                Console.WriteLine();
+                                //Console.WriteLine();
+                                //Console.WriteLine(JsonSerializer.Serialize(rewardBlock));
+                                //Console.WriteLine();
                                 // Console.WriteLine(JsonSerializer.Serialize(rewardBlock, new JsonSerializerOptions() { WriteIndented = true }));
-                                Console.ReadLine();
+                                //Console.ReadLine();
                                 Func_NewBlockIncome(rewardBlock);
-                                Console.ReadLine();
+                                //Console.ReadLine();
                             }
                             catch (Exception err)
                             {

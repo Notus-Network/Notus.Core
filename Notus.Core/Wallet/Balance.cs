@@ -292,6 +292,7 @@ namespace Notus.Wallet
                 tmpBlockForBalance.info.type != 360
             )
             {
+                Notus.Print.Basic(Obj_Settings, tmpBlockForBalance.info.uID );
                 Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString() + " -> "+ tmpBlockForBalance.info.rowNo.ToString() );
             }
 

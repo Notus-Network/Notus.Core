@@ -147,7 +147,7 @@ namespace Notus.Validator
                 userDefineWalletKey = Console.ReadLine();
                 tmpExitWhileLoop = true;
                 userDefineWalletKey = userDefineWalletKey.Trim();
-                if (userDefineWalletKey.Length != 38)
+                if (userDefineWalletKey.Length != Notus.Variable.Constant.WalletTextLength)
                 {
                     userDefineWalletKey = string.Empty;
                     Console.WriteLine();
@@ -1083,6 +1083,7 @@ namespace Notus.Validator
         }
         public void Start()
         {
+            Console.ResetColor();
             MP_NodeList = new Notus.Mempool(Notus.Variable.Constant.MemoryPoolName["MainNodeWalletConfig"]);
             MP_NodeList.AsyncActive = false;
             //MP_NodeList.Clear();
@@ -1172,8 +1173,6 @@ namespace Notus.Validator
         }
         public Notus.Variable.Common.ClassSetting PreStart(string[] args)
         {
-            bool EmptyTimerActive = true;
-            bool CryptoTimerActive = true;
             bool LightNodeActive = true;
 
             Notus.Variable.Common.ClassSetting NodeSettings = GiveDefaultNodeSettings();
@@ -1194,15 +1193,6 @@ namespace Notus.Validator
                         NodeSettings.Network = Notus.Variable.Enum.NetworkType.DevNet;
                     }
 
-
-                    if (string.Equals(args[a], "--empty"))
-                    {
-                        EmptyTimerActive = true;
-                    }
-                    if (string.Equals(args[a], "--crypto"))
-                    {
-                        CryptoTimerActive = true;
-                    }
                     if (string.Equals(args[a], "--light"))
                     {
                         LightNodeActive = true;

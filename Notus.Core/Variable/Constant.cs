@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Notus.Variable.Enum;
 
 namespace Notus.Variable
 {
     public static class Constant
     {
+
         /*
         
         public class NonceType
@@ -16,6 +18,7 @@ namespace Notus.Variable
         */
         public static readonly DateTime DefaultTime = new DateTime(2000, 01, 1, 0, 00, 00);
         public static readonly string MainCoinTagName = "NOTUS";
+        public static readonly int WalletTextLength = 38;
         public static readonly string DefaultDateTimeFormatText = "yyyyMMddHHmmssfff";
         public static readonly string DefaultHexAlphabetString = "0123456789abcdef";
         public static readonly string DefaultBase32AlphabetString = "QAZ2WSX3EDC4RFV5TGB6YHN7UJM8K9LP";
@@ -43,85 +46,97 @@ namespace Notus.Variable
         private static readonly int DefaultPortNo = 5000;
         public static readonly int DefaultChunkSize = 2048;
 
-        // layer 1 - main layer for crypto & token generate and transfer
-        public static readonly Dictionary<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>> PortNo = new Dictionary<Notus.Variable.Enum.NetworkLayer, Dictionary<Notus.Variable.Enum.NetworkType, int>>()
+        public static readonly Dictionary<NetworkLayer, Dictionary<NetworkType, string>> AirDropVolume = 
+            new Dictionary<NetworkLayer, Dictionary<NetworkType, string>>()
         {
             {
-                Notus.Variable.Enum.NetworkLayer.Layer1, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 0},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 1},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 2}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer2, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 100},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 101},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 102}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer3, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 200},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 201},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 202}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer4, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 300},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 301},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 302}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer5, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 400},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 401},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 402}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer6, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 500},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 501},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 502}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer7, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 600},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 601},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 602}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer8, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 700},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 701},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 702}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer9, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 800},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 801},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 802}
-                }
-            },
-            {
-                Notus.Variable.Enum.NetworkLayer.Layer10, new Dictionary<Notus.Variable.Enum.NetworkType,int>(){
-                    { Notus.Variable.Enum.NetworkType.MainNet, DefaultPortNo + 900},
-                    { Notus.Variable.Enum.NetworkType.TestNet, DefaultPortNo + 901},
-                    { Notus.Variable.Enum.NetworkType.DevNet, DefaultPortNo + 902}
+                NetworkLayer.Layer1, new Dictionary<NetworkType,string>(){
+                    { NetworkType.MainNet, "2000000000"},
+                    { NetworkType.TestNet, "2000000000"},
+                    { NetworkType.DevNet, "2000000000"}
                 }
             }
         };
-        public static Dictionary<Notus.Variable.Enum.NetworkLayer, string> LayerText = new Dictionary<Notus.Variable.Enum.NetworkLayer, string>() {
-            { Notus.Variable.Enum.NetworkLayer.Layer1,"Layer 1 ( Crypto Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer2,"Layer 2 ( File Storage Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer3,"Layer 3 ( Crypto Message Layer )" },
-            { Notus.Variable.Enum.NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
+
+        // layer 1 - main layer for crypto & token generate and transfer
+        public static readonly Dictionary<NetworkLayer, Dictionary<NetworkType, int>> PortNo = new Dictionary<NetworkLayer, Dictionary<NetworkType, int>>()
+        {
+            {
+                NetworkLayer.Layer1, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 0},
+                    { NetworkType.TestNet, DefaultPortNo + 1},
+                    { NetworkType.DevNet, DefaultPortNo + 2}
+                }
+            },
+            {
+                NetworkLayer.Layer2, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 100},
+                    { NetworkType.TestNet, DefaultPortNo + 101},
+                    { NetworkType.DevNet, DefaultPortNo + 102}
+                }
+            },
+            {
+                NetworkLayer.Layer3, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 200},
+                    { NetworkType.TestNet, DefaultPortNo + 201},
+                    { NetworkType.DevNet, DefaultPortNo + 202}
+                }
+            },
+            {
+                NetworkLayer.Layer4, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 300},
+                    { NetworkType.TestNet, DefaultPortNo + 301},
+                    { NetworkType.DevNet, DefaultPortNo + 302}
+                }
+            },
+            {
+                NetworkLayer.Layer5, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 400},
+                    { NetworkType.TestNet, DefaultPortNo + 401},
+                    { NetworkType.DevNet, DefaultPortNo + 402}
+                }
+            },
+            {
+                NetworkLayer.Layer6, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 500},
+                    { NetworkType.TestNet, DefaultPortNo + 501},
+                    { NetworkType.DevNet, DefaultPortNo + 502}
+                }
+            },
+            {
+                NetworkLayer.Layer7, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 600},
+                    { NetworkType.TestNet, DefaultPortNo + 601},
+                    { NetworkType.DevNet, DefaultPortNo + 602}
+                }
+            },
+            {
+                NetworkLayer.Layer8, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 700},
+                    { NetworkType.TestNet, DefaultPortNo + 701},
+                    { NetworkType.DevNet, DefaultPortNo + 702}
+                }
+            },
+            {
+                NetworkLayer.Layer9, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 800},
+                    { NetworkType.TestNet, DefaultPortNo + 801},
+                    { NetworkType.DevNet, DefaultPortNo + 802}
+                }
+            },
+            {
+                NetworkLayer.Layer10, new Dictionary<NetworkType,int>(){
+                    { NetworkType.MainNet, DefaultPortNo + 900},
+                    { NetworkType.TestNet, DefaultPortNo + 901},
+                    { NetworkType.DevNet, DefaultPortNo + 902}
+                }
+            }
+        };
+        public static Dictionary<NetworkLayer, string> LayerText = new Dictionary<NetworkLayer, string>() {
+            { NetworkLayer.Layer1,"Layer 1 ( Crypto Layer )" },
+            { NetworkLayer.Layer2,"Layer 2 ( File Storage Layer )" },
+            { NetworkLayer.Layer3,"Layer 3 ( Crypto Message Layer )" },
+            { NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
         };
 
         public static readonly List<string> ListMainNodeIp = new List<string> {

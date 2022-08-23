@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 
 namespace Notus.Validator
@@ -296,7 +293,7 @@ namespace Notus.Validator
                     // gönderilen işlem transferini veriyor
                     if (string.Equals(IncomeData.UrlList[0].ToLower(), "tx"))
                     {
-                        if (IncomeData.UrlList[1].Length == 38)
+                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
                         {
 
                         }
@@ -305,7 +302,7 @@ namespace Notus.Validator
                     // alınan işlem transferini veriyor
                     if (string.Equals(IncomeData.UrlList[0].ToLower(), "rx"))
                     {
-                        if (IncomeData.UrlList[1].Length == 38)
+                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
                         {
 
                         }
@@ -507,8 +504,34 @@ namespace Notus.Validator
             {
                 tmpKeyPair = ObjMp_Genesis.Get("seed_key");
             }
-            Notus.Variable.Struct.EccKeyPair KeyPair_PreSeed = JsonSerializer.Deserialize<Notus.Variable.Struct.EccKeyPair>(tmpKeyPair);
+            if (tmpKeyPair.Length == 0)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
+                {
+                    ErrorNo = 6728,
+                    ID = string.Empty,
+                    Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
+                });
+            }
+            Notus.Variable.Struct.EccKeyPair? KeyPair_PreSeed = JsonSerializer.Deserialize<Notus.Variable.Struct.EccKeyPair>(tmpKeyPair);
+            if (KeyPair_PreSeed == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
+                {
+                    ErrorNo = 8259,
+                    ID = string.Empty,
+                    Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
+                });
+            }
 
+            string airdropStr = "2000000";
+            if (Notus.Variable.Constant.AirDropVolume.ContainsKey(Obj_Settings.Layer))
+            {
+                if (Notus.Variable.Constant.AirDropVolume[Obj_Settings.Layer].ContainsKey(Obj_Settings.Network))
+                {
+                    airdropStr = Notus.Variable.Constant.AirDropVolume[Obj_Settings.Layer][Obj_Settings.Network];
+                }
+            }
             string ReceiverWalletKey = IncomeData.UrlList[1];
             Notus.Variable.Struct.CryptoTransactionStruct tmpSignedTrans = Notus.Wallet.Transaction.Sign(
                 new Notus.Variable.Struct.CryptoTransactionBeforeStruct()
@@ -518,12 +541,11 @@ namespace Notus.Validator
                     Receiver = ReceiverWalletKey,
                     Sender = KeyPair_PreSeed.WalletKey,
                     UnlockTime = Date.ToLong(DateTime.Now),
-                    Volume = "200000",
+                    Volume = airdropStr,
                     Network = Obj_Settings.Network,
                     CurveName = Notus.Variable.Constant.Default_EccCurveName
                 }
             );
-            Console.WriteLine(JsonSerializer.Serialize(tmpSignedTrans));
             if (IncomeData.PostParams.ContainsKey("data") == false)
             {
                 IncomeData.PostParams.Add("data", "");
@@ -1155,7 +1177,7 @@ namespace Notus.Validator
 
         private string Request_Send(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            Notus.Variable.Struct.CryptoTransactionStruct tmpTransfer;
+            Notus.Variable.Struct.CryptoTransactionStruct? tmpTransfer;
             try
             {
                 tmpTransfer = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionStruct>(IncomeData.PostParams["data"]);
@@ -1166,6 +1188,15 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 9618,
+                    ID = string.Empty,
+                    Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
+                });
+            }
+            if (tmpTransfer == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
+                {
+                    ErrorNo = 78945,
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
@@ -1187,9 +1218,9 @@ namespace Notus.Validator
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongParameter
                 });
             }
-
+            
             const int transferTimeOut = 0;
-            if (tmpTransfer.Sender.Length != 38)
+            if (tmpTransfer.Sender.Length != Notus.Variable.Constant.WalletTextLength)
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
@@ -1200,7 +1231,17 @@ namespace Notus.Validator
             }
 
             //receiver
-            if (tmpTransfer.Receiver.Length != 38)
+            if (tmpTransfer.Receiver.Length != Notus.Variable.Constant.WalletTextLength)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
+                {
+                    ErrorNo = 5245,
+                    ID = string.Empty,
+                    Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Receiver
+                });
+            }
+            
+            if (string.Equals(tmpTransfer.Receiver, tmpTransfer.Sender))
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
@@ -1663,7 +1704,7 @@ namespace Notus.Validator
 
         private string Request_Balance(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (IncomeData.UrlList[1].Length == 38)
+            if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
             {
                 Notus.Variable.Struct.WalletBalanceStruct tmpBalanceVal = Obj_Balance.Get(IncomeData.UrlList[1], 0);
                 if (Obj_Settings.PrettyJson == true)
