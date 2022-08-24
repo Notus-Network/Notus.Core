@@ -1,5 +1,8 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using System.Collections.Generic;
 using System.Text.Json;
+using System.IO;
 
 namespace Notus.Validator
 {
@@ -44,8 +47,9 @@ namespace Notus.Validator
         private Notus.Mempool ObjMp_CryptoTransfer;
         private Dictionary<string, Notus.Variable.Enum.BlockStatusCode> Obj_TransferStatusList;
 
-        public System.Func<string, Notus.Variable.Class.BlockData> Func_OnReadFromChain = null;
-        public System.Func<Notus.Variable.Struct.PoolBlockRecordStruct, bool> Func_AddToChainPool = null;
+        public System.Func<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>?>? Func_GetPoolList = null;
+        public System.Func<string, Notus.Variable.Class.BlockData?>? Func_OnReadFromChain = null;
+        public System.Func<Notus.Variable.Struct.PoolBlockRecordStruct, bool>? Func_AddToChainPool = null;
 
         private bool PrepareExecuted = false;
 
@@ -285,6 +289,37 @@ namespace Notus.Validator
 
                 if (IncomeData.UrlList.Length > 1)
                 {
+                    if (IncomeData.UrlList[0].ToLower() == "pool")
+                    {
+                        if (int.TryParse(IncomeData.UrlList[1], out int blockTypeNo))
+                        {
+                            if (Func_GetPoolList != null)
+                            {
+                                List<Variable.Struct.List_PoolBlockRecordStruct>? tmpPoolList = Func_GetPoolList(blockTypeNo);
+                                if (tmpPoolList != null)
+                                {
+                                    if(tmpPoolList.Count>0)
+                                    {
+                                        Dictionary<string, string> tmpResultList = new Dictionary<string, string>();
+                                        for (int innerCount = 0; innerCount < tmpPoolList.Count; innerCount++)
+                                        {
+                                            Variable.Struct.List_PoolBlockRecordStruct? tmpItem = tmpPoolList[innerCount];
+                                            if (tmpItem != null)
+                                            {
+                                                tmpResultList.Add(tmpItem.key, tmpItem.data);
+                                            }
+                                        }
+                                        if (tmpResultList.Count > 0)
+                                        {
+                                            return JsonSerializer.Serialize(tmpResultList);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return JsonSerializer.Serialize(false);
+                    }
+
                     if (string.Equals(IncomeData.UrlList[0].ToLower(), "balance"))
                     {
                         return Request_Balance(IncomeData);
@@ -1218,7 +1253,7 @@ namespace Notus.Validator
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongParameter
                 });
             }
-            
+
             const int transferTimeOut = 0;
             if (tmpTransfer.Sender.Length != Notus.Variable.Constant.WalletTextLength)
             {
@@ -1240,7 +1275,7 @@ namespace Notus.Validator
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Receiver
                 });
             }
-            
+
             if (string.Equals(tmpTransfer.Receiver, tmpTransfer.Sender))
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()

@@ -92,7 +92,7 @@ namespace Notus
 
         //burada verilen blok numarasını tüm nodelardan sorgula
         //alınan blok özetlerini kontrol et ve en çok olan özeti kabul et       
-        private static Notus.Variable.Class.BlockData GetValidBlock
+        private static Notus.Variable.Class.BlockData? GetValidBlock
         (
             Notus.Variable.Common.ClassSetting objSettings
         )
