@@ -8,8 +8,6 @@
 // Redistribution and use in source and binary forms with or without
 // modifications are permitted.
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 
@@ -20,6 +18,11 @@ namespace Notus.Wallet
     /// </summary>
     public class ID
     {
+        public static bool NewMultiKey()
+        {
+            return false;
+        }
+
         /// <summary>
         /// Verifies data and returns verify status
         /// </summary>
@@ -150,30 +153,66 @@ namespace Notus.Wallet
         /// <returns>Returns true if wallet address is correct. Returns false if wallet address is incorrect.</returns>
         public static bool CheckAddress(string walletAddress, Notus.Variable.Enum.NetworkType WhichNetworkFor = Notus.Variable.Enum.NetworkType.MainNet)
         {
-            if (walletAddress != null)
+            if (walletAddress == null)
             {
-                if (walletAddress.Length == Notus.Variable.Constant.WalletTextLength)
+                return false;
+            }
+            if (walletAddress.Length < 5)
+            {
+                return false;
+            }
+
+
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
+            {
+                if (walletAddress.Length == Notus.Variable.Constant.SingleWalletTextLength)
                 {
-                    if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_TestNetwork.Length) == Notus.Variable.Constant.SingleWalletPrefix_TestNetwork)
                     {
-                        if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_TestNetwork.Length) == Notus.Variable.Constant.Prefix_TestNetwork)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    else
+                }
+                if (walletAddress.Length == Notus.Variable.Constant.MultiWalletTextLength)
+                {
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_TestNetwork.Length) == Notus.Variable.Constant.MultiWalletPrefix_TestNetwork)
                     {
-                        if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_MainNetwork.Length) == Notus.Variable.Constant.Prefix_MainNetwork)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            if (walletAddress.Substring(0, Notus.Variable.Constant.Prefix_DevelopmentNetwork.Length) == Notus.Variable.Constant.Prefix_DevelopmentNetwork)
-                            {
-                                return true;
-                            }
-                        }
+                        return true;
+                    }
+                }
+            }
+
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.MainNet)
+            {
+                if (walletAddress.Length == Notus.Variable.Constant.SingleWalletTextLength)
+                {
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_MainNetwork.Length) == Notus.Variable.Constant.SingleWalletPrefix_MainNetwork)
+                    {
+                        return true;
+                    }
+                }
+                if (walletAddress.Length == Notus.Variable.Constant.MultiWalletTextLength)
+                {
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_MainNetwork.Length) == Notus.Variable.Constant.MultiWalletPrefix_MainNetwork)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.DevNet)
+            {
+                if (walletAddress.Length == Notus.Variable.Constant.SingleWalletTextLength)
+                {
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork.Length) == Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork)
+                    {
+                        return true;
+                    }
+                }
+                if (walletAddress.Length == Notus.Variable.Constant.SingleWalletTextLength)
+                {
+                    if (walletAddress.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_DevelopmentNetwork.Length) == Notus.Variable.Constant.MultiWalletPrefix_DevelopmentNetwork)
+                    {
+                        return true;
                     }
                 }
             }
@@ -198,9 +237,23 @@ namespace Notus.Wallet
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <param name="CurveName">Current curve.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName)
+        public static string GetAddressWithPublicKey(
+            string publicKey, 
+            Notus.Variable.Enum.NetworkType WhichNetworkFor, 
+            string CurveName
+        )
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), CurveName, true), WhichNetworkFor, CurveName);
+            return GetAddress_SubFunction_FromPublicKey(
+                PublicKey.fromString(
+                    Notus.Convert.Hex2Byte(
+                        publicKey
+                    ), 
+                    CurveName, 
+                    true
+                ), 
+                WhichNetworkFor, 
+                CurveName
+            );
         }
 
         /// <summary>
@@ -209,9 +262,16 @@ namespace Notus.Wallet
         /// <param name="privateKey">Private Key <see cref="string"/></param>
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor)
+        public static string GetAddress(
+            string privateKey, 
+            Notus.Variable.Enum.NetworkType WhichNetworkFor
+        )
         {
-            return GetAddress_SubFunction(privateKey, WhichNetworkFor, Notus.Variable.Constant.Default_EccCurveName);
+            return GetAddress_SubFunction(
+                privateKey, 
+                WhichNetworkFor, 
+                Notus.Variable.Constant.Default_EccCurveName
+            );
         }
 
         /// <summary>
@@ -221,40 +281,63 @@ namespace Notus.Wallet
         /// <param name="WhichNetworkFor">Current Network for Request.</param>
         /// <param name="CurveName">Current curve.</param>
         /// <returns>Returns Wallet Address</returns>
-        public static string GetAddress(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName)
+        public static string GetAddress(
+            string privateKey,
+            Notus.Variable.Enum.NetworkType WhichNetworkFor,
+            string CurveName
+        )
         {
-            return GetAddress_SubFunction(privateKey, WhichNetworkFor, CurveName);
+            return GetAddress_SubFunction(
+                privateKey, 
+                WhichNetworkFor, 
+                CurveName
+            );
         }
 
-        private static string GetAddress_SubFunction(string privateKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+        private static string GetAddress_SubFunction(
+            string privateKey,
+            Notus.Variable.Enum.NetworkType WhichNetworkFor,
+            string CurveName = "secp256k1"
+        )
         {
             PrivateKey yPrivKey = new PrivateKey(CurveName, Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             PublicKey yPubKey = yPrivKey.publicKey();
-            return GetAddress_SubFunction_FromPublicKey(yPubKey, WhichNetworkFor, CurveName);
+            return GetAddress_SubFunction_FromPublicKey(
+                yPubKey,
+                WhichNetworkFor,
+                CurveName
+            );
         }
 
-        private static string GetAddress_SubFunction_FromPublicKey(PublicKey yPubKey, Notus.Variable.Enum.NetworkType WhichNetworkFor, string CurveName = "secp256k1")
+        private static string GetAddress_SubFunction_FromPublicKey(
+            PublicKey yPubKey,
+            Notus.Variable.Enum.NetworkType WhichNetworkFor,
+            string CurveName = "secp256k1"
+        )
         {
             BigInteger pkPointVal = yPubKey.point.x;
             string fullPublicKey = yPubKey.point.x.ToString("x") + yPubKey.point.y.ToString("x");
 
             string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
 
-            string keyPrefix = Notus.Variable.Constant.Prefix_MainNetwork;
+            string keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_MainNetwork;
             string networkByteStr = "00";
+
             if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.MainNet)
             {
-                keyPrefix = Notus.Variable.Constant.Prefix_MainNetwork;
+                keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_MainNetwork;
                 networkByteStr = "10";
             }
+
             if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
             {
-                keyPrefix = Notus.Variable.Constant.Prefix_TestNetwork;
+                keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_TestNetwork;
                 networkByteStr = "20";
             }
+
             if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.DevNet)
             {
-                keyPrefix = Notus.Variable.Constant.Prefix_DevelopmentNetwork;
+                keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork;
                 networkByteStr = "30";
             }
 
@@ -275,7 +358,9 @@ namespace Notus.Wallet
                 networkByteStr + hashPubKeyStr + checkSumStr,
                 NumberStyles.AllowHexSpecifier);
 
-            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number, 36);
+            int howManyLen = 0;
+            howManyLen = Notus.Variable.Constant.SingleWalletTextLength - Notus.Variable.Constant.SingleWalletPrefix_MainNetwork.Length;
+            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number, howManyLen);
             return keyPrefix + walletAddressStr;
         }
 

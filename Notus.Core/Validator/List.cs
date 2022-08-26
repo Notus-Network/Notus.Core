@@ -4,6 +4,8 @@ namespace Notus.Validator
 {
     public static class List
     {
+        // omergoksoy
+        // burada liste constant.ListMainNodeIp sabitinden alınıp List içeriğine eklenecek.
         public static readonly Dictionary<Variable.Enum.NetworkLayer,
                 Dictionary<Variable.Enum.NetworkType, List<Variable.Struct.IpInfo>>> Main
             =

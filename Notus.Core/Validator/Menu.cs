@@ -147,7 +147,7 @@ namespace Notus.Validator
                 userDefineWalletKey = Console.ReadLine();
                 tmpExitWhileLoop = true;
                 userDefineWalletKey = userDefineWalletKey.Trim();
-                if (userDefineWalletKey.Length != Notus.Variable.Constant.WalletTextLength)
+                if (userDefineWalletKey.Length != Notus.Variable.Constant.SingleWalletTextLength)
                 {
                     userDefineWalletKey = string.Empty;
                     Console.WriteLine();
@@ -1074,7 +1074,7 @@ namespace Notus.Validator
             currentSetting.DevelopmentNode = nodeObj.DevelopmentMode;
             if (currentSetting.DevelopmentNode == true)
             {
-                currentSetting.NodeWallet.WalletKey = Notus.Variable.Constant.Prefix_DevelopmentNetwork + nodeObj.Wallet.Key.Substring(2);
+                currentSetting.NodeWallet.WalletKey = Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork + nodeObj.Wallet.Key.Substring(Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork.Length);
             }
 
             currentSetting.Port = nodeObj.Layer.Port;

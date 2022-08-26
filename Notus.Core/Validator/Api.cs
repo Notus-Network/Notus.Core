@@ -328,7 +328,7 @@ namespace Notus.Validator
                     // gönderilen işlem transferini veriyor
                     if (string.Equals(IncomeData.UrlList[0].ToLower(), "tx"))
                     {
-                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
+                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.SingleWalletTextLength)
                         {
 
                         }
@@ -337,7 +337,7 @@ namespace Notus.Validator
                     // alınan işlem transferini veriyor
                     if (string.Equals(IncomeData.UrlList[0].ToLower(), "rx"))
                     {
-                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
+                        if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.SingleWalletTextLength)
                         {
 
                         }
@@ -1255,7 +1255,7 @@ namespace Notus.Validator
             }
 
             const int transferTimeOut = 0;
-            if (tmpTransfer.Sender.Length != Notus.Variable.Constant.WalletTextLength)
+            if (tmpTransfer.Sender.Length != Notus.Variable.Constant.SingleWalletTextLength)
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
@@ -1266,7 +1266,7 @@ namespace Notus.Validator
             }
 
             //receiver
-            if (tmpTransfer.Receiver.Length != Notus.Variable.Constant.WalletTextLength)
+            if (tmpTransfer.Receiver.Length != Notus.Variable.Constant.SingleWalletTextLength)
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
@@ -1739,7 +1739,7 @@ namespace Notus.Validator
 
         private string Request_Balance(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.WalletTextLength)
+            if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.SingleWalletTextLength)
             {
                 Notus.Variable.Struct.WalletBalanceStruct tmpBalanceVal = Obj_Balance.Get(IncomeData.UrlList[1], 0);
                 if (Obj_Settings.PrettyJson == true)
