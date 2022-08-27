@@ -141,14 +141,14 @@ namespace Notus.Wallet
                                 10, true,
                                 true
                             );
-                            Notus.Print.Basic(true, "Request Response : " + MainResultStr);
+                            //Notus.Print.Basic(true, "Request Response : " + MainResultStr);
                             Notus.Variable.Struct.CryptoTransactionResult? tmpTransferResult = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(MainResultStr);
                             exitInnerLoop = true;
                             return tmpTransferResult;
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                            //Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                             Thread.Sleep(2000);
                         }
                         if (whichNodeIpAddress != "")
@@ -164,7 +164,7 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
-                Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
+                //Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()
             {
