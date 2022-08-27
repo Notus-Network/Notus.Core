@@ -188,7 +188,7 @@ namespace Notus.Reward
                                 //Console.WriteLine();
                                 //Console.WriteLine(JsonSerializer.Serialize(rewardBlock));
                                 //Console.WriteLine();
-                                // Console.WriteLine(JsonSerializer.Serialize(rewardBlock, new JsonSerializerOptions() { WriteIndented = true }));
+                                //Console.WriteLine(JsonSerializer.Serialize(rewardBlock, Notus.Variable.Constant.JsonSetting);
                                 //Console.ReadLine();
                                 Func_NewBlockIncome(rewardBlock);
                                 //Console.ReadLine();

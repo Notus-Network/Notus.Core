@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Notus.Variable.Enum;
 
 namespace Notus.Variable
 {
     public static class Constant
     {
-
-        /*
-        
-        public class NonceType
-        {
-            public int Method { get; set; }
-            public int Type { get; set; }
-            public int Difficulty { get; set; }
-        }
-        */
+        public static readonly JsonSerializerOptions JsonSetting = new JsonSerializerOptions() { WriteIndented = true };
 
         // wallet constant
         public static readonly int SingleWalletTextLength = 39;
@@ -34,7 +26,7 @@ namespace Notus.Variable
         //date time
         public static readonly DateTime DefaultTime = new DateTime(2000, 01, 1, 0, 00, 00);
         public static readonly string DefaultDateTimeFormatText = "yyyyMMddHHmmssfff";
-        
+
         //alphabet constant
         public static readonly string DefaultHexAlphabetString = "0123456789abcdef";
         public static readonly string DefaultBase32AlphabetString = "QAZ2WSX3EDC4RFV5TGB6YHN7UJM8K9LP";
@@ -60,7 +52,7 @@ namespace Notus.Variable
         private static readonly int DefaultPortNo = 5000;
         public static readonly int DefaultChunkSize = 2048;
 
-        public static readonly Dictionary<NetworkLayer, Dictionary<NetworkType, string>> AirDropVolume = 
+        public static readonly Dictionary<NetworkLayer, Dictionary<NetworkType, string>> AirDropVolume =
             new Dictionary<NetworkLayer, Dictionary<NetworkType, string>>()
         {
             {
@@ -296,8 +288,8 @@ namespace Notus.Variable
             public const string TokenTagList = "token_tag_list";
             public const string TokenTagListForLock = "lock_token_tag_name";
         }
-    
-        
+
+
 
     }
 }

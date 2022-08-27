@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Text.Json;
 
 namespace Notus.Block
@@ -224,34 +225,55 @@ namespace Notus.Block
                 {
                     string tmpFileName = TempBlockList[0];
                     TempBlockList.Clear();
-                    //Console.WriteLine(JsonSerializer.Serialize(TempBlockList));
                     TempBlockList.Add(
                         System.Convert.ToBase64String(File.ReadAllBytes(tmpFileName))
                     );
                 }
+
                 if (CurrentBlockType == 120)
                 {
-                    //Console.WriteLine("control-point-11-bcbc");
                     if (TempBlockList.Count > 1)
                     {
-                        Console.WriteLine("--------------------------------------");
-                        Console.WriteLine("Notus.Block.Queue -> Line 270");
-                        Console.WriteLine("Burada 2 dizi birlestirilip tek dizi haline getirilecek.");
-                        Console.WriteLine("Burada 2 dizi birlestirilip tek dizi haline getirilecek.");
-                        Console.WriteLine("Burada 2 dizi birlestirilip tek dizi haline getirilecek.");
-                        Console.WriteLine(JsonSerializer.Serialize(TempBlockList, new JsonSerializerOptions() { WriteIndented = true }));
-                        Console.WriteLine("--------------------------------------");
-                        Console.WriteLine(JsonSerializer.Serialize(TempBlockList, new JsonSerializerOptions() { WriteIndented = true }));
-                        Console.WriteLine("--------------------------------------");
-                        Console.ReadLine();
-                    }
-                    else
-                    {
-                        //Console.WriteLine("control-point-14-bcbc");
-                        //Console.WriteLine(JsonSerializer.Serialize(TempBlockList, new JsonSerializerOptions() { WriteIndented = true }));
+                        Notus.Variable.Class.BlockStruct_120 tmpBlockCipherData = new Variable.Class.BlockStruct_120()
+                        {
+                            In = new Dictionary<string, Variable.Class.BlockStruct_120_In_Struct>(),
+                            Out = new Dictionary<string, Dictionary<string, Dictionary<ulong, string>>>(),
+                            Validator = new Variable.Struct.ValidatorStruct()
+                        };
+
+                        bool validatorAssigned = false;
+                        for (int i=0;i< TempBlockList.Count; i++)
+                        {
+                            Notus.Variable.Class.BlockStruct_120? tmpInnerData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(TempBlockList[i]);
+                            if (tmpInnerData != null)
+                            {
+                                if (validatorAssigned == false)
+                                {
+                                    tmpBlockCipherData.Validator = tmpInnerData.Validator;
+                                    validatorAssigned=true;
+                                }
+                                else
+                                {
+                                    BigInteger tmpFee =
+                                        BigInteger.Parse(tmpBlockCipherData.Validator.Reward)
+                                        +
+                                        BigInteger.Parse(tmpInnerData.Validator.Reward);
+                                    tmpBlockCipherData.Validator.Reward = tmpFee.ToString();
+                                }
+                                foreach (KeyValuePair<string, Variable.Class.BlockStruct_120_In_Struct> iEntry in tmpInnerData.In)
+                                {
+                                    tmpBlockCipherData.In.Add(iEntry.Key, iEntry.Value);
+                                }
+                                foreach (KeyValuePair<string, Dictionary<string, Dictionary<ulong, string>>> iEntry in tmpInnerData.Out)
+                                {
+                                    tmpBlockCipherData.Out.Add(iEntry.Key, iEntry.Value);
+                                }
+                            }
+                        }
+                        TempBlockList.Clear();
+                        TempBlockList.Add(JsonSerializer.Serialize(tmpBlockCipherData));
                     }
                 }
-
                 LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
             BlockStruct.prev = "";
@@ -371,18 +393,7 @@ namespace Notus.Block
             {
                 string blockKeyStr = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
                 Add2Queue(PreBlockData, blockKeyStr);
-                
-                //testpoint
-                //testpoint
-                //testpoint
-                //testpoint
                 string PreBlockDataStr = JsonSerializer.Serialize(PreBlockData);
-                if (PreBlockDataStr.IndexOf("}:{") > 0)
-                {
-                    Console.WriteLine("Notus.Block.Queue.Add -> Line 339 -> On blok hazırlama hatasi");
-                    Console.WriteLine(PreBlockDataStr);
-                    Console.ReadLine();
-                }
                 MP_BlockPoolList.Set(GiveBlockKey(PreBlockData.data), PreBlockDataStr, true);
             }
         }

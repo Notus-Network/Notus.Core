@@ -282,7 +282,7 @@ namespace Notus.Block
             }
 
 
-            //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, Notus.Variable.Constant.JsonSetting);
             //Console.ReadLine();
 
             //Console.WriteLine(Obj_Settings.NodeType);
@@ -316,7 +316,7 @@ namespace Notus.Block
             }
             if (rowNumberError == true)
             {
-                //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, new JsonSerializerOptions() { WriteIndented = true }));
+                //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, Notus.Variable.Constant.JsonSetting);
                 //Console.ReadLine();
 
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);

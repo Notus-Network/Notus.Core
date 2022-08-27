@@ -238,28 +238,8 @@ namespace Notus.Validator
                     int tmpRequestSend_ListCount = Obj_Api.RequestSend_ListCount();
                     if (tmpRequestSend_ListCount > 0)
                     {
-                        Console.WriteLine(tmpRequestSend_ListCount);
                         ulong unlockTimeForNodeWallet = Notus.Time.NowToUlong();
                         Notus.Variable.Struct.WalletBalanceStruct tmpValidatorWalletBalance = Obj_Api.BalanceObj.Get(Obj_Settings.NodeWallet.WalletKey, unlockTimeForNodeWallet);
-                        //control-point
-                        /*
-
-                        bu kayıt blok içeriğinden çıkartıldı
-                        bu kayıt blok içeriğinden çıkartıldı
-                        bu kayıt blok içeriğinden çıkartıldı
-
-{"In":{"1348b962324202e6c7b123627b952d2b83b1dd37a7a0f9059bdaa067a697450fbd2f889780f92fbb883ab17b3b":{"Sender":{"Wallet":"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17","Balance":{"NOTUS":{"16777216000000000":"999999998798281"}},"WitnessRowNo":608,"WitnessBlockUid":"1348b96231da0474eccdce9560ad5744138d560f914c0b44c958e166db08f43291bdd39eebf3f25004a70d2913"},"Receiver":{"Wallet":"NDWHHeVwYbAfMDgb2gZUmGB17dQ6HeQv5rpDMj","Balance":{"NOTUS":{"20220822173939138":"0"}},"WitnessRowNo":0,"WitnessBlockUid":""},"Currency":"NOTUS","Volume":"200000","Fee":"150","PublicKey":"f92fba1a1f120b29d170637b4d0f7e4885ca6da03befb85f0b087100d7af98dafa74320044d08c52e10709f3f6a5ecced4370696ff2d3b175b10ea01ee7a63a1","Sign":"3045022100b6822404e8794f53e6dbd679bb7b594ed22ae61b7f72936151c717ec36541eaa022033030fe4a0b5ebae21cf72846e062ef8ebcf881fd061734416c13898d84e259c"}},"Out":{"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17":{"NOTUS":{"16777216000000000":"999999998598131"}},"NDWHHeVwYbAfMDgb2gZUmGB17dQ6HeQv5rpDMj":{"NOTUS":{"20220822173937576":"200000"}}},"Validator":{"Reward":"150","NodeWallet":"NDErc7LvpRCrgq4WUVYaVU2zjeagPAi2Z9VtrN"}}:{"In":{"1348b96232a80e9777b13c93433d1a4f83bf9cedba96c5f1a3fef1b8833ee0b7bd1538dd14957f5d3db978a28c":{"Sender":{"Wallet":"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17","Balance":{"NOTUS":{"16777216000000000":"999999998798281"}},"WitnessRowNo":608,"WitnessBlockUid":"1348b96231da0474eccdce9560ad5744138d560f914c0b44c958e166db08f43291bdd39eebf3f25004a70d2913"},"Receiver":{"Wallet":"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV","Balance":{"NOTUS":{"20220822174043000":"0"}},"WitnessRowNo":0,"WitnessBlockUid":""},"Currency":"NOTUS","Volume":"200000","Fee":"150","PublicKey":"f92fba1a1f120b29d170637b4d0f7e4885ca6da03befb85f0b087100d7af98dafa74320044d08c52e10709f3f6a5ecced4370696ff2d3b175b10ea01ee7a63a1","Sign":"30450221009f062f2fda7c86905bb040c6fe3abcb7fde0362250b54d578ac59dd687596e55022047f233c4d4599caf302f089ebbfc51445ae791526ee07f43b9dfd3956ba13083"}},"Out":{"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17":{"NOTUS":{"16777216000000000":"999999998598131"}},"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV":{"NOTUS":{"20220822174040747":"200000"}}},"Validator":{"Reward":"150","NodeWallet":"NDErc7LvpRCrgq4WUVYaVU2zjeagPAi2Z9VtrN"}}:{"In":{"1348b96232e600f0fd0ed3a79139e91ea1ecdf4cee7c52f0fa89869231198f08d6147b9c5ae5045ff0efbc9e03":{"Sender":{"Wallet":"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17","Balance":{"NOTUS":{"16777216000000000":"999999998798281"}},"WitnessRowNo":608,"WitnessBlockUid":"1348b96231da0474eccdce9560ad5744138d560f914c0b44c958e166db08f43291bdd39eebf3f25004a70d2913"},"Receiver":{"Wallet":"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV","Balance":{"NOTUS":{"20220822174103332":"0"}},"WitnessRowNo":0,"WitnessBlockUid":""},"Currency":"NOTUS","Volume":"200000","Fee":"150","PublicKey":"f92fba1a1f120b29d170637b4d0f7e4885ca6da03befb85f0b087100d7af98dafa74320044d08c52e10709f3f6a5ecced4370696ff2d3b175b10ea01ee7a63a1","Sign":"3046022100c0d5bfb7995d6115e5749f8f55de7c6b47b6802a7805aebce8357d3f00cc008a0221008d633eda5d3f97ec969483bec2a29df60bfafb5eec6247c20732849e19ed6620"}},"Out":{"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17":{"NOTUS":{"16777216000000000":"999999998598131"}},"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV":{"NOTUS":{"20220822174101218":"200000"}}},"Validator":{"Reward":"150","NodeWallet":"NDErc7LvpRCrgq4WUVYaVU2zjeagPAi2Z9VtrN"}}:{"In":{"1348b96233040b48dbbd9ca5381dc988de9782e450cc8d463c71df7db511b04631c0995e48a92daa50b3c913f1":{"Sender":{"Wallet":"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17","Balance":{"NOTUS":{"16777216000000000":"999999998798281"}},"WitnessRowNo":608,"WitnessBlockUid":"1348b96231da0474eccdce9560ad5744138d560f914c0b44c958e166db08f43291bdd39eebf3f25004a70d2913"},"Receiver":{"Wallet":"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV","Balance":{"NOTUS":{"20220822174133702":"0"}},"WitnessRowNo":0,"WitnessBlockUid":""},"Currency":"NOTUS","Volume":"200000","Fee":"150","PublicKey":"f92fba1a1f120b29d170637b4d0f7e4885ca6da03befb85f0b087100d7af98dafa74320044d08c52e10709f3f6a5ecced4370696ff2d3b175b10ea01ee7a63a1","Sign":"3045022100be5eb1a78377fb350f33f4996c103deab3ab2ede240d4aed9d7a2963553985880220710f5f6c928a19c208eb14466521c3f56336dd697d1f669c6a72e3ca832e4932"}},"Out":{"NDYiZpB8at3N8tYxt3dZM6vfK7MwiVYGmM3V17":{"NOTUS":{"16777216000000000":"999999998598131"}},"NDWNVi22xKeJgwvEGyrCV7x1KPRh9dWsZbkKvV":{"NOTUS":{"20220822174131904":"200000"}}},"Validator":{"Reward":"150","NodeWallet":"NDErc7LvpRCrgq4WUVYaVU2zjeagPAi2Z9VtrN"}}
-
-
-                        */
-                        // aynı anda sadece ödeme alma veya ödeme yapma işlemi gerçekleştirilecek.
-                        // bu liste aynı hesapların birden fazla kez gönderme alma işlemini engellemek için kullanılacak.
-                        // işlem yapılan her hesap bu listeye atılacak
-                        // eğer işlem yapılacak hesap bu listede mevcut ise bir sonraki tur da işlem yapılması için es geçilecek
-
-                        // kısaca,
-                        // alıcı veya gönderici hesap, aynı blok içinde sadece 1 kere gönderim veya alım işlemi yapabilir
-                        //List<string> tmpWalletList = new List<string>() { Obj_Settings.NodeWallet.WalletKey };
                         List<string> tmpWalletList = new List<string>() { };
                         tmpWalletList.Clear();
 
@@ -473,7 +453,7 @@ namespace Notus.Validator
                                 }
                             }
                             tmpBlockCipherData.Validator.Reward = totalBlockReward.ToString();
-                            //omergoksoy                            
+
                             Obj_BlockQueue.Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
                             {
                                 type = 120,
@@ -485,12 +465,6 @@ namespace Notus.Validator
                             Obj_Api.RequestSend_Remove(entry.Key);
                         }
                     }  //if (ObjMp_CryptoTransfer.Count() > 0)
-
-
-                    if (executedCryptoTransfer == true)
-                    {
-
-                    }  //if (executedCryptoTransfer == true)
 
                     CryptoTransferTime = DateTime.Now;
                     CryptoTransferTimerIsRunning = false;
@@ -642,9 +616,9 @@ namespace Notus.Validator
                 return true;
             };
 
+            ValidatorQueueObj.GetUtcTimeFromServer();
             if (Obj_Settings.GenesisCreated == false)
             {
-                ValidatorQueueObj.GetUtcTimeFromServer();
                 //Console.ReadLine();
 
                 ValidatorQueueObj.PreStart(
@@ -976,7 +950,7 @@ namespace Notus.Validator
                     Console.WriteLine("Notus.Main.OrganizeEachBlock -> Line 705");
                     Console.WriteLine("Notus.Main.OrganizeEachBlock -> Line 705");
                     Console.WriteLine("Make request and add file to layer 3");
-                    Console.WriteLine(JsonSerializer.Serialize(blockData, new JsonSerializerOptions() { WriteIndented = true }));
+                    Console.WriteLine(JsonSerializer.Serialize(blockData, Notus.Variable.Constant.JsonSetting));
 
                     Notus.Variable.Struct.StorageOnChainStruct tmpStorageOnChain = JsonSerializer.Deserialize<Notus.Variable.Struct.StorageOnChainStruct>(System.Text.Encoding.UTF8.GetString(
                         System.Convert.FromBase64String(

@@ -239,7 +239,7 @@ namespace Notus.Toolbox
             {
                 string dnsResult = Dns.GetHostName();
                 IPHostEntry host = Dns.GetHostEntry(dnsResult);
-                //Console.WriteLine(JsonSerializer.Serialize(host, new JsonSerializerOptions() { WriteIndented = true }));
+                //Console.WriteLine(JsonSerializer.Serialize(host, Notus.Variable.Constant.JsonSetting);
                 foreach (IPAddress ip in host.AddressList)
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)

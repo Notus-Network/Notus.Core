@@ -24,12 +24,12 @@ namespace Notus.Wallet
         /// DONE
         /// </summary>
         public static Notus.Variable.Enum.BlockStatusCode Status(
-            string TransferId, 
+            string TransferId,
             Notus.Variable.Enum.NetworkType WhichNetwork,
             Notus.Variable.Enum.NetworkLayer WhichLayer
         )
         {
-            string requestResult=Notus.Network.Node.FindAvailableSync(
+            string requestResult = Notus.Network.Node.FindAvailableSync(
                 "transaction/status/" + TransferId,
                 WhichNetwork,
                 WhichLayer

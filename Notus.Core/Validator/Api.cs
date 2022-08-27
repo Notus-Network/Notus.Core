@@ -157,7 +157,7 @@ namespace Notus.Validator
             //Notus.Print.Basic(Obj_Settings.DebugMode, "Request Income - API Class");
             if (Obj_Settings.DebugMode == true)
             {
-                //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
+                //Console.WriteLine(JsonSerializer.Serialize(IncomeData, Notus.Variable.Constant.JsonSetting);
             }
 
             if (IncomeData.UrlList.Length == 0)
@@ -169,7 +169,7 @@ namespace Notus.Validator
             {
                 if (string.Equals(IncomeData.UrlList[0].ToLower(), "storage"))
                 {
-                    //Console.WriteLine(JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true }));
+                    //Console.WriteLine(JsonSerializer.Serialize(IncomeData, Notus.Variable.Constant.JsonSetting);
                     //Console.WriteLine(JsonSerializer.Serialize(IncomeData));
                     if (string.Equals(IncomeData.UrlList[1].ToLower(), "file"))
                     {
@@ -549,29 +549,28 @@ namespace Notus.Validator
             IncomeData.PostParams["data"] = JsonSerializer.Serialize(tmpSignedTrans);
             return Request_Send(IncomeData);
         }
-        private (bool, Notus.Variable.Class.BlockData) GetBlockWithRowNo(Int64 BlockRowNo)
+        private Notus.Variable.Class.BlockData? GetBlockWithRowNo(Int64 BlockRowNo)
         {
             if (Func_OnReadFromChain == null)
             {
-                //Console.WriteLine("Func_OnReadFromChain = NULL");
-                return (false, null);
+                return null;
             }
             if (Obj_Settings.LastBlock.info.rowNo >= BlockRowNo)
             {
                 if (Obj_Settings.LastBlock.info.rowNo == BlockRowNo)
                 {
-                    return (true, Obj_Settings.LastBlock);
+                    return Obj_Settings.LastBlock;
                 }
                 bool exitPrevWhile = false;
                 string PrevBlockIdStr = Obj_Settings.LastBlock.prev;
                 while (exitPrevWhile == false)
                 {
-                    Notus.Variable.Class.BlockData tmpStoredBlock = Func_OnReadFromChain(PrevBlockIdStr.Substring(0, 90));
+                    Notus.Variable.Class.BlockData? tmpStoredBlock = Func_OnReadFromChain(PrevBlockIdStr.Substring(0, 90));
                     if (tmpStoredBlock != null)
                     {
                         if (tmpStoredBlock.info.rowNo == BlockRowNo)
                         {
-                            return (true, tmpStoredBlock);
+                            return tmpStoredBlock;
                         }
                         PrevBlockIdStr = tmpStoredBlock.prev;
                     }
@@ -581,7 +580,7 @@ namespace Notus.Validator
                     }
                 }
             }
-            return (false, null);
+            return null;
         }
 
         private string Request_TransactionStatus(Notus.Variable.Struct.HttpRequestDetails IncomeData)
@@ -906,7 +905,7 @@ namespace Notus.Validator
             Console.WriteLine("----------------------------------------------------");
             //Console.WriteLine((IncomeData.PostParams["data"]));
             //Console.WriteLine(JsonSerializer.Serialize(IncomeData.PostParams["data"]));
-            //Console.WriteLine(JsonSerializer.Serialize(IncomeData.PostParams, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(IncomeData.PostParams, Notus.Variable.Constant.JsonSetting));
             */
             try
             {
@@ -1064,7 +1063,7 @@ namespace Notus.Validator
                 });
             }
 
-            //Console.WriteLine(JsonSerializer.Serialize(Obj_Settings.Genesis.Fee, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(Obj_Settings.Genesis.Fee, Notus.Variable.Constant.JsonSetting));
             //Console.WriteLine("Control_Point_4-a");
             // 1500 * 44304
             long StorageFee = Obj_Settings.Genesis.Fee.Data * tmpStorageData.Size;
@@ -1106,7 +1105,7 @@ namespace Notus.Validator
             tmpStorageData.Balance.Wallet = tmpWalletBalance.Wallet;
             tmpStorageData.Balance.Fee = StorageFee.ToString();
 
-            Console.WriteLine(JsonSerializer.Serialize(tmpStorageData, new JsonSerializerOptions() { WriteIndented = true }));
+            Console.WriteLine(JsonSerializer.Serialize(tmpStorageData, Notus.Variable.Constant.JsonSetting));
 
             string tmpTransferIdKey = Notus.Core.Function.GenerateBlockKey(true);
 
@@ -1377,7 +1376,7 @@ namespace Notus.Validator
                 Sign = tmpTransfer.Sign,
             };
             //Console.WriteLine("Notus.Node.Validator.Api -> Line 546");
-            //Console.WriteLine(JsonSerializer.Serialize(recordStruct, new JsonSerializerOptions() { WriteIndented = true }));
+            //Console.WriteLine(JsonSerializer.Serialize(recordStruct, Notus.Variable.Constant.JsonSetting));
 
             // transfer data saved for next step
             ObjMp_CryptoTransfer.Add(tmpTransferIdKey, JsonSerializer.Serialize(recordStruct), transferTimeOut);
@@ -1392,11 +1391,7 @@ namespace Notus.Validator
                         ErrorNo = 0,
                         ID = tmpTransferIdKey,
                         Result = Notus.Variable.Enum.BlockStatusCode.AddedToQueue,
-                    },
-                    new JsonSerializerOptions()
-                    {
-                        WriteIndented = true
-                    }
+                    }, Notus.Variable.Constant.JsonSetting
                 );
             }
             return JsonSerializer.Serialize(
@@ -1443,14 +1438,8 @@ namespace Notus.Validator
 
         private string Request_Block(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            bool prettyJson = Obj_Settings.PrettyJson;
-            if (IncomeData.UrlList.Length > 2)
-            {
-                if (string.Equals(IncomeData.UrlList[2].ToLower(), "raw"))
-                {
-                    prettyJson = false;
-                }
-            }
+
+            bool prettyJson = PrettyCheckForRaw(IncomeData, 2);
             if (IncomeData.UrlList[1].Length == 90)
             {
                 try
@@ -1460,7 +1449,7 @@ namespace Notus.Validator
                     {
                         if (prettyJson == true)
                         {
-                            return JsonSerializer.Serialize(tmpStoredBlock, new JsonSerializerOptions() { WriteIndented = true });
+                            return JsonSerializer.Serialize(tmpStoredBlock, Notus.Variable.Constant.JsonSetting);
                         }
                         return JsonSerializer.Serialize(tmpStoredBlock);
                     }
@@ -1476,12 +1465,12 @@ namespace Notus.Validator
             bool isNumeric = Int64.TryParse(IncomeData.UrlList[1], out BlockNumber);
             if (isNumeric == true)
             {
-                (bool blockFound, Notus.Variable.Class.BlockData tmpResultBlock) = GetBlockWithRowNo(BlockNumber);
-                if (blockFound == true)
+                Notus.Variable.Class.BlockData? tmpResultBlock = GetBlockWithRowNo(BlockNumber);
+                if (tmpResultBlock != null)
                 {
                     if (prettyJson == true)
                     {
-                        return JsonSerializer.Serialize(tmpResultBlock, new JsonSerializerOptions() { WriteIndented = true });
+                        return JsonSerializer.Serialize(tmpResultBlock, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(tmpResultBlock);
                 }
@@ -1510,8 +1499,8 @@ namespace Notus.Validator
             bool isNumeric2 = Int64.TryParse(IncomeData.UrlList[2], out BlockNumber2);
             if (isNumeric2 == true)
             {
-                (bool blockFound, Notus.Variable.Class.BlockData tmpResultBlock) = GetBlockWithRowNo(BlockNumber2);
-                if (blockFound == true)
+                Notus.Variable.Class.BlockData? tmpResultBlock = GetBlockWithRowNo(BlockNumber2);
+                if (tmpResultBlock != null)
                 {
                     return tmpResultBlock.info.uID + tmpResultBlock.sign;
                 }
@@ -1535,7 +1524,7 @@ namespace Notus.Validator
         {
             if (PrettyCheckForRaw(IncomeData, 2) == true)
             {
-                return JsonSerializer.Serialize(Obj_Settings.LastBlock, new JsonSerializerOptions() { WriteIndented = true });
+                return JsonSerializer.Serialize(Obj_Settings.LastBlock, Notus.Variable.Constant.JsonSetting);
             }
             return JsonSerializer.Serialize(Obj_Settings.LastBlock);
         }
@@ -1548,7 +1537,8 @@ namespace Notus.Validator
                     RowNo = Obj_Settings.LastBlock.info.rowNo,
                     uID = Obj_Settings.LastBlock.info.uID,
                     Sign = Obj_Settings.LastBlock.sign
-                }, new JsonSerializerOptions() { WriteIndented = true });
+                }, Notus.Variable.Constant.JsonSetting);
+
             }
             return JsonSerializer.Serialize(new Notus.Variable.Struct.LastBlockInfo()
             {
@@ -1703,15 +1693,6 @@ namespace Notus.Validator
 
         private string Request_Balance(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            bool prettyJson = Obj_Settings.PrettyJson;
-            if (IncomeData.UrlList.Length > 2)
-            {
-                if (string.Equals(IncomeData.UrlList[2] , "raw"))
-                {
-                    prettyJson = false;
-                }
-            }
-
             Notus.Variable.Struct.WalletBalanceStruct balanceResult = new Notus.Variable.Struct.WalletBalanceStruct()
             {
                 Balance = new Dictionary<string, Dictionary<ulong, string>>(){
@@ -1735,9 +1716,9 @@ namespace Notus.Validator
                 balanceResult = Obj_Balance.Get(IncomeData.UrlList[1], 0);
             }
 
-            if (prettyJson == true)
+            if (PrettyCheckForRaw(IncomeData, 2) == true)
             {
-                return JsonSerializer.Serialize(balanceResult, new JsonSerializerOptions() { WriteIndented = true });
+                return JsonSerializer.Serialize(balanceResult, Notus.Variable.Constant.JsonSetting);
             }
             return JsonSerializer.Serialize(balanceResult);
         }
@@ -1848,7 +1829,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(
                     GiveMeList(
                         Notus.Variable.Enum.NetworkNodeType.Main
-                    ), new JsonSerializerOptions() { WriteIndented = true }
+                    ), Notus.Variable.Constant.JsonSetting
                 );
             }
             return JsonSerializer.Serialize(
@@ -1864,7 +1845,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(
                     GiveMeList(
                         Notus.Variable.Enum.NetworkNodeType.Replicant
-                    ), new JsonSerializerOptions() { WriteIndented = true }
+                    ), Notus.Variable.Constant.JsonSetting
                 );
             }
             return JsonSerializer.Serialize(
@@ -1880,7 +1861,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(
                     GiveMeList(
                         Notus.Variable.Enum.NetworkNodeType.Master
-                    ), new JsonSerializerOptions() { WriteIndented = true }
+                    ), Notus.Variable.Constant.JsonSetting
                 );
             }
             return JsonSerializer.Serialize(
@@ -1896,7 +1877,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(
                     GiveMeList(
                         Notus.Variable.Enum.NetworkNodeType.All
-                    ), new JsonSerializerOptions() { WriteIndented = true }
+                    ), Notus.Variable.Constant.JsonSetting
                 );
             }
             return JsonSerializer.Serialize(
@@ -1917,7 +1898,7 @@ namespace Notus.Validator
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.MetricsResponseStruct()
                         {
                             Count = tmpTotalBlock
-                        }, new JsonSerializerOptions() { WriteIndented = true });
+                        }, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(
                         new Notus.Variable.Struct.MetricsResponseStruct()
@@ -1934,7 +1915,7 @@ namespace Notus.Validator
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.MetricsResponseStruct()
                         {
                             Count = tmpTotalBlock
-                        }, new JsonSerializerOptions() { WriteIndented = true });
+                        }, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(
                         new Notus.Variable.Struct.MetricsResponseStruct()
@@ -1951,7 +1932,7 @@ namespace Notus.Validator
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.MetricsResponseStruct()
                         {
                             Count = tmpTotalBlock
-                        }, new JsonSerializerOptions() { WriteIndented = true });
+                        }, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(
                         new Notus.Variable.Struct.MetricsResponseStruct()
@@ -1968,7 +1949,7 @@ namespace Notus.Validator
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.MetricsResponseStruct()
                         {
                             Count = tmpTotalBlock
-                        }, new JsonSerializerOptions() { WriteIndented = true });
+                        }, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(
                         new Notus.Variable.Struct.MetricsResponseStruct()
@@ -1985,7 +1966,7 @@ namespace Notus.Validator
                         return JsonSerializer.Serialize(new Notus.Variable.Struct.MetricsResponseStruct()
                         {
                             Count = tmpTotalBlock
-                        }, new JsonSerializerOptions() { WriteIndented = true });
+                        }, Notus.Variable.Constant.JsonSetting);
                     }
                     return JsonSerializer.Serialize(
                         new Notus.Variable.Struct.MetricsResponseStruct()
@@ -2000,9 +1981,9 @@ namespace Notus.Validator
         }
         private string Request_Online(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (Obj_Settings.PrettyJson == true)
+            if (PrettyCheckForRaw(IncomeData, 1))
             {
-                return JsonSerializer.Serialize(IncomeData, new JsonSerializerOptions() { WriteIndented = true });
+                return JsonSerializer.Serialize(IncomeData, Notus.Variable.Constant.JsonSetting);
             }
             return JsonSerializer.Serialize(IncomeData);
         }
