@@ -84,7 +84,8 @@ namespace Notus.Wallet
         public static async Task<Notus.Variable.Struct.CryptoTransactionResult> Send(
             Notus.Variable.Struct.CryptoTransactionStruct preTransfer,
             Notus.Variable.Enum.NetworkType currentNetwork,
-            string whichNodeIpAddress = ""
+            string whichNodeIpAddress = "",
+            bool useSSL = false
         )
         {
             try
@@ -110,24 +111,36 @@ namespace Notus.Wallet
                             string fullUrlAddress =
                                 Notus.Network.Node.MakeHttpListenerPath(
                                     (
-                                        whichNodeIpAddress == "" 
-                                            ? 
-                                        Notus.Variable.Constant.ListMainNodeIp[a] 
-                                            : 
+                                        whichNodeIpAddress == ""
+                                            ?
+                                        Notus.Variable.Constant.ListMainNodeIp[a]
+                                            :
                                         whichNodeIpAddress
                                     ),
                                     Notus.Network.Node.GetNetworkPort(
-                                        currentNetwork, 
+                                        currentNetwork,
                                         Notus.Variable.Enum.NetworkLayer.Layer1
                                     )
                                 ) + "send/";
+
+                            if (useSSL == true)
+                            {
+                                fullUrlAddress =
+                                    Notus.Network.Node.MakeHttpListenerPath(
+                                        Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
+                                        Notus.Network.Node.GetNetworkPort(
+                                            currentNetwork,
+                                            Notus.Variable.Enum.NetworkLayer.Layer1
+                                        )
+                                    ) + "send/";
+                            }
                             string MainResultStr = await Notus.Communication.Request.Post(
                                 fullUrlAddress,
                                 new System.Collections.Generic.Dictionary<string, string>()
                                 {
                                     { "data" , JsonSerializer.Serialize(preTransfer) }
                                 },
-                                10,true,
+                                10, true,
                                 true
                             );
                             Notus.Print.Basic(true, "Request Response : " + MainResultStr);
@@ -161,6 +174,7 @@ namespace Notus.Wallet
                 Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
             };
         }
+
 
         /// <summary>
         /// Validates sent transaction information.
