@@ -42,10 +42,9 @@ namespace Notus.Network
                 {
                     MainResultStr = await Notus.Communication.Request.Get(
                         MakeHttpListenerPath(
-                            Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork] ,
-                            GetNetworkPort(
-                                currentNetwork, networkLayer
-                            ),true
+                            Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
+                            0,
+                            true
                         ) + 
                         UrlText, 10, true);
                 }
@@ -96,9 +95,7 @@ namespace Notus.Network
                     MainResultStr = await Notus.Communication.Request.Post(
                         MakeHttpListenerPath(
                             Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
-                            GetNetworkPort(
-                                currentNetwork, networkLayer
-                            ), true
+                            0, true
                         ) +
                         UrlText, PostData);
                 }
@@ -190,8 +187,12 @@ namespace Notus.Network
         {
             return Notus.Variable.Constant.PortNo[currentLayer][currentNetwork];
         }
-        public static string MakeHttpListenerPath(string IpAddress, int PortNo, bool UseSSL = false)
+        public static string MakeHttpListenerPath(string IpAddress, int PortNo=0, bool UseSSL = false)
         {
+            if (PortNo == 0)
+            {
+                return "http" + (UseSSL == true ? "s" : "") + "://" + IpAddress +  "/";
+            }
             return "http" + (UseSSL == true ? "s" : "") + "://" + IpAddress + ":" + PortNo + "/";
         }
     }

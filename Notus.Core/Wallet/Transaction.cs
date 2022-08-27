@@ -128,10 +128,8 @@ namespace Notus.Wallet
                                 fullUrlAddress =
                                     Notus.Network.Node.MakeHttpListenerPath(
                                         Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
-                                        Notus.Network.Node.GetNetworkPort(
-                                            currentNetwork,
-                                            Notus.Variable.Enum.NetworkLayer.Layer1
-                                        )
+                                        0,
+                                        true
                                     ) + "send/";
                             }
                             string MainResultStr = await Notus.Communication.Request.Post(
