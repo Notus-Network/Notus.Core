@@ -5,8 +5,8 @@ namespace Notus.Threads
 {
     public class Timer : IDisposable
     {
-        private System.Action DefinedFunctionObj;
-        private System.Timers.Timer InnerTimerObject;
+        private System.Action? DefinedFunctionObj;
+        private System.Timers.Timer? InnerTimerObject;
         private bool TimerStarted = false;
         private int IntervalTimeValue = 5000;
         public int Interval
@@ -27,7 +27,6 @@ namespace Notus.Threads
         {
             IntervalTimeValue = TimerInterval;
         }
-
         public void Kill()
         {
             if (TimerStarted == true)
@@ -65,12 +64,17 @@ namespace Notus.Threads
         }
         private void OnTimedEvent_ForScreen(Object source, ElapsedEventArgs e)
         {
-            DefinedFunctionObj();
+            if (DefinedFunctionObj != null)
+            {
+                DefinedFunctionObj();
+            }
         }
         public void Dispose()
         {
             Kill();
         }
-        ~Timer() { }
+        ~Timer() {
+            //Dispose(true);
+        }
     }
 }

@@ -152,7 +152,11 @@ namespace Notus.Variable
             { NetworkLayer.Layer3,"Layer 3 ( Crypto Message Layer )" },
             { NetworkLayer.Layer4,"Layer 4 ( Secure File Storage Layer )" },
         };
-
+        public static Dictionary<NetworkType, string> DefaultNetworkUrl = new Dictionary<NetworkType, string>() {
+            { NetworkType.MainNet,"mainnet.notus.network" },
+            { NetworkType.TestNet,"testnet.notus.network" },
+            { NetworkType.DevNet,"devnet.notus.network" }
+        };
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "89.252.134.91",
             "89.252.184.151"

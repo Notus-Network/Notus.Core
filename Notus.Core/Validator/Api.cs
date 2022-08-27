@@ -348,7 +348,7 @@ namespace Notus.Validator
                     {
                         if (string.Equals(IncomeData.UrlList[1].ToLower(), "summary"))
                         {
-                            return Request_BlockSummary();
+                            return Request_BlockSummary(IncomeData);
                         }
 
                         if (string.Equals(IncomeData.UrlList[1].ToLower(), "last"))
@@ -468,45 +468,6 @@ namespace Notus.Validator
                         }
                     }
                 }
-                if (string.Equals(IncomeData.UrlList[0].ToLower(), "convert"))
-                {
-                    if (IncomeData.UrlList.Length > 3)
-                    {
-                        if (string.Equals(IncomeData.UrlList[1].ToLower(), "wallet"))
-                        {
-                            if (string.Equals(IncomeData.UrlList[2].ToLower(), "pk"))
-                            {
-                                string tmpPrivateKeyStr = IncomeData.UrlList[3].ToLower();
-                                return JsonSerializer.Serialize(
-                                    new Notus.Variable.Struct.EccKeyPair()
-                                    {
-                                        CurveName = "",
-                                        Words = new string[] { },
-                                        PrivateKey = tmpPrivateKeyStr,
-                                        PublicKey = Notus.Wallet.ID.Generate(tmpPrivateKeyStr),
-                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr, Obj_Settings.Network)
-                                    }
-                                );
-                            }
-
-                            if (string.Equals(IncomeData.UrlList[2].ToLower(), "word"))
-                            {
-                                string tmpPrivateKeyStr = Notus.Wallet.ID.PrivateKeyFromWordList(IncomeData.UrlList[3].ToLower().Split("_"));
-                                return JsonSerializer.Serialize(
-                                    new Notus.Variable.Struct.EccKeyPair()
-                                    {
-                                        CurveName = "",
-                                        Words = new string[] { },
-                                        PrivateKey = tmpPrivateKeyStr,
-                                        PublicKey = Notus.Wallet.ID.Generate(tmpPrivateKeyStr),
-                                        WalletKey = Notus.Wallet.ID.GetAddress(tmpPrivateKeyStr, Obj_Settings.Network)
-                                    }
-                                );
-                            }
-
-                        }
-                    }
-                }
             }
 
             // bu veri API class'ı tarafından değil, Queue Class'ı tarafından yorumlanacak
@@ -523,7 +484,6 @@ namespace Notus.Validator
                     return "queue-data";
                 }
             }
-
             return JsonSerializer.Serialize(false);
         }
 
@@ -1558,26 +1518,30 @@ namespace Notus.Validator
             }
             return JsonSerializer.Serialize(false);
         }
-        private string Request_BlockLast(Notus.Variable.Struct.HttpRequestDetails IncomeData)
+        private bool PrettyCheckForRaw(Notus.Variable.Struct.HttpRequestDetails IncomeData,int indexNo)
         {
             bool prettyJson = Obj_Settings.PrettyJson;
-            if (IncomeData.UrlList.Length > 2)
+            if (IncomeData.UrlList.Length > indexNo)
             {
-                if (string.Equals(IncomeData.UrlList[2].ToLower(), "raw"))
+                if (string.Equals(IncomeData.UrlList[indexNo].ToLower(), "raw"))
                 {
                     prettyJson = false;
                 }
             }
+            return prettyJson;
+        }
 
-            if (prettyJson == true)
+        private string Request_BlockLast(Notus.Variable.Struct.HttpRequestDetails IncomeData)
+        {
+            if (PrettyCheckForRaw(IncomeData, 2) == true)
             {
                 return JsonSerializer.Serialize(Obj_Settings.LastBlock, new JsonSerializerOptions() { WriteIndented = true });
             }
             return JsonSerializer.Serialize(Obj_Settings.LastBlock);
         }
-        private string Request_BlockSummary()
+        private string Request_BlockSummary(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (Obj_Settings.PrettyJson == true)
+            if (PrettyCheckForRaw(IncomeData, 2) == true)
             {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.LastBlockInfo()
                 {
@@ -1739,19 +1703,18 @@ namespace Notus.Validator
 
         private string Request_Balance(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
-            if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.SingleWalletTextLength)
+            bool prettyJson = Obj_Settings.PrettyJson;
+            if (IncomeData.UrlList.Length > 2)
             {
-                Notus.Variable.Struct.WalletBalanceStruct tmpBalanceVal = Obj_Balance.Get(IncomeData.UrlList[1], 0);
-                if (Obj_Settings.PrettyJson == true)
+                if (string.Equals(IncomeData.UrlList[2] , "raw"))
                 {
-                    return JsonSerializer.Serialize(tmpBalanceVal, new JsonSerializerOptions() { WriteIndented = true });
+                    prettyJson = false;
                 }
-                return JsonSerializer.Serialize(tmpBalanceVal);
             }
-            return JsonSerializer.Serialize(
-                new Notus.Variable.Struct.WalletBalanceStruct()
-                {
-                    Balance = new Dictionary<string, Dictionary<ulong, string>>(){
+
+            Notus.Variable.Struct.WalletBalanceStruct balanceResult = new Notus.Variable.Struct.WalletBalanceStruct()
+            {
+                Balance = new Dictionary<string, Dictionary<ulong, string>>(){
                         {
                             Obj_Settings.Genesis.CoinInfo.Tag,
                             new Dictionary<ulong, string>(){
@@ -1762,11 +1725,21 @@ namespace Notus.Validator
                             }
                         }
                     },
-                    UID = "",
-                    Wallet = IncomeData.UrlList[1],
-                    RowNo = 0
-                }
-            );
+                UID = "",
+                Wallet = IncomeData.UrlList[1],
+                RowNo = 0
+            }
+            ;
+            if (IncomeData.UrlList[1].Length == Notus.Variable.Constant.SingleWalletTextLength)
+            {
+                balanceResult = Obj_Balance.Get(IncomeData.UrlList[1], 0);
+            }
+
+            if (prettyJson == true)
+            {
+                return JsonSerializer.Serialize(balanceResult, new JsonSerializerOptions() { WriteIndented = true });
+            }
+            return JsonSerializer.Serialize(balanceResult);
         }
 
         private string Request_NFTImageList(Notus.Variable.Struct.HttpRequestDetails IncomeData)

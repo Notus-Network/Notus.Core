@@ -16,7 +16,7 @@ namespace Notus.Reward
 
         public Queue<KeyValuePair<string, string>> RewardList = new Queue<KeyValuePair<string, string>>();
         private bool TimerIsRunning = false;
-        private Notus.Threads.Timer TimerObj;
+        private Notus.Threads.Timer? TimerObj;
         public void Execute(
             Notus.Variable.Common.ClassSetting objSettings,
             System.Action<Notus.Variable.Struct.EmptyBlockRewardStruct> Func_NewBlockIncome
@@ -250,6 +250,7 @@ namespace Notus.Reward
             {
                 TimerObj.Dispose();
             }
+            RewardList.Clear();
         }
     }
 }

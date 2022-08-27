@@ -81,7 +81,7 @@ namespace Notus.Wallet
         /// <param name="currentNetwork">Current Network for Request.</param>
         /// <param name="whichNodeIpAddress">Node IP Address for Request.</param>
         /// <returns>Returns Result of the Transaction as <see cref="Notus.Variable.Struct.CryptoTransactionResult"/>.</returns>
-        public static async Task<Notus.Variable.Struct.CryptoTransactionResult?>? Send(
+        public static async Task<Notus.Variable.Struct.CryptoTransactionResult> Send(
             Notus.Variable.Struct.CryptoTransactionStruct preTransfer,
             Notus.Variable.Enum.NetworkType currentNetwork,
             string whichNodeIpAddress = ""
@@ -89,7 +89,8 @@ namespace Notus.Wallet
         {
             try
             {
-                if (Verify(preTransfer) == false)
+                bool transactionVerify = Verify(preTransfer);
+                if (transactionVerify == false)
                 {
                     return new Notus.Variable.Struct.CryptoTransactionResult()
                     {
@@ -120,7 +121,6 @@ namespace Notus.Wallet
                                         Notus.Variable.Enum.NetworkLayer.Layer1
                                     )
                                 ) + "send/";
-
                             string MainResultStr = await Notus.Communication.Request.Post(
                                 fullUrlAddress,
                                 new System.Collections.Generic.Dictionary<string, string>()

@@ -9,26 +9,49 @@ namespace Notus.Network
         public static async Task<string> FindAvailable(
             string UrlText,
             Notus.Variable.Enum.NetworkType currentNetwork,
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            bool sslActive=false
         )
         {
             string MainResultStr = string.Empty;
-            bool exitInnerLoop = false;
-            while (exitInnerLoop == false)
+            if (sslActive == false)
             {
-                for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                bool exitInnerLoop = false;
+                while (exitInnerLoop == false)
                 {
-                    try
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                     {
-                        MainResultStr = await Notus.Communication.Request.Get(MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a],
-                            GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
+                        try
+                        {
+                            MainResultStr = await Notus.Communication.Request.Get(MakeHttpListenerPath(
+                                Notus.Variable.Constant.ListMainNodeIp[a],
+                                GetNetworkPort(currentNetwork, networkLayer)) + UrlText, 10, true);
+                        }
+                        catch (Exception err)
+                        {
+                            Console.WriteLine(err.Message);
+                            Notus.Date.SleepWithoutBlocking(5, true);
+                        }
+                        exitInnerLoop = (MainResultStr.Length > 0);
                     }
-                    catch (Exception err)
-                    {
-                        Console.WriteLine(err.Message);
-                        Notus.Date.SleepWithoutBlocking(5, true);
-                    }
-                    exitInnerLoop = (MainResultStr.Length > 0);
+                }
+            }
+            else
+            {
+                try
+                {
+                    MainResultStr = await Notus.Communication.Request.Get(
+                        MakeHttpListenerPath(
+                            Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork] ,
+                            GetNetworkPort(
+                                currentNetwork, networkLayer
+                            ),true
+                        ) + 
+                        UrlText, 10, true);
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err.Message);
                 }
             }
             return MainResultStr;
@@ -37,29 +60,51 @@ namespace Notus.Network
             string UrlText,
             Dictionary<string, string> PostData,
             Notus.Variable.Enum.NetworkType currentNetwork,
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            bool sslActive = false
         )
         {
             string MainResultStr = string.Empty;
-            bool exitInnerLoop = false;
-            while (exitInnerLoop == false)
+            if (sslActive == false)
             {
-                for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                bool exitInnerLoop = false;
+                while (exitInnerLoop == false)
                 {
-                    try
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                     {
-                        MainResultStr = await Notus.Communication.Request.Post(
-                            MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a],
-                            GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
-                            PostData
-                        );
+                        try
+                        {
+                            MainResultStr = await Notus.Communication.Request.Post(
+                                MakeHttpListenerPath(Notus.Variable.Constant.ListMainNodeIp[a],
+                                GetNetworkPort(currentNetwork, networkLayer)) + UrlText,
+                                PostData
+                            );
+                        }
+                        catch (Exception err)
+                        {
+                            Console.WriteLine(err.Message);
+                            Notus.Date.SleepWithoutBlocking(5, true);
+                        }
+                        exitInnerLoop = (MainResultStr.Length > 0);
                     }
-                    catch (Exception err)
-                    {
-                        Console.WriteLine(err.Message);
-                        Notus.Date.SleepWithoutBlocking(5, true);
-                    }
-                    exitInnerLoop = (MainResultStr.Length > 0);
+                }
+            }
+            else
+            {
+                try
+                {
+                    MainResultStr = await Notus.Communication.Request.Post(
+                        MakeHttpListenerPath(
+                            Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
+                            GetNetworkPort(
+                                currentNetwork, networkLayer
+                            ), true
+                        ) +
+                        UrlText, PostData);
+                }
+                catch (Exception err)
+                {
+                    Console.WriteLine(err.Message);
                 }
             }
             return MainResultStr;
