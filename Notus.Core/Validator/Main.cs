@@ -538,7 +538,18 @@ namespace Notus.Validator
             };
             Obj_Api.Func_AddToChainPool = blockStructForQueue =>
             {
-                Obj_BlockQueue.Add(blockStructForQueue);
+                if (blockStructForQueue.type == 40)
+                {
+                    Console.WriteLine("--------------");
+                    Console.WriteLine(blockStructForQueue.data);
+                    Console.WriteLine("--------------");
+                    Console.WriteLine(blockStructForQueue.data);
+                    Console.WriteLine("--------------");
+                }
+                else
+                {
+                    Obj_BlockQueue.Add(blockStructForQueue);
+                }
                 return true;
             };
             Obj_Api.Prepare();

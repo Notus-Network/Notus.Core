@@ -4,6 +4,20 @@ namespace Notus.Core
 {
     public class MergeRawData
     {
+        public static string WalletSafe(
+            string walletKey,
+            string publicKey,
+            string pass,
+            ulong unlockTime
+        )
+        {
+            return
+                walletKey + Notus.Variable.Constant.CommonDelimeterChar +
+                publicKey + Notus.Variable.Constant.CommonDelimeterChar +
+                pass + Notus.Variable.Constant.CommonDelimeterChar +
+                unlockTime.ToString();
+        }
+
         public static Notus.Variable.Struct.GenericSignStruct GenericSign(string PrivateKey)
         {
             string PublicKeyStr = Notus.Wallet.ID.Generate(PrivateKey);

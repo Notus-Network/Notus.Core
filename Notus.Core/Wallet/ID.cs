@@ -19,7 +19,7 @@ namespace Notus.Wallet
     /// </summary>
     public class ID
     {
-        public static bool NewMultiKey()
+        public static bool NewMultiKey(List<string> WalletList)
         {
             return false;
         }
@@ -475,6 +475,10 @@ namespace Notus.Wallet
             };
         }
 
+        public static string GetPublicKeyFromPrivateKey(string privateKey, string curveName = Notus.Variable.Constant.Default_EccCurveName)
+        {
+            return Generate(privateKey, curveName);
+        }
         /// <summary>
         /// Returns public key via given private key.
         /// </summary>

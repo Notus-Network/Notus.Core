@@ -20,6 +20,94 @@ namespace Notus.Wallet
     /// </summary>
     public class Transaction
     {
+        public static async Task<Notus.Variable.Struct.CryptoTransactionResult> Airdrop(
+            string walletKey,
+            Notus.Variable.Enum.NetworkType currentNetwork,
+            string whichNodeIpAddress = "",
+            bool useSSL = false
+        )
+        {
+            try
+            {
+                if (Notus.Wallet.ID.CheckAddress(walletKey, currentNetwork) == false)
+                {
+                    return new Notus.Variable.Struct.CryptoTransactionResult()
+                    {
+                        ID = string.Empty,
+                        Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet,
+                    };
+                }
+
+                bool exitInnerLoop = false;
+                while (exitInnerLoop == false)
+                {
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                    {
+                        try
+                        {
+                            string fullUrlAddress =
+                                Notus.Network.Node.MakeHttpListenerPath(
+                                    (
+                                        whichNodeIpAddress == ""
+                                            ?
+                                        Notus.Variable.Constant.ListMainNodeIp[a]
+                                            :
+                                        whichNodeIpAddress
+                                    ),
+                                    Notus.Network.Node.GetNetworkPort(
+                                        currentNetwork,
+                                        Notus.Variable.Enum.NetworkLayer.Layer1
+                                    )
+                                ) + "airdrop/"+ walletKey+"/";
+
+                            if (useSSL == true)
+                            {
+                                fullUrlAddress =
+                                    Notus.Network.Node.MakeHttpListenerPath(
+                                        Notus.Variable.Constant.DefaultNetworkUrl[currentNetwork],
+                                        0,
+                                        true
+                                    ) + "airdrop/" + walletKey + "/";
+                            }
+                            string MainResultStr = await Notus.Communication.Request.Get(
+                                fullUrlAddress, 10, true, true
+                            );
+                            //Notus.Print.Basic(true, "Request Response : " + MainResultStr);
+                            Notus.Variable.Struct.CryptoTransactionResult? tmpTransferResult = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(MainResultStr);
+                            exitInnerLoop = true;
+                            if (tmpTransferResult != null)
+                            {
+                                return tmpTransferResult;
+                            }
+                        }
+                        catch (Exception err)
+                        {
+                            //Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                            Thread.Sleep(2000);
+                        }
+                        if (whichNodeIpAddress != "")
+                        {
+                            return new Notus.Variable.Struct.CryptoTransactionResult()
+                            {
+                                ID = string.Empty,
+                                Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                //Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
+            }
+            return new Notus.Variable.Struct.CryptoTransactionResult()
+            {
+                ID = string.Empty,
+                Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
+            };
+        }
+
+
         /// <summary>
         /// DONE
         /// </summary>
