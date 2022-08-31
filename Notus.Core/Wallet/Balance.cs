@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 namespace Notus.Wallet
 {
@@ -156,9 +154,9 @@ namespace Notus.Wallet
             balanceObj.Balance[coinTagName][unlockTime] = totalVolume.ToString();
             return balanceObj;
         }
-        public bool HasEnoughCoin(string walletKey, BigInteger howMuchCoinNeed, string CoinTagName = "")
+        public bool HasEnoughCoin(string walletKey, BigInteger howMuchCoinNeed, string CoinTagName = string.Empty)
         {
-            if (CoinTagName.Length==0)
+            if (CoinTagName == string.Empty)
             {
                 CoinTagName = Obj_Settings.Genesis.CoinInfo.Tag;
             }

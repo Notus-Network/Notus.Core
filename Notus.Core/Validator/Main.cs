@@ -538,6 +538,7 @@ namespace Notus.Validator
             };
             Obj_Api.Func_AddToChainPool = blockStructForQueue =>
             {
+                /*
                 if (blockStructForQueue.type == 40)
                 {
                     Console.WriteLine("--------------");
@@ -550,6 +551,8 @@ namespace Notus.Validator
                 {
                     Obj_BlockQueue.Add(blockStructForQueue);
                 }
+                */
+                Obj_BlockQueue.Add(blockStructForQueue);
                 return true;
             };
             Obj_Api.Prepare();
@@ -955,6 +958,12 @@ namespace Notus.Validator
                 if (blockData.info.type == 250)
                 {
                     Obj_Api.Layer3_StorageFileDone(blockData.info.uID);
+                }
+                if (blockData.info.type == 40)
+                {
+                    Console.WriteLine("Lock Account");
+                    Console.WriteLine("Notus.Main.OrganizeEachBlock -> Line 964");
+                    Console.WriteLine("Lock Account");
                 }
                 if (blockData.info.type == 240)
                 {
