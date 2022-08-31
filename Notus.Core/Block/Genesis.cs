@@ -159,7 +159,8 @@ namespace Notus.Block
                         Common = 150,       // standart transfer işlemi
                         NoName = 1000,      // önce merkezi bir hesaba ardından kişiye gönderilen 
                         ByPieces = 4000     // önce merkezi bir hesaba ardından paralı halde kişiye gönderilen 
-                    }
+                    },
+                    BlockAccount = 1500     // standart işlem ücretinin 10 katı ile hesap bloke edilebilir.
                 },
                 Info = new GenesisInfoType()
                 {

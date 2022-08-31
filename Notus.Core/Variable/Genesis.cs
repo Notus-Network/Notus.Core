@@ -84,6 +84,7 @@ namespace Notus.Variable.Genesis
     }
     public class FeeType
     {
+        public ulong BlockAccount { get; set; }     /* hesabı bloke etme işlem ücreti */
         public CoinTransferFeeType Transfer { get; set; }
         public TokenPriceStructType Token { get; set; }
         //public ContractFeeType Contract { get; set; }

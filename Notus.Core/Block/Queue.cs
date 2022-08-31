@@ -230,6 +230,50 @@ namespace Notus.Block
                     );
                 }
 
+
+                //control-point
+                //control-point
+                //omergoksoy
+                //omergoksoy
+                //control-point
+                //control-point
+                if (CurrentBlockType == 40)
+                {
+                    string tmpLockWalletKey = TempBlockList[0];
+                    Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletStruct = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(tmpLockWalletKey);
+
+                    TempBlockList.Clear();
+                    if (tmpLockWalletStruct == null)
+                    {
+                        TempBlockList.Add(
+                            JsonSerializer.Serialize(
+                                new Notus.Variable.Struct.LockWalletStruct()
+                                {
+                                    WalletKey = "", 
+                                    UnlockTime = 0, 
+                                    PublicKey = "", 
+                                    Sign = ""
+                                }
+                            )
+                        );
+                    }
+                    else
+                    {
+                        TempBlockList.Add(
+                            JsonSerializer.Serialize(
+                                new Notus.Variable.Struct.LockWalletStruct()
+                                {
+                                    WalletKey = tmpLockWalletStruct.WalletKey,
+                                    UnlockTime = tmpLockWalletStruct.UnlockTime,
+                                    PublicKey = tmpLockWalletStruct.PublicKey,
+                                    Sign = tmpLockWalletStruct.Sign
+                                }
+                            )
+                        );
+                        BlockStruct.info.uID = tmpLockWalletStruct.UID;
+                    }
+                }
+
                 if (CurrentBlockType == 120)
                 {
                     if (TempBlockList.Count > 1)
@@ -242,7 +286,7 @@ namespace Notus.Block
                         };
 
                         bool validatorAssigned = false;
-                        for (int i=0;i< TempBlockList.Count; i++)
+                        for (int i = 0; i < TempBlockList.Count; i++)
                         {
                             Notus.Variable.Class.BlockStruct_120? tmpInnerData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(TempBlockList[i]);
                             if (tmpInnerData != null)
@@ -250,7 +294,7 @@ namespace Notus.Block
                                 if (validatorAssigned == false)
                                 {
                                     tmpBlockCipherData.Validator = tmpInnerData.Validator;
-                                    validatorAssigned=true;
+                                    validatorAssigned = true;
                                 }
                                 else
                                 {
@@ -276,6 +320,14 @@ namespace Notus.Block
                 }
                 LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
+            /*
+            if (CurrentBlockType == 40)
+            {
+                Console.WriteLine("Queue -> Line 312");
+                Console.WriteLine(LongNonceText);
+                Console.WriteLine("--------------------------");
+            }
+            */
             BlockStruct.prev = "";
             BlockStruct.info.prevList.Clear();
 

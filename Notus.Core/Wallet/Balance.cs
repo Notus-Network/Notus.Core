@@ -12,6 +12,7 @@ namespace Notus.Wallet
             get { return Obj_Settings; }
             set { Obj_Settings = value; }
         }
+        private Notus.Mempool ObjMp_LockWallet;
         private Notus.Mempool ObjMp_Balance;
 
         private void StoreToDb(Notus.Variable.Struct.WalletBalanceStruct BalanceObj)
@@ -155,6 +156,20 @@ namespace Notus.Wallet
             balanceObj.Balance[coinTagName][unlockTime] = totalVolume.ToString();
             return balanceObj;
         }
+        public bool HasEnoughCoin(string walletKey, BigInteger howMuchCoinNeed, string CoinTagName = "")
+        {
+            if (CoinTagName.Length==0)
+            {
+                CoinTagName = Obj_Settings.Genesis.CoinInfo.Tag;
+            }
+            Notus.Variable.Struct.WalletBalanceStruct tmpGeneratorBalanceObj = Get(walletKey, 0);
+            BigInteger currentVolume = GetCoinBalance(tmpGeneratorBalanceObj, CoinTagName);
+            if (howMuchCoinNeed > currentVolume)
+            {
+                return false;
+            }
+            return true;
+        }
         public BigInteger GetCoinBalance(Notus.Variable.Struct.WalletBalanceStruct tmpBalanceObj, string CoinTagName)
         {
             if (tmpBalanceObj.Balance.ContainsKey(CoinTagName) == false)
@@ -172,6 +187,22 @@ namespace Notus.Wallet
                 }
             }
             return resultVal;
+        }
+        public bool AccountIsLock(string WalletKey)
+        {
+            string unlockTimeStr = ObjMp_LockWallet.Get(WalletKey, string.Empty);
+            if (unlockTimeStr.Length > 0)
+            {
+                if (ulong.TryParse(unlockTimeStr, out ulong unlockTimeLong))
+                {
+                    DateTime unlockTime = Notus.Date.ToDateTime(unlockTimeStr);
+                    if (DateTime.Now > unlockTime)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         public void Control(Notus.Variable.Class.BlockData tmpBlockForBalance)
         {
@@ -203,6 +234,7 @@ namespace Notus.Wallet
                 //Notus.Wallet.Currency.Add2List(Obj_Settings.Network, Obj_Settings.Genesis.CoinInfo.Tag, tmpBlockForBalance.info.uID);
 
                 ObjMp_Balance.Clear();
+                ObjMp_LockWallet.Clear();
                 string tmpBalanceStr = Obj_Settings.Genesis.Premining.PreSeed.Volume.ToString();
                 if (Obj_Settings.Genesis.Premining.PreSeed.DecimalContains == false)
                 {
@@ -287,13 +319,13 @@ namespace Notus.Wallet
             }
 
             if (
-                tmpBlockForBalance.info.type != 300 
+                tmpBlockForBalance.info.type != 300
                 &&
                 tmpBlockForBalance.info.type != 360
             )
             {
-                Notus.Print.Basic(Obj_Settings, tmpBlockForBalance.info.uID );
-                Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString() + " -> "+ tmpBlockForBalance.info.rowNo.ToString() );
+                //Notus.Print.Basic(Obj_Settings, tmpBlockForBalance.info.uID);
+                Notus.Print.Basic(Obj_Settings, "Balance.Cs -> Control function -> Line 178 -> Block type -> " + tmpBlockForBalance.info.type.ToString() + " -> " + tmpBlockForBalance.info.rowNo.ToString());
             }
 
             if (tmpBlockForBalance.info.type == 120)
@@ -306,7 +338,7 @@ namespace Notus.Wallet
                 //Console.WriteLine(tmpRawDataStr);
                 //Console.ReadLine();
 
-                Notus.Variable.Class.BlockStruct_120? tmpBalanceVal = 
+                Notus.Variable.Class.BlockStruct_120? tmpBalanceVal =
                     JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(
                         tmpRawDataStr
                     );
@@ -346,63 +378,84 @@ namespace Notus.Wallet
 
             */
 
+            if (tmpBlockForBalance.info.type == 40)
+            {
+                string pureStr = System.Text.Encoding.UTF8.GetString(
+                    System.Convert.FromBase64String(
+                        tmpBlockForBalance.cipher.data
+                    )
+                );
+                Notus.Variable.Struct.LockWalletStruct? tmpLockBalance = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletStruct>(pureStr);
+                if (tmpLockBalance != null)
+                {
+                    ObjMp_LockWallet.Set(
+                        tmpLockBalance.WalletKey,
+                        tmpLockBalance.UnlockTime.ToString(),
+                        true
+                    );
+                }
+            }
+
             if (tmpBlockForBalance.info.type == 160)
             {
-                Notus.Variable.Struct.BlockStruct_160 tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Struct.BlockStruct_160>(
+                Notus.Variable.Struct.BlockStruct_160? tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Struct.BlockStruct_160>(
                     System.Text.Encoding.UTF8.GetString(
                         System.Convert.FromBase64String(
                             tmpBlockForBalance.cipher.data
                         )
                     )
                 );
-                Int64 BlockFee = Notus.Wallet.Fee.Calculate(tmpBalanceVal, Obj_Settings.Network);
-                string WalletKeyStr = Notus.Wallet.ID.GetAddressWithPublicKey(tmpBalanceVal.Creation.PublicKey, Obj_Settings.Network);
-                Notus.Variable.Struct.WalletBalanceStruct CurrentBalance = Get(WalletKeyStr, 0);
-                string TokenBalanceStr = tmpBalanceVal.Reserve.Supply.ToString();
+                if (tmpBalanceVal != null)
+                {
+                    Int64 BlockFee = Notus.Wallet.Fee.Calculate(tmpBalanceVal, Obj_Settings.Network);
+                    string WalletKeyStr = Notus.Wallet.ID.GetAddressWithPublicKey(tmpBalanceVal.Creation.PublicKey, Obj_Settings.Network);
+                    Notus.Variable.Struct.WalletBalanceStruct CurrentBalance = Get(WalletKeyStr, 0);
+                    string TokenBalanceStr = tmpBalanceVal.Reserve.Supply.ToString();
 
 
-                ulong tmpBlockTime = ulong.Parse(tmpBlockForBalance.info.time.Substring(0,17));
-                CurrentBalance.Balance.Add(tmpBalanceVal.Info.Tag, new Dictionary<ulong, string>()
+                    ulong tmpBlockTime = ulong.Parse(tmpBlockForBalance.info.time.Substring(0, 17));
+                    CurrentBalance.Balance.Add(tmpBalanceVal.Info.Tag, new Dictionary<ulong, string>()
                     {
                         { tmpBlockTime, TokenBalanceStr }
                     }
-                );
+                    );
 
-                (bool tmpErrorStatus, var newBalanceVal) =
-                    SubtractVolumeWithUnlockTime(CurrentBalance, BlockFee.ToString(), Obj_Settings.Genesis.CoinInfo.Tag, tmpBlockTime);
-                /*
-                CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag] =
-                    (BigInteger.Parse(CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag]) -
-                    BlockFee).ToString();
-                */
+                    (bool tmpErrorStatus, var newBalanceVal) =
+                        SubtractVolumeWithUnlockTime(CurrentBalance, BlockFee.ToString(), Obj_Settings.Genesis.CoinInfo.Tag, tmpBlockTime);
+                    /*
+                    CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag] =
+                        (BigInteger.Parse(CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag]) -
+                        BlockFee).ToString();
+                    */
 
-                StoreToDb(new Notus.Variable.Struct.WalletBalanceStruct()
-                {
-                    Balance = newBalanceVal.Balance,
-                    RowNo = tmpBlockForBalance.info.rowNo,
-                    UID = tmpBlockForBalance.info.uID,
-                    Wallet = Notus.Wallet.ID.GetAddressWithPublicKey(tmpBalanceVal.Creation.PublicKey, Obj_Settings.Network)
-                }
-                );
-
-                Notus.Wallet.Block.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
-                {
-                    Uid = tmpBlockForBalance.info.uID,
-                    Detail = new Notus.Variable.Struct.CurrencyList()
+                    StoreToDb(new Notus.Variable.Struct.WalletBalanceStruct()
                     {
-                        ReserveCurrency = false,
-                        Name = tmpBalanceVal.Info.Name,
-                        Tag = tmpBalanceVal.Info.Tag,
-                        Logo = new Notus.Variable.Struct.FileStorageStruct()
+                        Balance = newBalanceVal.Balance,
+                        RowNo = tmpBlockForBalance.info.rowNo,
+                        UID = tmpBlockForBalance.info.uID,
+                        Wallet = Notus.Wallet.ID.GetAddressWithPublicKey(tmpBalanceVal.Creation.PublicKey, Obj_Settings.Network)
+                    }
+                    );
+
+                    Notus.Wallet.Block.Add2List(Obj_Settings.Network, Obj_Settings.Layer, new Notus.Variable.Struct.CurrencyListStorageStruct()
+                    {
+                        Uid = tmpBlockForBalance.info.uID,
+                        Detail = new Notus.Variable.Struct.CurrencyList()
                         {
-                            Base64 = tmpBalanceVal.Info.Logo.Base64,
-                            Source = tmpBalanceVal.Info.Logo.Source,
-                            Url = tmpBalanceVal.Info.Logo.Url,
-                            Used = tmpBalanceVal.Info.Logo.Used
+                            ReserveCurrency = false,
+                            Name = tmpBalanceVal.Info.Name,
+                            Tag = tmpBalanceVal.Info.Tag,
+                            Logo = new Notus.Variable.Struct.FileStorageStruct()
+                            {
+                                Base64 = tmpBalanceVal.Info.Logo.Base64,
+                                Source = tmpBalanceVal.Info.Logo.Source,
+                                Url = tmpBalanceVal.Info.Logo.Url,
+                                Used = tmpBalanceVal.Info.Logo.Used
+                            }
                         }
                     }
+                    );
                 }
-                );
             }
 
         }
@@ -414,6 +467,13 @@ namespace Notus.Wallet
             );
             ObjMp_Balance.AsyncActive = false;
             ObjMp_Balance.Clear();
+
+            ObjMp_LockWallet = new Notus.Mempool(
+                Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Balance) +
+                "account_lock"
+            );
+            ObjMp_LockWallet.AsyncActive = false;
+            ObjMp_LockWallet.Clear();
         }
         public Balance()
         {
@@ -429,6 +489,14 @@ namespace Notus.Wallet
                 if (ObjMp_Balance != null)
                 {
                     ObjMp_Balance.Dispose();
+                }
+            }
+            catch { }
+            try
+            {
+                if (ObjMp_LockWallet != null)
+                {
+                    ObjMp_LockWallet.Dispose();
                 }
             }
             catch { }
