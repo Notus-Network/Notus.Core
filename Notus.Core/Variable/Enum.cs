@@ -19,9 +19,8 @@ namespace Notus.Variable.Enum
     public enum PingServerType
     {
         MainNet = 0,
-        Miner = 1,
-        Validator = 2,
-        Staker = 4
+        Validator = 1,
+        Staker = 2
     }
 
     public enum MempoolEachRecordLimitType

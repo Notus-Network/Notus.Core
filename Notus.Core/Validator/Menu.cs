@@ -142,7 +142,7 @@ namespace Notus.Validator
             {
                 if (userDefineWalletKey == string.Empty)
                 {
-                    Console.Write("Miner Key  : ");
+                    Console.Write("Validator Key  : ");
                 }
                 userDefineWalletKey = Console.ReadLine();
                 tmpExitWhileLoop = true;

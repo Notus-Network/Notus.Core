@@ -30,7 +30,7 @@ namespace Notus.Variable.Class
                         master = false,
                         replicant = false,
                         broadcaster = false,
-                        miner = false,
+                        validator = false,
                         executor = false,
                         keeper = new NodeKeeperType()
                         {
@@ -55,10 +55,10 @@ namespace Notus.Variable.Class
                     info = "",
                     FINAL = ""
                 },
-                miner = new MinerMainType()
+                validator = new ValidatorMainType()
                 {
                     count = new Dictionary<string, int>(),
-                    map = new MapMinerType()
+                    map = new MapValidatorType()
                     {
                         block = new Dictionary<int, string>(),
                         data = new Dictionary<int, string>(),
@@ -83,7 +83,7 @@ namespace Notus.Variable.Class
         public InfoType info { get; set; }
         public CipherType cipher { get; set; }
         public HashType hash { get; set; }
-        public MinerMainType miner { get; set; }
+        public ValidatorMainType validator { get; set; }
         public NonceType nonce { get; set; }
         public string prev { get; set; }
         public string sign { get; set; }
@@ -94,16 +94,16 @@ namespace Notus.Variable.Class
         public string data { get; set; }
         public string info { get; set; }
     }
-    public class MapMinerType
+    public class MapValidatorType
     {
         public Dictionary<int, string> block { get; set; }
         public Dictionary<int, string> data { get; set; }
         public Dictionary<int, string> info { get; set; }
     }
-    public class MinerMainType
+    public class ValidatorMainType
     {
         public Dictionary<string, int> count { get; set; }
-        public MapMinerType map { get; set; }
+        public MapValidatorType map { get; set; }
         public string sign { get; set; }
     }
     public class HashType
@@ -143,7 +143,7 @@ namespace Notus.Variable.Class
         public bool master { get; set; }            // kaynak kodda tanımlı olan adresler
         public bool replicant { get; set; }         // sonradan dahil olan adresler
         public bool broadcaster { get; set; }       // yayın yapanlar
-        public bool miner { get; set; }             // sadece mining işlemi yapanlar
+        public bool validator { get; set; }             // sadece mining işlemi yapanlar
         public bool executor { get; set; }          // kontratları çalıştıranlar
         public NodeKeeperType keeper { get; set; }  // dosyaları tutanlar
     }
@@ -154,13 +154,13 @@ namespace Notus.Variable.Class
         public bool file { get; set; }
         public bool tor { get; set; }
     }
-    public class MinerNonceListe
+    public class ValidatorNonceListe
     {
         public Dictionary<int, string> Block { get; set; }
         public Dictionary<int, string> Data { get; set; }
         public Dictionary<int, string> Info { get; set; }
     }
-    public class MinerNonceValueListe
+    public class ValidatorNonceValueListe
     {
         public Dictionary<int, int> Block { get; set; }
         public Dictionary<int, int> Data { get; set; }
@@ -168,8 +168,8 @@ namespace Notus.Variable.Class
     }
 
 
-    // this class for miner
-    public class MinerDetailsForPool
+    // this class for validator
+    public class ValidatorDetailsForPool
     {
         //public IPAddress ip { get; set; }
         public string ip { get; set; }
@@ -189,7 +189,7 @@ namespace Notus.Variable.Class
         //public System.Net.Sockets.Socket netSoc { get; set; }
     }
 
-    // this class for miner
+    // this class for validator
     public class ValidatorListForPool
     {
         //public IPAddress ip { get; set; }

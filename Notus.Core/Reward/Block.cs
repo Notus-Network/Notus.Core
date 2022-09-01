@@ -64,7 +64,7 @@ namespace Notus.Reward
                                     {
                                         if (tmpBlockData.info.type == 300)
                                         {
-                                            string blockValidator = tmpBlockData.miner.count.First().Key;
+                                            string blockValidator = tmpBlockData.validator.count.First().Key;
                                             rewardCount++;
                                             ulong tmpBlockTime = Notus.Date.ToLong(tmpBlockData.info.time);
                                             if (earliestBlockTime > tmpBlockTime)

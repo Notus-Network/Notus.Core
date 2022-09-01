@@ -538,20 +538,6 @@ namespace Notus.Validator
             };
             Obj_Api.Func_AddToChainPool = blockStructForQueue =>
             {
-                /*
-                if (blockStructForQueue.type == 40)
-                {
-                    Console.WriteLine("--------------");
-                    Console.WriteLine(blockStructForQueue.data);
-                    Console.WriteLine("--------------");
-                    Console.WriteLine(blockStructForQueue.data);
-                    Console.WriteLine("--------------");
-                }
-                else
-                {
-                    Obj_BlockQueue.Add(blockStructForQueue);
-                }
-                */
                 Obj_BlockQueue.Add(blockStructForQueue);
                 return true;
             };
@@ -752,7 +738,11 @@ namespace Notus.Validator
                     // geçerli utc zaman bilgisini alıp block oluşturma işlemi için parametre olarak gönder böylece
                     // her blok utc zamanı ile oluşturulmuş olsun
                     DateTime currentUtcTime = ValidatorQueueObj.GetUtcTime();
-                    Notus.Variable.Struct.PoolBlockRecordStruct? TmpBlockStruct = Obj_BlockQueue.Get(currentUtcTime);
+                    
+                    Notus.Variable.Struct.PoolBlockRecordStruct? TmpBlockStruct = Obj_BlockQueue.Get(
+                        currentUtcTime,
+                        Obj_Api.BalanceObj
+                    );
                     if (TmpBlockStruct != null)
                     {
                         Notus.Variable.Class.BlockData? PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(TmpBlockStruct.data);
@@ -875,7 +865,7 @@ namespace Notus.Validator
                 RewardBlockObj.RewardList.Enqueue(
                     new KeyValuePair<string, string>(
                         blockData.info.uID,
-                        blockData.miner.count.First().Key
+                        blockData.validator.count.First().Key
                     )
                 );
 

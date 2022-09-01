@@ -6,37 +6,37 @@ namespace Notus.Block
 {
     public class Generate : IDisposable
     {
-        private string MinerWalletKeyStr = "minerKey";
-        public string MinerWalletKey
+        private string ValidatorWalletKeyStr = "validatorKey";
+        public string ValidatorWalletKey
         {
             set
             {
-                MinerWalletKeyStr = value;
+                ValidatorWalletKeyStr = value;
             }
             get
             {
-                return MinerWalletKeyStr;
+                return ValidatorWalletKeyStr;
             }
         }
         
-        private Notus.Variable.Class.BlockData FillMinerKeyData(Notus.Variable.Class.BlockData BlockData)
+        private Notus.Variable.Class.BlockData FillValidatorKeyData(Notus.Variable.Class.BlockData BlockData)
         {
             using (Notus.Nonce.Calculate CalculateObj = new Notus.Nonce.Calculate())
             {
-                BlockData.miner.map.block.Clear();
-                BlockData.miner.map.data.Clear();
-                BlockData.miner.map.info.Clear();
-                BlockData.miner.count.Clear();
+                BlockData.validator.map.block.Clear();
+                BlockData.validator.map.data.Clear();
+                BlockData.validator.map.info.Clear();
+                BlockData.validator.count.Clear();
 
                 int HowManyNonceStep = CalculateObj.NonceStepCount(
                                     BlockData.info.nonce.type,
                                     BlockData.info.nonce.method,
                                     BlockData.info.nonce.difficulty
                                 );
-                BlockData.miner.map.block.Add(1000, MinerWalletKeyStr);
-                BlockData.miner.map.data.Add(1000, MinerWalletKeyStr);
-                BlockData.miner.map.info.Add(1000, MinerWalletKeyStr);
-                BlockData.miner.count.Add(MinerWalletKeyStr, (HowManyNonceStep * 3));
+                BlockData.validator.map.block.Add(1000, ValidatorWalletKeyStr);
+                BlockData.validator.map.data.Add(1000, ValidatorWalletKeyStr);
+                BlockData.validator.map.info.Add(1000, ValidatorWalletKeyStr);
+                BlockData.validator.count.Add(ValidatorWalletKeyStr, (HowManyNonceStep * 3));
             }
             return BlockData;
         }
@@ -90,11 +90,11 @@ namespace Notus.Block
             return BlockData;
         }
 
-        private Notus.Variable.Class.BlockData Make_Miner(Notus.Variable.Class.BlockData BlockData)
+        private Notus.Variable.Class.BlockData Make_Validator(Notus.Variable.Class.BlockData BlockData)
         {
-            string TmpText = FirstString_Miner(BlockData);
+            string TmpText = FirstString_Validator(BlockData);
             Notus.Hash hashObj = new Notus.Hash();
-            BlockData.miner.sign = hashObj.CommonHash("sasha", TmpText);
+            BlockData.validator.sign = hashObj.CommonHash("sasha", TmpText);
 
             return BlockData;
         }
@@ -185,11 +185,11 @@ namespace Notus.Block
                     BlockData.info.nonce.difficulty = 1;
                 }
 
-                BlockData = FillMinerKeyData(BlockData);
+                BlockData = FillValidatorKeyData(BlockData);
                 BlockData = Make_Data(BlockData);
                 BlockData = Make_Info(BlockData);
                 BlockData = Make_Block(BlockData);
-                BlockData = Make_Miner(BlockData);
+                BlockData = Make_Validator(BlockData);
                 BlockData = Make_FINAL(BlockData);
             }
 
@@ -248,10 +248,10 @@ namespace Notus.Block
             {
                 return false;
             }
-            TmpText = FirstString_Miner(BlockData);
+            TmpText = FirstString_Validator(BlockData);
             Notus.Hash hashObj2 = new Notus.Hash();
             ControlStr = hashObj2.CommonHash("sasha", TmpText);
-            if (string.Equals(BlockData.miner.sign, ControlStr) == false)
+            if (string.Equals(BlockData.validator.sign, ControlStr) == false)
             {
                 return false;
             }
@@ -284,7 +284,7 @@ namespace Notus.Block
         private string FirstString_Block(Notus.Variable.Class.BlockData BlockData)
         {
             return
-                BlockData.miner.sign + Notus.Variable.Constant.CommonDelimeterChar +
+                BlockData.validator.sign + Notus.Variable.Constant.CommonDelimeterChar +
                 BlockData.prev + Notus.Variable.Constant.CommonDelimeterChar +
                 BlockData.info.rowNo.ToString() + Notus.Variable.Constant.CommonDelimeterChar +
                 BlockNonce_GetPrevListStr(BlockData) + Notus.Variable.Constant.CommonDelimeterChar +
@@ -292,22 +292,22 @@ namespace Notus.Block
                 BlockData.hash.info + Notus.Variable.Constant.CommonDelimeterChar +
                 BlockData.hash.block;
         }
-        private string FirstString_Miner(Notus.Variable.Class.BlockData BlockData)
+        private string FirstString_Validator(Notus.Variable.Class.BlockData BlockData)
         {
             return
-            BlockNonce_MinerMapList_IntAndString(BlockData.miner.map.data) +
+            BlockNonce_ValidatorMapList_IntAndString(BlockData.validator.map.data) +
             Notus.Variable.Constant.CommonDelimeterChar +
 
-            BlockNonce_MinerMapList_IntAndString(BlockData.miner.map.info) +
+            BlockNonce_ValidatorMapList_IntAndString(BlockData.validator.map.info) +
             Notus.Variable.Constant.CommonDelimeterChar +
 
-            BlockNonce_MinerMapList_IntAndString(BlockData.miner.map.block) +
+            BlockNonce_ValidatorMapList_IntAndString(BlockData.validator.map.block) +
             Notus.Variable.Constant.CommonDelimeterChar +
 
-            BlockNonce_MinerMapList_IntAndString(BlockData.miner.map.block) +
+            BlockNonce_ValidatorMapList_IntAndString(BlockData.validator.map.block) +
             Notus.Variable.Constant.CommonDelimeterChar +
 
-            BlockNonce_MinerMapList_StringAndInt(BlockData.miner.count);
+            BlockNonce_ValidatorMapList_StringAndInt(BlockData.validator.count);
         }
         private string FirstString_Info(Notus.Variable.Class.BlockData BlockData)
         {
@@ -326,7 +326,7 @@ namespace Notus.Block
             BoolToStr(BlockData.info.node.master) + Notus.Variable.Constant.CommonDelimeterChar +
             BoolToStr(BlockData.info.node.replicant) + Notus.Variable.Constant.CommonDelimeterChar +
             BoolToStr(BlockData.info.node.broadcaster) + Notus.Variable.Constant.CommonDelimeterChar +
-            BoolToStr(BlockData.info.node.miner) + Notus.Variable.Constant.CommonDelimeterChar +
+            BoolToStr(BlockData.info.node.validator) + Notus.Variable.Constant.CommonDelimeterChar +
             BoolToStr(BlockData.info.node.executor) + Notus.Variable.Constant.CommonDelimeterChar +
 
             BoolToStr(BlockData.info.node.keeper.key) + Notus.Variable.Constant.CommonDelimeterChar +
@@ -335,7 +335,7 @@ namespace Notus.Block
             BoolToStr(BlockData.info.node.keeper.tor) + Notus.Variable.Constant.CommonDelimeterChar;
         }
 
-        private string BlockNonce_MinerMapList_StringAndInt(Dictionary<string, int> DicList)
+        private string BlockNonce_ValidatorMapList_StringAndInt(Dictionary<string, int> DicList)
         {
             string TmpStr = "";
             bool isFirst = true;
@@ -353,7 +353,7 @@ namespace Notus.Block
             }
             return TmpStr;
         }
-        private string BlockNonce_MinerMapList_IntAndString(Dictionary<int, string> DicList)
+        private string BlockNonce_ValidatorMapList_IntAndString(Dictionary<int, string> DicList)
         {
             string TmpStr = "";
             bool isFirst = true;
@@ -398,9 +398,9 @@ namespace Notus.Block
         {
 
         }
-        public Generate(string minerWalletKey)
+        public Generate(string validatorWalletKey)
         {
-            MinerWalletKeyStr = minerWalletKey;
+            ValidatorWalletKeyStr = validatorWalletKey;
         }
         ~Generate()
         {

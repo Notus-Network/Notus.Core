@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 
 namespace Notus.Block
@@ -63,7 +60,7 @@ namespace Notus.Block
 
 
         //bu fonksiyon ile işlem yapılacak aynı türden bloklar sırası ile listeden çekilip geri gönderilecek
-        public Notus.Variable.Struct.PoolBlockRecordStruct? Get(DateTime currentUtcTime)
+        public Notus.Variable.Struct.PoolBlockRecordStruct? Get(DateTime currentUtcTime, Notus.Wallet.Balance BalanceObj)
         {
             DateTime startingTime = DateTime.Now;
             if (Queue_PoolTransaction.Count == 0)
@@ -230,13 +227,6 @@ namespace Notus.Block
                     );
                 }
 
-
-                //control-point
-                //control-point
-                //omergoksoy
-                //omergoksoy
-                //control-point
-                //control-point
                 if (CurrentBlockType == 40)
                 {
                     string tmpLockWalletKey = TempBlockList[0];
@@ -249,27 +239,49 @@ namespace Notus.Block
                             JsonSerializer.Serialize(
                                 new Notus.Variable.Struct.LockWalletStruct()
                                 {
-                                    WalletKey = "", 
-                                    UnlockTime = 0, 
-                                    PublicKey = "", 
-                                    Sign = ""
+                                    WalletKey = "",
+                                    Balance = null,
+                                    Out = null,
+                                    UnlockTime = 0,
+                                    PublicKey = "",
+                                    Sign = "",
                                 }
                             )
                         );
                     }
                     else
                     {
-                        TempBlockList.Add(
-                            JsonSerializer.Serialize(
-                                new Notus.Variable.Struct.LockWalletStruct()
-                                {
-                                    WalletKey = tmpLockWalletStruct.WalletKey,
-                                    UnlockTime = tmpLockWalletStruct.UnlockTime,
-                                    PublicKey = tmpLockWalletStruct.PublicKey,
-                                    Sign = tmpLockWalletStruct.Sign
-                                }
-                            )
-                        );
+                        Notus.Variable.Struct.WalletBalanceStruct currentBalance=
+                            BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0);
+                        (bool tmpBalanceResult, Notus.Variable.Struct.WalletBalanceStruct tmpNewGeneratorBalance) =
+                            BalanceObj.SubtractVolumeWithUnlockTime(
+                                BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0),
+                                Obj_Settings.Genesis.Fee.BlockAccount.ToString(),
+                                Obj_Settings.Genesis.CoinInfo.Tag,
+                                0
+                            );
+                        if (tmpBalanceResult == false)
+                        {
+                            TempBlockList.Add(
+                                JsonSerializer.Serialize(
+                                    new Notus.Variable.Struct.LockWalletStruct()
+                                    {
+                                        WalletKey = tmpLockWalletStruct.WalletKey,
+                                        Balance = new Notus.Variable.Class.WalletBalanceStructForTransaction()
+                                        {
+                                            Balance = BalanceObj.ReAssign(currentBalance.Balance),
+                                            Wallet = tmpLockWalletStruct.WalletKey,
+                                            WitnessBlockUid = currentBalance.UID,
+                                            WitnessRowNo = currentBalance.RowNo
+                                        },
+                                        Out = tmpNewGeneratorBalance.Balance,
+                                        UnlockTime = tmpLockWalletStruct.UnlockTime,
+                                        PublicKey = tmpLockWalletStruct.PublicKey,
+                                        Sign = tmpLockWalletStruct.Sign
+                                    }
+                                )
+                            );
+                        }
                         BlockStruct.info.uID = tmpLockWalletStruct.UID;
                     }
                 }
@@ -443,11 +455,24 @@ namespace Notus.Block
         {
             if (PreBlockData != null)
             {
-                string blockKeyStr = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
-                Add2Queue(PreBlockData, blockKeyStr);
-                string PreBlockDataStr = JsonSerializer.Serialize(PreBlockData);
-                MP_BlockPoolList.Set(GiveBlockKey(PreBlockData.data), PreBlockDataStr, true);
+                if (Obj_Settings != null)
+                {
+                    if (Obj_Settings.NodeWallet != null)
+                    {
+                        string blockKeyStr = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
+                        Add2Queue(PreBlockData, blockKeyStr);
+                        string PreBlockDataStr = JsonSerializer.Serialize(PreBlockData);
+                        MP_BlockPoolList.Set(GiveBlockKey(PreBlockData.data), PreBlockDataStr, true);
+                    }
+                }
             }
+
+            /*
+            
+            public Dictionary<string, Dictionary<ulong, string>> Out { get; set; }  // after 
+
+
+            */
         }
 
         public void AddEmptyBlock()

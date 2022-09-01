@@ -122,22 +122,21 @@ namespace Notus.Validator
 
         public void AddForCache(Notus.Variable.Class.BlockData Obj_BlockData)
         {
-            // Console.WriteLine("Api - Line 120");
-            // Console.WriteLine(JsonSerializer.Serialize(Obj_Balance));
-            // Console.WriteLine(JsonSerializer.Serialize(Obj_BlockData));
             Obj_Balance.Control(Obj_BlockData);
             if (Obj_BlockData.info.type == 120)
             {
-                Notus.Variable.Class.BlockStruct_120 tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(System.Text.Encoding.UTF8.GetString(
+                Notus.Variable.Class.BlockStruct_120? tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(System.Text.Encoding.UTF8.GetString(
                     System.Convert.FromBase64String(
                         Obj_BlockData.cipher.data
                     )
                 ));
-
-                Console.WriteLine("Node.Api.AddToBalanceDB [cba09834] : " + Obj_BlockData.info.type);
-                foreach (KeyValuePair<string, Notus.Variable.Class.BlockStruct_120_In_Struct> entry in tmpBalanceVal.In)
+                if (tmpBalanceVal != null)
                 {
-                    RequestSend_Done(entry.Key, Obj_BlockData.info.rowNo, Obj_BlockData.info.uID);
+                    Console.WriteLine("Node.Api.AddToBalanceDB [cba09834] : " + Obj_BlockData.info.type);
+                    foreach (KeyValuePair<string, Notus.Variable.Class.BlockStruct_120_In_Struct> entry in tmpBalanceVal.In)
+                    {
+                        RequestSend_Done(entry.Key, Obj_BlockData.info.rowNo, Obj_BlockData.info.uID);
+                    }
                 }
             }
         }
@@ -1809,6 +1808,20 @@ namespace Notus.Validator
                 GetNtpTime(),
                 Obj_Settings.NodeWallet.WalletKey
             );
+            BigInteger howMuchCoinNeed = BigInteger.Parse(Obj_Settings.Genesis.Fee.BlockAccount.ToString());
+            Notus.Variable.Struct.WalletBalanceStruct tmpGeneratorBalanceObj = Obj_Balance.Get(LockObj.WalletKey, 0);
+
+            BigInteger currentVolume = Obj_Balance.GetCoinBalance(tmpGeneratorBalanceObj, Obj_Settings.Genesis.CoinInfo.Tag);
+            if (howMuchCoinNeed > currentVolume)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "InsufficientBalance",
+                    Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
+                });
+            }
+
             Notus.Variable.Struct.LockWalletBeforeStruct tmpLockObj = new Notus.Variable.Struct.LockWalletBeforeStruct()
             {
                 UID = tmpChunkIdKey,

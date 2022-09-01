@@ -297,14 +297,14 @@ namespace Notus.Variable.Struct
         public int countdown { get; set; }
         public int order { get; set; }
     }
-    public class TmpMinerPingListStruct
+    public class TmpValidatorPingListStruct
     {
         public string IpAddress { get; set; }
         public string PortNo { get; set; }
         public string PublicKey { get; set; }
         public string Sign { get; set; }
     }
-    public class MinerPingListStruct
+    public class ValidatorPingListStruct
     {
         public string IpAddress { get; set; }
         public int PortNo { get; set; }
@@ -514,6 +514,8 @@ namespace Notus.Variable.Struct
     public class LockWalletStruct
     {
         public string WalletKey { get; set; }
+        public Notus.Variable.Class.WalletBalanceStructForTransaction? Balance { get; set; }
+        public Dictionary<string, Dictionary<ulong, string>>? Out { get; set; }
         public ulong UnlockTime { get; set; }
         public string PublicKey { get; set; }
         public string Sign { get; set; }
