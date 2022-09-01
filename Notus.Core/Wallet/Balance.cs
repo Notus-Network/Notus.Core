@@ -98,7 +98,12 @@ namespace Notus.Wallet
             }
             return tmpResult;
         }
-        public (bool, Notus.Variable.Struct.WalletBalanceStruct) SubtractVolumeWithUnlockTime(Notus.Variable.Struct.WalletBalanceStruct balanceObj, string volume, string coinTagName, ulong unlockTime)
+        public (bool, Notus.Variable.Struct.WalletBalanceStruct) SubtractVolumeWithUnlockTime(
+            Notus.Variable.Struct.WalletBalanceStruct balanceObj, 
+            string volume, 
+            string coinTagName, 
+            ulong unlockTime
+        )
         {
             bool volumeError = true;
             // first parametre hata oluşması durumunda

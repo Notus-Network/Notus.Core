@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 
 namespace Notus.Block
@@ -232,8 +229,11 @@ namespace Notus.Block
 
                 if (CurrentBlockType == 40)
                 {
+                    Console.WriteLine(JsonSerializer.Serialize(TempBlockList, Notus.Variable.Constant.JsonSetting));
+
                     string tmpLockWalletKey = TempBlockList[0];
                     Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletStruct = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(tmpLockWalletKey);
+                    Console.WriteLine(JsonSerializer.Serialize(tmpLockWalletStruct, Notus.Variable.Constant.JsonSetting));
 
                     TempBlockList.Clear();
                     if (tmpLockWalletStruct == null)
@@ -254,14 +254,16 @@ namespace Notus.Block
                     }
                     else
                     {
-                        Notus.Variable.Struct.WalletBalanceStruct currentBalance=
+                        string lockAccountFee = Obj_Settings.Genesis.Fee.BlockAccount.ToString();
+                        Console.WriteLine(JsonSerializer.Serialize(BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0), Notus.Variable.Constant.JsonSetting));
+                        Notus.Variable.Struct.WalletBalanceStruct currentBalance =
                             BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0);
                         (bool tmpBalanceResult, Notus.Variable.Struct.WalletBalanceStruct tmpNewGeneratorBalance) =
                             BalanceObj.SubtractVolumeWithUnlockTime(
                                 BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0),
-                                Obj_Settings.Genesis.Fee.BlockAccount.ToString(),
+                                lockAccountFee,
                                 Obj_Settings.Genesis.CoinInfo.Tag,
-                                0
+                                Notus.Time.NowToUlong()
                             );
                         if (tmpBalanceResult == false)
                         {
@@ -278,12 +280,20 @@ namespace Notus.Block
                                             WitnessRowNo = currentBalance.RowNo
                                         },
                                         Out = tmpNewGeneratorBalance.Balance,
+                                        Fee = lockAccountFee,
                                         UnlockTime = tmpLockWalletStruct.UnlockTime,
                                         PublicKey = tmpLockWalletStruct.PublicKey,
                                         Sign = tmpLockWalletStruct.Sign
                                     }
                                 )
                             );
+                        }
+                        else
+                        {
+                            Console.WriteLine("Balance result true");
+                            Console.WriteLine("burada true dönüş yapınca, JSON convert işlemi hata veriyor");
+                            Console.WriteLine("buraya true dönmesi durumunda bloğu oluşturmamak için kontrol eklensin");
+                            Console.WriteLine("Balance result true");
                         }
                         BlockStruct.info.uID = tmpLockWalletStruct.UID;
                     }
@@ -335,13 +345,13 @@ namespace Notus.Block
                 }
                 LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
-            /*
             if (CurrentBlockType == 40)
             {
                 Console.WriteLine("Queue -> Line 312");
                 Console.WriteLine(LongNonceText);
                 Console.WriteLine("--------------------------");
             }
+            /*
             */
             BlockStruct.prev = "";
             BlockStruct.info.prevList.Clear();
@@ -469,13 +479,6 @@ namespace Notus.Block
                     }
                 }
             }
-
-            /*
-            
-            public Dictionary<string, Dictionary<ulong, string>> Out { get; set; }  // after 
-
-
-            */
         }
 
         public void AddEmptyBlock()

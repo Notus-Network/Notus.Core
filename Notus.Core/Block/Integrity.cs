@@ -123,7 +123,7 @@ namespace Notus.Block
                     multiBlockFound = true;
                 }
             }
-            if (multiBlockFound == true)
+            if(multiBlockFound == true)
             {
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
@@ -269,7 +269,7 @@ namespace Notus.Block
                         }
                         else
                         {
-                            if (BlockOrderList.ContainsKey(BiggestBlockHeight - 1))
+                            if(BlockOrderList.ContainsKey(BiggestBlockHeight - 1))
                             {
                                 Notus.Archive.DeleteFromInside(
                                     BlockOrderList[BiggestBlockHeight - 1],

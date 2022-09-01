@@ -516,6 +516,7 @@ namespace Notus.Variable.Struct
         public string WalletKey { get; set; }
         public Notus.Variable.Class.WalletBalanceStructForTransaction? Balance { get; set; }
         public Dictionary<string, Dictionary<ulong, string>>? Out { get; set; }
+        public string Fee { get; set; }
         public ulong UnlockTime { get; set; }
         public string PublicKey { get; set; }
         public string Sign { get; set; }
