@@ -170,6 +170,17 @@ namespace Notus.Toolbox
                 .ToLower()
                 .PadRight(60, 'x');
         }
+        public static string ToHex(string RawString,int hexLen=140)
+        {
+            return
+                System.Convert.ToHexString(
+                    System.Text.Encoding.ASCII.GetBytes(
+                        RawString
+                    )
+                )
+                .ToLower()
+                .PadRight(hexLen, 'x');
+        }
         public static string Hex2CurrencyName(string CurrencyNameHex)
         {
             return System.Text.Encoding.ASCII.GetString(

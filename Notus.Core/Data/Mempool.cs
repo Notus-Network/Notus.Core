@@ -67,6 +67,14 @@ namespace Notus
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    70008854,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, "Error Text [90ecab593] : " + err.Message);
             }
 
@@ -194,6 +202,14 @@ namespace Notus
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        90008877,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
                     Notus.Print.Basic(DebugModeActive, "Error Text [90ecab567]   : " + err.Message);
                     Notus.Print.Basic(DebugModeActive, "Mempool Name [90ecab567] : " + PoolNameForDb);
                 }
@@ -311,6 +327,10 @@ namespace Notus
         }
         public void Remove(string KeyName)
         {
+            if (Obj_DataList.ContainsKey(KeyName) == false)
+            {
+                Console.WriteLine("KeyName Does Not Exist -> " + KeyName);
+            }
             Obj_DataList.Remove(KeyName);
             DeleteFromTable(KeyName);
         }
@@ -370,6 +390,14 @@ namespace Notus
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    900770077,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, "Error Text [90ecab524] : " + err.Message);
                 return "19810125020000000";
             }
@@ -382,6 +410,14 @@ namespace Notus
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    800077700,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, "Error Text [90ecab547] : " + err.Message);
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }

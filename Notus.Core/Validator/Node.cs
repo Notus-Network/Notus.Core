@@ -127,6 +127,15 @@ namespace Notus.Validator
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        660050,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
+
                     Notus.Print.Danger(NodeSettings, "Replicant Outer Error Text : " + err.Message);
                 }
             }

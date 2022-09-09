@@ -29,6 +29,15 @@ namespace Notus.Network
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                600444004,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+
                             Console.WriteLine(err.Message);
                             Notus.Date.SleepWithoutBlocking(5, true);
                         }
@@ -50,6 +59,15 @@ namespace Notus.Network
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        77007700,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
+
                     Console.WriteLine(err.Message);
                 }
             }
@@ -81,6 +99,15 @@ namespace Notus.Network
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                9000877,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+
                             Console.WriteLine(err.Message);
                             Notus.Date.SleepWithoutBlocking(5, true);
                         }
@@ -101,6 +128,15 @@ namespace Notus.Network
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        90778400,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
+
                     Console.WriteLine(err.Message);
                 }
             }
@@ -134,6 +170,15 @@ namespace Notus.Network
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            77700000,
+                            err.Message,
+                            "BlockRowNo",
+                            objSettings,
+                            err
+                        );
+
                         Notus.Print.Danger(objSettings, "Notus.Network.Node.FindAvailableSync -> Line 92 -> " + err.Message);
                         Notus.Date.SleepWithoutBlocking(5, true);
                     }
@@ -170,6 +215,15 @@ namespace Notus.Network
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            80000888,
+                            err.Message,
+                            "BlockRowNo",
+                            objSettings,
+                            err
+                        );
+
                         Console.WriteLine(err.Message);
                         Notus.Date.SleepWithoutBlocking(5, true);
                     }

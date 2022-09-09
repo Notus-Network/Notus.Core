@@ -10,6 +10,51 @@ namespace Notus
 {
     public static class Print
     {
+        public static void Log(
+            Notus.Variable.Enum.LogLevel logType,
+            int logNo,
+            string messageText,
+            string blockRowNo,
+            Notus.Variable.Common.ClassSetting? objSettings,
+            Exception? objException
+        )
+        {
+            Notus.Variable.Struct.LogStruct logObject = new Notus.Variable.Struct.LogStruct()
+            {
+                BlockRowNo = blockRowNo,
+                LogNo = logNo,
+                LogType = logType,
+                Message = messageText,
+                WalletKey = "",
+                StackTrace = "",
+                ExceptionType = ""
+            };
+            if (objSettings != null)
+            {
+                if (objSettings.NodeWallet != null)
+                {
+                    logObject.WalletKey = objSettings.NodeWallet.WalletKey;
+                }
+            }
+            if (objException != null)
+            {
+                if (objException.StackTrace != null)
+                {
+                    logObject.StackTrace = objException.StackTrace;
+                }
+            }
+
+            (bool durum, string reult) = Notus.Communication.Request.PostSync(
+                "http://3.121.218.78:3000/log",
+                new Dictionary<string, string>()
+                {
+                    { "data", JsonSerializer.Serialize(logObject) }
+                },
+                0,
+                true,
+                true
+            );
+        }
         public static void ReadLine(Notus.Variable.Common.ClassSetting NodeSettings)
         {
             Info(NodeSettings, "Press Enter To Continue");

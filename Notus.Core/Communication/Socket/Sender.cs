@@ -101,6 +101,14 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    700088554,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, err.Message);
                 ErrorText = err.Message;
             }
@@ -126,6 +134,15 @@ namespace Notus.Communication
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        900000004,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
+
                     Notus.Print.Basic(DebugModeActive, err.Message);
                     ErrorText = err.Message;
                 }

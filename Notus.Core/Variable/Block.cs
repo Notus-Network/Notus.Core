@@ -87,6 +87,10 @@ namespace Notus.Variable.Class
         public NonceType nonce { get; set; }
         public string prev { get; set; }
         public string sign { get; set; }
+        public BlockData Clone()
+        {
+            return (BlockData)this.MemberwiseClone();
+        }
     }
     public class NonceType
     {

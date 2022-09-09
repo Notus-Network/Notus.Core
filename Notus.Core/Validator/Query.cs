@@ -24,9 +24,16 @@ namespace Notus.Validator
                 Notus.Variable.Class.BlockData? PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
                 return (true, PreBlockData);
             }
-            catch
+            catch(Exception err)
             {
-
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    3020101,
+                    err.Message,
+                    "BlockRowNo",
+                    objSettings,
+                    err
+                );
             }
             return (false, null);
         }
@@ -45,9 +52,16 @@ namespace Notus.Validator
                 Notus.Variable.Struct.LastBlockInfo PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Struct.LastBlockInfo>(MainResultStr);
                 return PreBlockData;
             }
-            catch
+            catch(Exception err)
             {
-
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    809050,
+                    err.Message,
+                    "BlockRowNo",
+                    Obj_Settings,
+                    err
+                );
             }
             return null;
         }
@@ -78,6 +92,15 @@ namespace Notus.Validator
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            951230,
+                            err.Message,
+                            "BlockRowNo",
+                            null,
+                            err
+                        );
+
                         errorCount++;
                         Notus.Print.Basic(DebugModeActive, "Error Text [a9b467ce] : " + err.Message);
                     }

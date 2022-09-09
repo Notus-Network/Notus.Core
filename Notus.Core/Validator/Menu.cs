@@ -1055,8 +1055,16 @@ namespace Notus.Validator
                 {
                     nodeObj.Layer = JsonSerializer.Deserialize<Notus.Variable.Struct.LayerInfo>(tmpNodeType);
                 }
-                catch
+                catch(Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        9805000,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
                     nodeObj.Layer = tmpLayerObj;
                 }
             }

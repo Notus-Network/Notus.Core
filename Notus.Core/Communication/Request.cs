@@ -9,9 +9,9 @@ namespace Notus.Communication
     public static class Request
     {
         public static async Task<string> Post(
-            string UrlAddress, 
-            Dictionary<string, string> PostData, 
-            int TimeOut = 0, 
+            string UrlAddress,
+            Dictionary<string, string> PostData,
+            int TimeOut = 0,
             bool UseTimeoutAsSecond = true,
             bool showOnError = true
         )
@@ -31,13 +31,13 @@ namespace Notus.Communication
                 }
             }
             return string.Empty;
-        }        
-        public static (bool,string) PostSync(
-            string UrlAddress, 
-            Dictionary<string, string> PostData, 
-            int TimeOut = 0, 
+        }
+        public static (bool, string) PostSync(
+            string UrlAddress,
+            Dictionary<string, string> PostData,
+            int TimeOut = 0,
             bool UseTimeoutAsSecond = true,
-            bool showOnError=true
+            bool showOnError = true
         )
         {
             FormUrlEncodedContent formContent = new FormUrlEncodedContent(PostData);
@@ -50,18 +50,27 @@ namespace Notus.Communication
                         client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
                     }
                     HttpResponseMessage response = client.PostAsync(UrlAddress, formContent).GetAwaiter().GetResult();
-
+                    HttpContent responseContent = response.Content;
                     if (response.IsSuccessStatusCode)
                     {
-                        HttpContent responseContent = response.Content;
-                        return (true,responseContent.ReadAsStringAsync().GetAwaiter().GetResult());
+                        return (true, responseContent.ReadAsStringAsync().GetAwaiter().GetResult());
                     }
                 }
-            }catch(Exception err)
+            }
+            catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    4456320,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 Notus.Print.Danger(showOnError, "Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
             }
-            return (false,string.Empty);
+            return (false, string.Empty);
         }
         public static async Task<string> Get(string UrlAddress, int TimeOut = 0, bool UseTimeoutAsSecond = true, bool showOnError = true)
         {
@@ -83,14 +92,22 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    774586,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 80 -> " + err.Message);
             }
             return string.Empty;
         }
         public static string GetSync(
-            string UrlAddress, 
-            int TimeOut = 0, 
-            bool UseTimeoutAsSecond = true, 
+            string UrlAddress,
+            int TimeOut = 0,
+            bool UseTimeoutAsSecond = true,
             bool showOnError = true,
             Notus.Variable.Common.ClassSetting? objSettings = null
         )
@@ -113,6 +130,15 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    5532145,
+                    err.Message,
+                    "BlockRowNo",
+                    objSettings,
+                    err
+                );
+
                 if (objSettings == null)
                 {
                     Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 112 -> " + err.Message);

@@ -26,7 +26,7 @@ namespace Notus.Block
         }
         private const string Const_DefaultPreText = "notus-block-queue";
 
-        public (bool, Notus.Variable.Class.BlockData) GetSatus(bool ResetBlocksIfNonValid = false)
+        public Notus.Variable.Class.BlockData? GetSatus(bool ResetBlocksIfNonValid = false)
         {
             Notus.Variable.Enum.BlockIntegrityStatus Val_Status = Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain;
             Notus.Variable.Class.BlockData LastBlock = new Notus.Variable.Class.BlockData();
@@ -44,7 +44,7 @@ namespace Notus.Block
 
             if (Val_Status == Notus.Variable.Enum.BlockIntegrityStatus.Valid)
             {
-                return (true, LastBlock);
+                return LastBlock;
             }
             if (ResetBlocksIfNonValid == true)
             {
@@ -57,12 +57,19 @@ namespace Notus.Block
                     }
                     catch (Exception err)
                     {
-
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            753356,
+                            err.Message,
+                            "blockRowNo",
+                            Obj_Settings,
+                            err
+                        );
                         Notus.Print.Danger(Obj_Settings, "Error Text [7abc63]: " + err.Message);
                     }
                 }
             }
-            return (false, null);
+            return null;
         }
         private (Notus.Variable.Enum.BlockIntegrityStatus, Notus.Variable.Class.BlockData?) ControlBlockIntegrity()
         {
@@ -220,6 +227,15 @@ namespace Notus.Block
                                     }
                                     catch (Exception err)
                                     {
+                                        Notus.Print.Log(
+                                            Notus.Variable.Enum.LogLevel.Info,
+                                            965354,
+                                            err.Message,
+                                            "blockRowNo",
+                                            Obj_Settings,
+                                            err
+                                        );
+
                                         Notus.Print.Danger(Obj_Settings, "Error Text [235abc]: " + err.Message);
                                     }
                                 }
@@ -443,6 +459,15 @@ namespace Notus.Block
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            221548,
+                            err.Message,
+                            BlockRowNo.ToString(),
+                            Obj_Settings,
+                            err
+                        );
+
                         Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [96a3c2]: " + err.Message);
                         Thread.Sleep(5000);
                     }
@@ -491,6 +516,15 @@ namespace Notus.Block
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                203154,
+                                err.Message,
+                                BlockRowNo.ToString(),
+                                Obj_Settings,
+                                err
+                            );
+
                             Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [5a6e84]: " + err.Message);
                             Notus.Print.Basic(Obj_Settings.DebugMode, "Income Text [5a6e84]: " + MainResultStr);
                         }
@@ -521,7 +555,6 @@ namespace Notus.Block
             FreeBlockStruct.info.prevList.Add(360, PrevStr);
             return new Notus.Block.Generate(Obj_Settings.NodeWallet.WalletKey).Make(FreeBlockStruct, 1000);
         }
-
         private Notus.Variable.Class.BlockData GiveMeGenesisBlock(Notus.Variable.Class.BlockData GenBlockStruct)
         {
             if (Obj_Settings.Layer == Notus.Variable.Enum.NetworkLayer.Layer1)
@@ -537,12 +570,15 @@ namespace Notus.Block
                     Obj_Settings.DebugMode,
                     Obj_Settings
                 );
-                Notus.Variable.Class.BlockData ControlBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(tmpResult);
-                Obj_Settings.Genesis = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
-                    System.Convert.FromBase64String(
-                        ControlBlock.cipher.data
-                    )
-                );
+                Notus.Variable.Class.BlockData? ControlBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(tmpResult);
+                if (ControlBlock != null)
+                {
+                    Obj_Settings.Genesis = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(
+                        System.Convert.FromBase64String(
+                            ControlBlock.cipher.data
+                        )
+                    );
+                }
             }
 
             GenBlockStruct.info.type = 360;
@@ -705,8 +741,6 @@ namespace Notus.Block
                     Notus.Print.Basic(Obj_Settings, "Hold Your Genesis Block - We Are Older");
                 }
             }
-            //Console.WriteLine("Press Enter To Continue");
-            //Console.ReadLine();
             return true;
         }
         public void GetLastBlock()

@@ -195,6 +195,14 @@ namespace Notus.Reward
                             }
                             catch (Exception err)
                             {
+                                Notus.Print.Log(
+                                    Notus.Variable.Enum.LogLevel.Info,
+                                    998007770,
+                                    err.Message,
+                                    "BlockRowNo",
+                                    objSettings,
+                                    err
+                                );
                                 Console.WriteLine(err.Message);
                             }
                         }

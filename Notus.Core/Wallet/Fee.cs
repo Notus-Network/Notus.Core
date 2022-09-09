@@ -59,6 +59,15 @@ namespace Notus.Wallet
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            798798799,
+                            err.Message,
+                            "BlockRowNo",
+                            null,
+                            err
+                        );
+
                         Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                         return new Notus.Variable.Struct.FeeCalculationStruct()
                         {

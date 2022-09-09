@@ -171,7 +171,7 @@ namespace Notus.Communication
             OnErrorFunctionObj = OnErrorFunc;
             OnErrorFunctionDefined = true;
         }
-        public void OnReceive(System.Func<string, System.Net.IPEndPoint, System.Net.IPEndPoint,string> OnReceiveFunc)
+        public void OnReceive(System.Func<string, System.Net.IPEndPoint, System.Net.IPEndPoint, string> OnReceiveFunc)
         {
             NewReceiveFunctionObj = OnReceiveFunc;
             OnReceiveFunctionDefined = true;
@@ -202,6 +202,14 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    17789563,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, "Error text [ 9870 ] : " + err.Message);
             }
         }
@@ -226,7 +234,16 @@ namespace Notus.Communication
                     ListenTcpObj.Dispose();
                 }
             }
-            catch { }
+            catch (Exception err){
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    17775564,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
 
             try
             {
@@ -235,16 +252,36 @@ namespace Notus.Communication
                     AllDoneObj.Reset();
                 }
             }
-            catch { }
+            catch (Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    19998765,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
 
             try
             {
-                if (AllDoneObj!=null)
+                if (AllDoneObj != null)
                 {
                     AllDoneObj.Close();
                 }
             }
-            catch { }
+            catch (Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    19995632,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
 
             DebugModeActive = tmpDebugMode;
         }
@@ -283,6 +320,15 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    136598980,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 Notus.Print.Basic(DebugModeActive, err.Message);
                 if (OnErrorFunctionDefined == true)
                 {
@@ -317,6 +363,15 @@ namespace Notus.Communication
                             }
                             catch (Exception err)
                             {
+                                Notus.Print.Log(
+                                    Notus.Variable.Enum.LogLevel.Info,
+                                    379850000,
+                                    err.Message,
+                                    "BlockRowNo",
+                                    null,
+                                    err
+                                );
+
                                 Notus.Print.Basic(DebugModeActive, err.Message);
                                 if (OnErrorFunctionDefined == true)
                                 {
@@ -347,6 +402,15 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                145910234,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+
                             Notus.Print.Basic(DebugModeActive, err.Message);
 
                             if (OnErrorFunctionDefined == true)
@@ -376,7 +440,7 @@ namespace Notus.Communication
                             string tmpIncomeData = string.Empty;
                             while (true)
                             {
-                                bytesRead = handler.Receive(scktBuffer,0, scktBuffer.Length, SocketFlags.None,out SocketError errorCode);
+                                bytesRead = handler.Receive(scktBuffer, 0, scktBuffer.Length, SocketFlags.None, out SocketError errorCode);
                                 if (errorCode == SocketError.Success)
                                 {
                                     if (ScktDataEndTextIsActive == true)
@@ -428,6 +492,14 @@ namespace Notus.Communication
                                 }
                                 catch (Exception err6)
                                 {
+                                    Notus.Print.Log(
+                                        Notus.Variable.Enum.LogLevel.Info,
+                                        1122330044,
+                                        err6.Message,
+                                        "BlockRowNo",
+                                        null,
+                                        err6
+                                    );
                                     Notus.Print.Basic(DebugModeActive, err6.Message);
                                     if (OnErrorFunctionDefined == true)
                                     {
@@ -449,7 +521,7 @@ namespace Notus.Communication
                                     {
                                         if (OnReceiveFunctionDefined == true)
                                         {
-                                            
+
                                             if (string.Compare(tmpIncomeData, "<ping>") == 0)
                                             {
                                                 handler.Send(Encoding.UTF8.GetBytes(NewReceiveFunctionObj("<ping>", remoteIpEndPoint, localIpEndPoint)));
@@ -466,6 +538,15 @@ namespace Notus.Communication
                                     }
                                     catch (Exception err2)
                                     {
+                                        Notus.Print.Log(
+                                            Notus.Variable.Enum.LogLevel.Info,
+                                            11123300,
+                                            err2.Message,
+                                            "BlockRowNo",
+                                            null,
+                                            err2
+                                        );
+
                                         Notus.Print.Basic(DebugModeActive, err2.Message);
                                         if (OnErrorFunctionDefined == true)
                                         {
@@ -487,6 +568,15 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                11111000,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+
                             Notus.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
@@ -506,7 +596,16 @@ namespace Notus.Communication
                                 {
                                     handler.Send(System.Text.Encoding.ASCII.GetBytes("false-test"));
                                 }
-                                catch(Exception err2) {
+                                catch (Exception err2)
+                                {
+                                    Notus.Print.Log(
+                                        Notus.Variable.Enum.LogLevel.Info,
+                                        100011101,
+                                        err2.Message,
+                                        "BlockRowNo",
+                                        null,
+                                        err2
+                                    );
                                     Console.WriteLine("Listener.cs - 510 ->" + err2.Message);
                                 }
                             }
@@ -516,8 +615,17 @@ namespace Notus.Communication
                                 handler.Shutdown(SocketShutdown.Both);
                                 handler.Close();
                             }
-                            catch
-                            { }
+                            catch (Exception err)
+                            {
+                                Notus.Print.Log(
+                                    Notus.Variable.Enum.LogLevel.Info,
+                                    200002200,
+                                    err.Message,
+                                    "BlockRowNo",
+                                    null,
+                                    err
+                                );
+                            }
                         }
                     }
                     /*
@@ -585,7 +693,7 @@ namespace Notus.Communication
             System.Net.IPEndPoint remoteIpEndPoint = handler.RemoteEndPoint as System.Net.IPEndPoint;
             System.Net.IPEndPoint localIpEndPoint = handler.LocalEndPoint as System.Net.IPEndPoint;
 
-            int bytesRead = handler.EndReceive(ar,out errorCode);
+            int bytesRead = handler.EndReceive(ar, out errorCode);
             if (bytesRead > 0 && errorCode == SocketError.Success)
             {
                 if (Val_ReturnByteArray == true)
@@ -615,6 +723,15 @@ namespace Notus.Communication
                     }
                     catch (Exception err)
                     {
+                        Notus.Print.Log(
+                            Notus.Variable.Enum.LogLevel.Info,
+                            777777000,
+                            err.Message,
+                            "BlockRowNo",
+                            null,
+                            err
+                        );
+
                         Notus.Print.Basic(DebugModeActive, err.Message);
 
                         if (OnErrorFunctionDefined == true)
@@ -659,6 +776,15 @@ namespace Notus.Communication
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                70007700,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+
                             Notus.Print.Basic(DebugModeActive, err.Message);
                             if (OnErrorFunctionDefined == true)
                             {
@@ -698,6 +824,14 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    999900880,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 Notus.Print.Basic(DebugModeActive, err.Message);
                 if (OnErrorFunctionDefined == true)
                 {
@@ -727,7 +861,7 @@ namespace Notus.Communication
             OnReceiveFunctionDefined = true;
             Begin(WithNewThread);
         }
-        public Listener(int PortNo, string IPAddress, System.Func<string, System.Net.IPEndPoint, System.Net.IPEndPoint,string> OnReceiveFunc, System.Action<int, string> OnErrorFunc, bool WithNewThread = true)
+        public Listener(int PortNo, string IPAddress, System.Func<string, System.Net.IPEndPoint, System.Net.IPEndPoint, string> OnReceiveFunc, System.Action<int, string> OnErrorFunc, bool WithNewThread = true)
         {
             CommPortNo = PortNo;
             CommIpAddress = IPAddress;

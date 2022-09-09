@@ -95,8 +95,8 @@ namespace Notus.Validator
             Obj_Integrity = new Notus.Block.Integrity();
             Obj_Integrity.Settings = Obj_Settings;
 
-            (bool validBlock, Notus.Variable.Class.BlockData tmpLastBlock) = Obj_Integrity.GetSatus(true);
-            if (validBlock == true)
+            Notus.Variable.Class.BlockData tmpLastBlock = Obj_Integrity.GetSatus(true);
+            if (tmpLastBlock != null)
             {
                 Obj_Settings.LastBlock = tmpLastBlock;
                 Notus.Print.Basic(Obj_Settings, "All Blocks Valid");

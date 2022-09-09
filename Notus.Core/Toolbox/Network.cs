@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Net.Http;
 
 namespace Notus.Toolbox
 {
@@ -43,6 +44,15 @@ namespace Notus.Toolbox
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    1001124,
+                    err.Message,
+                    "BlockRowNo",
+                    objSettings,
+                    err
+                );
+
                 if (objSettings != null)
                 {
                     Notus.Print.Danger(objSettings, err.Message);
@@ -75,6 +85,15 @@ namespace Notus.Toolbox
             }
             catch(Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    90877404,
+                    err.Message,
+                    "BlockRowNo",
+                    objSettings,
+                    err
+                );
+
                 if (objSettings == null)
                 {
                     Console.WriteLine("err : " + err.Message);
@@ -179,41 +198,49 @@ namespace Notus.Toolbox
             };
         }
 
-        public static string GetPublicIPAddress()
+        private static string ReadFromNet(string urlPath)
         {
             try
             {
-                string address = "";
-                WebRequest request = WebRequest.Create("https://api.ipify.org");
-                using (WebResponse response = request.GetResponse())
-                using (StreamReader stream = new StreamReader(response.GetResponseStream()))
-                {
-                    address = stream.ReadToEnd();
-                }
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = client.GetAsync(urlPath).GetAwaiter().GetResult();
+                response.EnsureSuccessStatusCode();
+                return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            }
+            catch(Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    90000854,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
+            return string.Empty;
+        }
+        public static string GetPublicIPAddress()
+        {
+            string address = ReadFromNet("https://api.ipify.org");
+            if (address.Length > 0)
+            {
                 return address;
             }
-            catch
+            
+            address = ReadFromNet("http://checkip.dyndns.org/");
+            if (address.Length > 0)
             {
-                try
+                if(address.Contains("</body>")==true && address.Contains("Address: ")==true)
                 {
-                    string address = "";
-                    WebRequest request = WebRequest.Create("http://checkip.dyndns.org/");
-                    using (WebResponse response = request.GetResponse())
-                    using (StreamReader stream = new StreamReader(response.GetResponseStream()))
-                    {
-                        address = stream.ReadToEnd();
-                    }
-
                     int first = address.IndexOf("Address: ") + 9;
-                    int last = address.LastIndexOf("</body>");
-                    address = address.Substring(first, last - first);
-                    return address;
-                }
-                catch
-                {
-
+                    return address.Substring(
+                        first, 
+                        address.LastIndexOf("</body>") - first
+                    );
                 }
             }
+
             return string.Empty;
         }
 
@@ -239,7 +266,6 @@ namespace Notus.Toolbox
             {
                 string dnsResult = Dns.GetHostName();
                 IPHostEntry host = Dns.GetHostEntry(dnsResult);
-                //Console.WriteLine(JsonSerializer.Serialize(host, Notus.Variable.Constant.JsonSetting);
                 foreach (IPAddress ip in host.AddressList)
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
@@ -250,7 +276,14 @@ namespace Notus.Toolbox
             }
             catch (Exception err)
             {
-                //Console.WriteLine(err.Message);
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    98798700,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
             }
             return "127.0.0.1";
         }
@@ -285,6 +318,14 @@ namespace Notus.Toolbox
                         }
                         catch (Exception errInner)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                50000005,
+                                errInner.Message,
+                                "BlockRowNo",
+                                objSettings,
+                                errInner
+                            );
                             Notus.Print.Basic(objSettings, "Error [75fde6374]: " + errInner.Message);
                         }
                     }
@@ -297,6 +338,14 @@ namespace Notus.Toolbox
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    88800880,
+                    err.Message,
+                    "BlockRowNo",
+                    objSettings,
+                    err
+                );
                 Notus.Print.Danger(objSettings, "Error [065]: " + err.Message);
                 Error_TestIpAddress = true;
             }

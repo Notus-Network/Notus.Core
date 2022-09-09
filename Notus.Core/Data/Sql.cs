@@ -29,7 +29,7 @@ namespace Notus.Data
         private string OpenedDbName;
         private SqliteConnection conObj;
 
-        public bool TableExist(string tableName,string ifTableDoesntExistSql)
+        public bool TableExist(string tableName, string ifTableDoesntExistSql)
         {
             try
             {
@@ -50,21 +50,39 @@ namespace Notus.Data
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    90008800,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 ErrorStrInsideObj = err.Message;
             }
-            
+
             try
             {
                 SqliteCommand createCommand = conObj.CreateCommand();
                 createCommand.CommandText = ifTableDoesntExistSql;
                 createCommand.ExecuteNonQuery();
-            }catch(Exception err)
+            }
+            catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    66550055,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 ErrorStrInsideObj = err.Message;
             }
             return false;
         }
-        
+
         // select işlemi
         public void Select(string tableName, Action<Dictionary<string, string>> incomeAction, List<string> nameList, Dictionary<string, string> condAndValue)
         {
@@ -80,7 +98,7 @@ namespace Notus.Data
             string selectQuery = "SELECT * FROM " + tableName;
             if (condCount > 0)
             {
-                selectQuery= selectQuery + " WHERE " + String.Join(", ", fCond.ToArray());
+                selectQuery = selectQuery + " WHERE " + String.Join(", ", fCond.ToArray());
             }
 
             SqliteCommand command = conObj.CreateCommand();
@@ -95,8 +113,8 @@ namespace Notus.Data
                     command.Parameters.Add(uid_p);
                 }
             }
-            
-            try 
+
+            try
             {
                 SqliteDataReader reader = command.ExecuteReader();
                 while (reader.Read())
@@ -113,10 +131,18 @@ namespace Notus.Data
             }
             catch (Exception msg)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    40006544,
+                    msg.Message,
+                    "BlockRowNo",
+                    null,
+                    msg
+                );
                 ErrorStrInsideObj = msg.Message;
             }
         }
-        
+
         // delete işlemi
         public bool Delete(string tableName, Dictionary<string, string> condAndValue)
         {
@@ -125,13 +151,13 @@ namespace Notus.Data
             foreach (KeyValuePair<string, string> entry in condAndValue)
             {
                 fCond.Add($"`{entry.Key}` = @{entry.Key}");
-            }            
-           
+            }
+
             string deleteQuery = "DELETE FROM " +
                 tableName +
                 " WHERE " +
                 String.Join(", ", fCond.ToArray());
-            
+
             SqliteCommand command = conObj.CreateCommand();
             command.CommandText = deleteQuery;
 
@@ -145,7 +171,7 @@ namespace Notus.Data
             command.ExecuteNonQuery();
             return true;
         }
-        
+
         // update işlemi
         public bool Update(string tableName, Dictionary<string, string> fieldAndValue, Dictionary<string, string> condAndValue)
         {
@@ -160,7 +186,7 @@ namespace Notus.Data
             {
                 fCond.Add($"`{entry.Key}` = @{entry.Key}");
             }
-           
+
             string updateQuery = "UPDATE " + tableName + " SET " +
                 String.Join(", ", fUpdate.ToArray()) +
                 " WHERE " +
@@ -233,6 +259,15 @@ namespace Notus.Data
             }
             catch (Exception msg)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    62005410,
+                    msg.Message,
+                    "BlockRowNo",
+                    null,
+                    msg
+                );
+
                 ErrorStrInsideObj = msg.Message;
             }
             DbOpened = false;
@@ -242,7 +277,7 @@ namespace Notus.Data
         {
 
             OpenedDbName = "";
-            if(DbOpened == true)
+            if (DbOpened == true)
             {
                 try
                 {
@@ -250,6 +285,14 @@ namespace Notus.Data
                 }
                 catch (Exception err)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        70044556,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
                     ErrorStrInsideObj = err.Message;
                 }
                 DbOpened = false;

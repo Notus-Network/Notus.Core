@@ -82,6 +82,14 @@ namespace Notus.Wallet
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                8797987,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
                             //Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                             Thread.Sleep(2000);
                         }
@@ -98,6 +106,14 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    6587562,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
                 //Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()
@@ -132,6 +148,15 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    7712365,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 return Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred;
             }
 
@@ -236,6 +261,14 @@ namespace Notus.Wallet
                         }
                         catch (Exception err)
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                2236524,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
                             //Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
                             Thread.Sleep(2000);
                         }
@@ -252,6 +285,15 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    5532698,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 //Notus.Print.Basic(true, "Error Text [3aebc9]: " + err.Message);
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()

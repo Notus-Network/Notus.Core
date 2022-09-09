@@ -528,5 +528,17 @@ namespace Notus.Variable.Struct
         public string Sign { get; set; }
         //public 
     }
+    public class LogStruct
+    {
+        public string WalletKey { get; set; }
+        public Notus.Variable.Enum.LogLevel LogType { get; set; }
+        public int LogNo { get; set; }
+        public string BlockRowNo { get; set; }
+        public string Message { get; set; }
+
+
+        public string ExceptionType { get; set; }
+        public string StackTrace { get; set; }
+    }
 }
 

@@ -515,9 +515,16 @@ namespace Notus.Validator
                         AddToNodeList(tmpNodeQueueInfo);
                     }
                 }
-                catch
+                catch(Exception err)
                 {
-
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Info,
+                        286321,
+                        err.Message,
+                        "BlockRowNo",
+                        null,
+                        err
+                    );
                 }
                 return "<node>" + JsonSerializer.Serialize(NodeList[MyNodeHexKey]) + "</node>";
             }
@@ -664,7 +671,16 @@ namespace Notus.Validator
                             tmpData = JsonSerializer.Serialize(MainAddressList);
                             innerControlLoop = true;
                         }
-                        catch { }
+                        catch (Exception err){
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Info,
+                                986547,
+                                err.Message,
+                                "BlockRowNo",
+                                null,
+                                err
+                            );
+                        }
                     }
                     SortedDictionary<string, IpInfo>? tmpMainAddressList = JsonSerializer.Deserialize<SortedDictionary<string, IpInfo>>(tmpData);
                     bool tmpRefreshNodeDetails = false;

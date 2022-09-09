@@ -120,6 +120,7 @@ namespace Notus.Variable.Enum
         WrongWallet_Sender = 6,
         WrongWallet_Receiver = 9,
 
+        WalletNotAllowed = 90,
         WalletDoesntExist = 11,
         InsufficientBalance = 12,
         PendingPreviousTransaction = 13,
@@ -151,4 +152,13 @@ namespace Notus.Variable.Enum
         DataStorage = 7                 /* blok içeriğinde kaydedilen verinin her byte'ı için  */
 
     }
+
+    public enum LogLevel
+    {
+        Info = 0,
+        Error = 1,
+        Fatal=9,
+        Warning = 2
+    }
+
 }

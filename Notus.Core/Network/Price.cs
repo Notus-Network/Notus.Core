@@ -23,7 +23,16 @@ namespace Notus.Network
             {
                 //Stop();
             }
-            catch { }
+            catch (Exception err){
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    5000064,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
         }
     }
 }

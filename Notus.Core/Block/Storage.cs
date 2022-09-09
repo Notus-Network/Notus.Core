@@ -119,6 +119,15 @@ namespace Notus.Block
             }
             catch (Exception err)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    7531201,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+
                 Notus.Print.Basic(DebugModeActivated, "Storage Error Text : " + err.Message);
             }
             return null;
