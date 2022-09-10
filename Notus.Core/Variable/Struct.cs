@@ -131,6 +131,7 @@ namespace Notus.Variable.Struct
     public class CryptoTransactionResult
     {
         public int ErrorNo { get; set; }
+        public string ErrorText { get; set; }
         public Notus.Variable.Enum.BlockStatusCode Result { get; set; }
         public string ID { get; set; }
     }

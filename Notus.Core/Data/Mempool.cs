@@ -306,7 +306,6 @@ namespace Notus
         {
             if (Obj_DataList.Count > 0)
             {
-
                 foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
                 {
                     incomeAction(entry.Key, entry.Value.Data);
@@ -323,13 +322,31 @@ namespace Notus
                 UpdateFromTable(KeyName);
                 return true;
             }
+            else
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    300000002,
+                    "KeyName Does Not Exist -> " + KeyName,
+                    "BlockRowNo",
+                    null,
+                    null
+                );
+            }
             return false;
         }
         public void Remove(string KeyName)
         {
             if (Obj_DataList.ContainsKey(KeyName) == false)
             {
-                Console.WriteLine("KeyName Does Not Exist -> " + KeyName);
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    300000001,
+                    "KeyName Does Not Exist -> " + KeyName,
+                    "BlockRowNo",
+                    null,
+                    null
+                );
             }
             Obj_DataList.Remove(KeyName);
             DeleteFromTable(KeyName);
@@ -450,11 +467,40 @@ namespace Notus
         }
         public void Dispose()
         {
-            TimerObj.Dispose();
+            try
+            {
+                TimerObj.Dispose();
+            }
+            catch (Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Error,
+                    300000005,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
+
             Obj_DataList.Clear();
-            SqlObj.Close();
-            Thread.Sleep(150);
-            SqlObj.Dispose();
+            try
+            {
+                SqlObj.Close();
+                Thread.Sleep(150);
+                SqlObj.Dispose();
+            }
+            catch (Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Error,
+                    300000004,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
         }
     }
 }

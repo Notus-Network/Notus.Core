@@ -11,11 +11,11 @@ namespace Notus
     {
         public static Notus.Variable.Struct.UTCTimeStruct GetNtpTime()
         {
-            Notus.Variable.Struct.UTCTimeStruct tmpReturn=new Notus.Variable.Struct.UTCTimeStruct();
+            Notus.Variable.Struct.UTCTimeStruct tmpReturn = new Notus.Variable.Struct.UTCTimeStruct();
             tmpReturn.UtcTime = Notus.Time.GetFromNtpServer(true);
             tmpReturn.Now = DateTime.Now;
             tmpReturn.After = (tmpReturn.Now > tmpReturn.UtcTime);
-            tmpReturn.Difference = (tmpReturn.After == true ? (tmpReturn.Now - tmpReturn.UtcTime ) : (tmpReturn.UtcTime - tmpReturn.Now));
+            tmpReturn.Difference = (tmpReturn.After == true ? (tmpReturn.Now - tmpReturn.UtcTime) : (tmpReturn.UtcTime - tmpReturn.Now));
             return tmpReturn;
         }
         public static Notus.Variable.Struct.UTCTimeStruct RefreshNtpTime(Notus.Variable.Struct.UTCTimeStruct currentUtcTime)
@@ -31,11 +31,11 @@ namespace Notus
             }
             return currentUtcTime;
         }
-        public static DateTime GetFromNtpServer(bool WaitUntilGetFromServer=false)
+        public static DateTime GetFromNtpServer(bool WaitUntilGetFromServer = false)
         {
             return GetExactTime(WaitUntilGetFromServer);
         }
-        public static DateTime GetExactTime(bool WaitUntilGetFromServer=false)
+        public static DateTime GetExactTime(bool WaitUntilGetFromServer = false)
         {
             if (WaitUntilGetFromServer == true)
             {
@@ -43,7 +43,7 @@ namespace Notus
                 int count = 0;
                 while (exactTimeLong == 0)
                 {
-                    exactTimeLong=(long)GetExactTime_Int();
+                    exactTimeLong = (long)GetExactTime_Int();
                     if (exactTimeLong == 0)
                     {
                         Thread.Sleep((count > 10 ? 5000 : 500));
@@ -58,13 +58,29 @@ namespace Notus
         {
             return ulong.Parse(Notus.Block.Key.GetTimeFromKey(blockUid).Substring(0, 17));
         }
-        public static ulong NowToUlong()
+        public static ulong NowToUlong(bool milisecondIncluded = true)
         {
-            return ulong.Parse(DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
+            if (milisecondIncluded == true)
+            {
+                return ulong.Parse(
+                    DateTime.Now.ToString(
+                        Notus.Variable.Constant.DefaultDateTimeFormatText
+                    )
+                );
+            }
+            return ulong.Parse(
+                DateTime.Now.ToString(
+                    Notus.Variable.Constant.DefaultDateTimeFormatText.Substring(0, 14)
+                )
+            );
         }
         public static ulong DateTimeToUlong(DateTime ConvertTime)
         {
-            return ulong.Parse(ConvertTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText));
+            return ulong.Parse(
+                ConvertTime.ToString(
+                    Notus.Variable.Constant.DefaultDateTimeFormatText
+                )
+            );
         }
 
         private static ulong GetExactTime_UTC_SubFunc(string server)
@@ -88,7 +104,7 @@ namespace Notus
                     ulong milliseconds = intPart * 1000 + fractPart * 1000 / 0x100000000L;
                     return milliseconds;
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,

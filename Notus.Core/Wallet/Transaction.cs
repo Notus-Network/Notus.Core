@@ -33,6 +33,7 @@ namespace Notus.Wallet
                 {
                     return new Notus.Variable.Struct.CryptoTransactionResult()
                     {
+                        ErrorText = "WrongWallet",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet,
                     };
@@ -97,6 +98,7 @@ namespace Notus.Wallet
                         {
                             return new Notus.Variable.Struct.CryptoTransactionResult()
                             {
+                                ErrorText = "AnErrorOccurred",
                                 ID = string.Empty,
                                 Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
                             };
@@ -118,6 +120,7 @@ namespace Notus.Wallet
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()
             {
+                ErrorText = "AnErrorOccurred",
                 ID = string.Empty,
                 Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
             };
@@ -208,6 +211,7 @@ namespace Notus.Wallet
                 {
                     return new Notus.Variable.Struct.CryptoTransactionResult()
                     {
+                        ErrorText = "WrongSignature",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature,
                     };
@@ -276,6 +280,7 @@ namespace Notus.Wallet
                         {
                             return new Notus.Variable.Struct.CryptoTransactionResult()
                             {
+                                ErrorText = "AnErrorOccurred",
                                 ID = string.Empty,
                                 Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
                             };
@@ -298,6 +303,7 @@ namespace Notus.Wallet
             }
             return new Notus.Variable.Struct.CryptoTransactionResult()
             {
+                ErrorText = "AnErrorOccurred",
                 ID = string.Empty,
                 Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred,
             };

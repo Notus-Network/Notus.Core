@@ -92,8 +92,6 @@ namespace Notus.Block
         }
         public static string GetTimeFromKey(string TimeKey, bool ProcessKeyAsHex = false)
         {
-            //Console.Write("TimeKey : ");
-            //Console.WriteLine(TimeKey);
             if (TimeKey.Length == 90)
             {
                 ProcessKeyAsHex = true;

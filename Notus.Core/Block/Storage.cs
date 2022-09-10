@@ -134,6 +134,15 @@ namespace Notus.Block
         }
         public void AddSync(Notus.Variable.Class.BlockData NewBlock, bool UpdateBlock = false)
         {
+            Notus.Print.Log(
+                Notus.Variable.Enum.LogLevel.Info,
+                90,
+                JsonSerializer.Serialize(NewBlock),
+                "AddSync",
+                null,
+                null
+            );
+
             string BlockFileName = Notus.Block.Key.GetBlockStorageFileName(NewBlock.info.uID, true);
             string ZipFileName = Notus.IO.GetFolderName(Val_NetworkType, Val_NetworkLayer, Notus.Variable.Constant.StorageFolderName.Block) + BlockFileName + ".zip";
             bool exitInnerLoop = false;

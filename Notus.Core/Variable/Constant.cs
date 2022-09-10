@@ -245,6 +245,7 @@ namespace Notus.Variable
             public const string Common = "common";
             public const string File = "file";
             public const string Storage = "storage";
+            public const string TempBlock = "temp_block";
         }
 
 

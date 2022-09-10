@@ -841,6 +841,15 @@ namespace Notus.Validator
             }
             if (blockSource == 2)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    100000002,
+                    JsonSerializer.Serialize(blockData),
+                    blockData.info.rowNo.ToString(),
+                    Obj_Settings,
+                    null
+                );
+
                 Notus.Print.Status(Obj_Settings, "Block Came From The Validator Queue [ " + fixedRowNoLength(blockData) + " ]");
             }
             if (blockSource == 3)
@@ -849,6 +858,14 @@ namespace Notus.Validator
             }
             if (blockSource == 4)
             {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    100000004,
+                    JsonSerializer.Serialize(blockData),
+                    blockData.info.rowNo.ToString(),
+                    Obj_Settings,
+                    null
+                );
                 Notus.Print.Status(Obj_Settings, "Block Came From The Main Loop [ " + fixedRowNoLength(blockData) + " ]");
             }
             if (blockSource == 5)
@@ -884,10 +901,9 @@ namespace Notus.Validator
         {
             if (blockData.info.rowNo > CurrentBlockRowNo)
             {
+                string tmpBlockDataStr = JsonSerializer.Serialize(blockData);
                 Notus.Variable.Class.BlockData? tmpBlockData =
-                    JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(
-                        JsonSerializer.Serialize(blockData)
-                    );
+                    JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(tmpBlockDataStr);
                 if (tmpBlockData != null)
                 {
                     IncomeBlockList.Add(blockData.info.rowNo, tmpBlockData);
@@ -896,6 +912,14 @@ namespace Notus.Validator
                 }
                 else
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Error,
+                        300000099,
+                        tmpBlockDataStr,
+                        "BlockRowNo",
+                        Obj_Settings,
+                        null
+                    );
                     ProcessBlock_PrintSection(blockData, blockSource);
                 }
                 return true;

@@ -31,7 +31,6 @@ namespace Notus
             if (objSettings.LastBlock.info.rowNo> smallestBlockRow)
             {
                 //Console.WriteLine("My Node Higher Than Other");
-                //Console.ReadLine();
             }
             else
             {

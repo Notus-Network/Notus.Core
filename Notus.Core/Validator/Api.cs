@@ -531,6 +531,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 6728,
+                        ErrorText = "AnErrorOccurred",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                     }, Notus.Variable.Constant.JsonSetting);
@@ -538,6 +539,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 6728,
+                    ErrorText = "AnErrorOccurred",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
@@ -550,6 +552,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 8259,
+                        ErrorText = "AnErrorOccurred",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                     }, Notus.Variable.Constant.JsonSetting);
@@ -558,6 +561,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 8259,
+                    ErrorText = "AnErrorOccurred",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
@@ -829,7 +833,7 @@ namespace Notus.Validator
                     {
                         tmpChunkList = JsonSerializer.Deserialize<Dictionary<int, string>>(tmpCurrentList);
                     }
-                    catch(Exception err)
+                    catch (Exception err)
                     {
                         Notus.Print.Log(
                             Notus.Variable.Enum.LogLevel.Info,
@@ -899,7 +903,7 @@ namespace Notus.Validator
                         Result = tmpUploadStatus
                     });
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
@@ -1068,7 +1072,7 @@ namespace Notus.Validator
                     {
                         tmpChunkList = JsonSerializer.Deserialize<Dictionary<int, string>>(tmpCurrentList);
                     }
-                    catch(Exception err)
+                    catch (Exception err)
                     {
                         Notus.Print.Log(
                             Notus.Variable.Enum.LogLevel.Info,
@@ -1138,7 +1142,7 @@ namespace Notus.Validator
                         Result = tmpUploadStatus
                     });
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
@@ -1271,7 +1275,7 @@ namespace Notus.Validator
                         Result = tmpUploadStatus
                     });
                 }
-                catch(Exception err)
+                catch (Exception err)
                 {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
@@ -1313,6 +1317,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 9618,
+                    ErrorText = "AnErrorOccurred",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
@@ -1322,6 +1327,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 78945,
+                    ErrorText = "AnErrorOccurred",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
@@ -1339,6 +1345,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 4928,
+                    ErrorText = "WrongParameter",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongParameter
                 });
@@ -1349,6 +1356,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 3827,
+                    ErrorText = "WalletNotAllowed",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WalletNotAllowed
                 });
@@ -1360,6 +1368,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 7546,
+                    ErrorText = "WrongWallet_Sender",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Sender
                 });
@@ -1371,6 +1380,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 5245,
+                    ErrorText = "WrongWallet_Receiver",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Receiver
                 });
@@ -1381,6 +1391,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 5245,
+                    ErrorText = "WrongWallet_Receiver",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Receiver
                 });
@@ -1391,6 +1402,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 3652,
+                    ErrorText = "WrongVolume",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongVolume
                 });
@@ -1404,6 +1416,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 7854,
+                    ErrorText = "InsufficientBalance",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
                 });
@@ -1425,6 +1438,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 2536,
+                        ErrorText = "InsufficientBalance",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
                     });
@@ -1437,6 +1451,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 7854,
+                        ErrorText = "InsufficientBalance",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
                     });
@@ -1447,6 +1462,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 7523,
+                        ErrorText = "InsufficientBalance",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
                     });
@@ -1458,6 +1474,7 @@ namespace Notus.Validator
                     return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 2365,
+                        ErrorText = "InsufficientBalance",
                         ID = string.Empty,
                         Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
                     });
@@ -1481,6 +1498,7 @@ namespace Notus.Validator
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 7314,
+                    ErrorText = "WrongSignature",
                     ID = string.Empty,
                     Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature
                 });
@@ -1530,6 +1548,7 @@ namespace Notus.Validator
                     new Notus.Variable.Struct.CryptoTransactionResult()
                     {
                         ErrorNo = 0,
+                        ErrorText = "AddedToQueue",
                         ID = tmpTransferIdKey,
                         Result = Notus.Variable.Enum.BlockStatusCode.AddedToQueue,
                     }, Notus.Variable.Constant.JsonSetting
@@ -1539,6 +1558,7 @@ namespace Notus.Validator
                 new Notus.Variable.Struct.CryptoTransactionResult()
                 {
                     ErrorNo = 0,
+                    ErrorText = "AddedToQueue",
                     ID = tmpTransferIdKey,
                     Result = Notus.Variable.Enum.BlockStatusCode.AddedToQueue,
                 }
@@ -2389,7 +2409,8 @@ namespace Notus.Validator
                 {
                     Obj_Balance.Dispose();
                 }
-                catch (Exception err){
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         10001111,

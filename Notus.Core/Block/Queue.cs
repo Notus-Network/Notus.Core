@@ -38,8 +38,6 @@ namespace Notus.Block
         public Notus.Variable.Class.BlockData OrganizeBlockOrder(Notus.Variable.Class.BlockData CurrentBlock)
         {
             CurrentBlock.info.rowNo = Obj_Settings.LastBlock.info.rowNo + 1;
-            //Console.WriteLine("Queue.cs -> Line 29");
-            //Console.WriteLine("CurrentBlock.info.rowNo : " + CurrentBlock.info.rowNo.ToString());
 
             CurrentBlock.prev = Obj_Settings.LastBlock.info.uID + Obj_Settings.LastBlock.sign;
             CurrentBlock.info.prevList.Clear();
@@ -232,12 +230,8 @@ namespace Notus.Block
 
                 if (CurrentBlockType == 40)
                 {
-                    //Console.WriteLine(JsonSerializer.Serialize(TempBlockList, Notus.Variable.Constant.JsonSetting));
-
                     string tmpLockWalletKey = TempBlockList[0];
                     Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletStruct = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(tmpLockWalletKey);
-                    //Console.WriteLine(JsonSerializer.Serialize(tmpLockWalletStruct, Notus.Variable.Constant.JsonSetting));
-
                     TempBlockList.Clear();
                     if (tmpLockWalletStruct == null)
                     {
@@ -258,7 +252,6 @@ namespace Notus.Block
                     else
                     {
                         string lockAccountFee = Obj_Settings.Genesis.Fee.BlockAccount.ToString();
-                        Console.WriteLine(JsonSerializer.Serialize(BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0), Notus.Variable.Constant.JsonSetting));
                         Notus.Variable.Struct.WalletBalanceStruct currentBalance =
                             BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0);
                         (bool tmpBalanceResult, Notus.Variable.Struct.WalletBalanceStruct tmpNewGeneratorBalance) =
@@ -361,14 +354,7 @@ namespace Notus.Block
                 }
                 LongNonceText = string.Join(Notus.Variable.Constant.CommonDelimeterChar, TempBlockList.ToArray());
             }
-            if (CurrentBlockType == 40)
-            {
-                Console.WriteLine("Queue -> Line 312");
-                Console.WriteLine(LongNonceText);
-                Console.WriteLine("--------------------------");
-            }
-            /*
-            */
+
             BlockStruct.prev = "";
             BlockStruct.info.prevList.Clear();
 
@@ -384,7 +370,6 @@ namespace Notus.Block
             {
             }
             */
-            //Console.WriteLine(File.)
             BlockStruct.cipher.data = System.Convert.ToBase64String(
                 System.Text.Encoding.ASCII.GetBytes(
                     LongNonceText
@@ -464,6 +449,15 @@ namespace Notus.Block
         //yeni blok hesaplanması tamamlandığı zaman buraya gelecek ve geçerli blok ise eklenecek.
         public void AddToChain(Notus.Variable.Class.BlockData NewBlock)
         {
+            Notus.Print.Log(
+                Notus.Variable.Enum.LogLevel.Info,
+                70,
+                JsonSerializer.Serialize(NewBlock),
+                "AddToChain",
+                null,
+                null
+            );
+
             BS_Storage.Add(NewBlock);
 
             string rawDataStr = Notus.Toolbox.Text.RawCipherData2String(

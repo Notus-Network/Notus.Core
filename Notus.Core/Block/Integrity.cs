@@ -95,7 +95,6 @@ namespace Notus.Block
                 {
                     tmpGetListAgain = true;
                     Thread.Sleep(1);
-                    //Console.WriteLine("Delete Zip : " + fileName);
                     File.Delete(fileName);
                 }
             }
@@ -113,7 +112,6 @@ namespace Notus.Block
                     List<string> fileNameList = new List<string>();
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        //Console.WriteLine("Entry Name : " + entry.FullName);
                         if (fileNameList.IndexOf(entry.FullName) == -1)
                         {
                             fileNameList.Add(entry.FullName);
@@ -145,7 +143,6 @@ namespace Notus.Block
 
             foreach (string fileName in ZipFileList)
             {
-                //Console.WriteLine("Zip File Name : " + fileName);
                 List<Int64> tmpUpdateBlockRowList = new List<Int64>();
                 List<string> tmpDeleteFileList = new List<string>();
                 bool returnForCheckAgain = false;
@@ -153,7 +150,6 @@ namespace Notus.Block
                 {
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        //Console.WriteLine("Entry Name : " + entry.FullName);
                         if (entry.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase) == false)
                         {
                             tmpDeleteFileList.Add(entry.FullName);
@@ -245,17 +241,13 @@ namespace Notus.Block
                 }
                 if (tmpDeleteFileList.Count > 0)
                 {
-                    //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList));
-                    //Console.WriteLine(JsonSerializer.Serialize(tmpDeleteFileList));
                     Thread.Sleep(1);
                     Notus.Archive.DeleteFromInside(
                         fileName,
                         tmpDeleteFileList,
                         true
                     );
-                    Console.WriteLine(returnForCheckAgain);
                     Notus.Print.Danger(Obj_Settings, "Repair Block Integrity = Contains Wrong / Extra Data");
-                    Console.ReadLine();
                     if (returnForCheckAgain == true)
                     {
                         return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
@@ -300,12 +292,6 @@ namespace Notus.Block
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
 
-
-            //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, Notus.Variable.Constant.JsonSetting);
-            //Console.ReadLine();
-
-            //Console.WriteLine(Obj_Settings.NodeType);
-            //Console.WriteLine(Obj_Settings.NodeType);
             long controlNumber = 1;
             bool rowNumberError = false;
             foreach (KeyValuePair<long, string> item in BlockOrderList)
@@ -313,8 +299,6 @@ namespace Notus.Block
                 if (item.Key != controlNumber)
                 {
                     StoreBlockWithRowNo(controlNumber);
-                    // Console.WriteLine("We Need This Block :" + controlNumber.ToString());
-                    // Notus.Print.Info(Obj_Settings, "We Get Block From Other Node > " + controlNumber.ToString());
                     /*
                     if (
                         Obj_Settings.NodeType != Notus.Variable.Enum.NetworkNodeType.Main &&
@@ -335,9 +319,6 @@ namespace Notus.Block
             }
             if (rowNumberError == true)
             {
-                //Console.WriteLine(JsonSerializer.Serialize(BlockOrderList, Notus.Variable.Constant.JsonSetting);
-                //Console.ReadLine();
-
                 return (Notus.Variable.Enum.BlockIntegrityStatus.CheckAgain, null);
             }
 
@@ -715,7 +696,6 @@ namespace Notus.Block
                         Notus.Archive.ClearBlocks(Obj_Settings);
                         BS_Storage.AddSync(signBlock[tmpBiggestSign], true);
                         Notus.Print.Basic(Obj_Settings, "Added Block : " + signBlock[tmpBiggestSign].info.uID);
-                        //Console.WriteLine(JsonSerializer.Serialize(signNode));
                         bool secondBlockAdded = false;
                         foreach (Variable.Struct.IpInfo? entry in signNode[tmpBiggestSign])
                         {
@@ -732,8 +712,6 @@ namespace Notus.Block
                             }
                         }
                     }
-                    //Console.WriteLine("enter for continue");
-                    //Console.ReadLine();
                     Notus.Date.SleepWithoutBlocking(150);
                 }
                 else

@@ -27,6 +27,10 @@ namespace Notus
             return GetZipFiles(objSettings.Network, objSettings.Layer);
         }
 
+        public static string GetFolderName(Notus.Variable.Common.ClassSetting objSettings, string folderName)
+        {
+            return GetFolderName(objSettings.Network, objSettings.Layer, folderName);
+        }
         public static string GetFolderName(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer, string folderName)
         {
             return
@@ -44,14 +48,11 @@ namespace Notus
         }
         public static void NodeFolderControl(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer)
         {
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.TempBlock));
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Balance));
-
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Block));
-
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Common));
-
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.File));
-
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Node));
         }
     }

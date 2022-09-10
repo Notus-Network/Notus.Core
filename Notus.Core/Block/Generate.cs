@@ -100,34 +100,19 @@ namespace Notus.Block
         }
         private Notus.Variable.Class.BlockData Make_Data(Notus.Variable.Class.BlockData BlockData)
         {
-            //Console.WriteLine("Inner - Point -> 11"); Console.ReadLine();
-
             string TmpText = BlockData.cipher.data + Notus.Variable.Constant.CommonDelimeterChar + BlockData.cipher.ver;
             Notus.Hash hashObj = new Notus.Hash();
 
-            //Console.WriteLine("Inner - Point -> 22"); Console.ReadLine();
-
             BlockData.cipher.sign = hashObj.CommonHash("sasha", TmpText);
-
-            //Console.WriteLine("Inner - Point -> 33"); Console.ReadLine();
 
             TmpText = TmpText + Notus.Variable.Constant.CommonDelimeterChar + BlockData.cipher.sign;
 
-            //Console.WriteLine("Inner - Point -> 44"); Console.ReadLine();
-
             BlockData.nonce.data = GenerateNonce(TmpText, BlockData);
-
-            //Console.WriteLine("Inner - Point -> 33"); Console.ReadLine();
-
-            //Notus.HashLib.Sasha sashaObj = ;
-            
-            //Console.WriteLine("Inner - Point -> 44"); Console.ReadLine();
 
             BlockData.hash.data = new Notus.HashLib.Sasha().ComputeHash(
                 TmpText + Notus.Variable.Constant.CommonDelimeterChar + BlockData.nonce.data,
                 false
             );
-            //Console.WriteLine("Inner - Point -> 44"); Console.ReadLine();
             return BlockData;
         }
 

@@ -60,7 +60,7 @@ namespace Notus.Toolbox
             }
             return null;
         }
-        public static Notus.Variable.Class.BlockData? GetLastBlock(Notus.Variable.Struct.IpInfo NodeIp, Notus.Variable.Common.ClassSetting? objSettings=null)
+        public static Notus.Variable.Class.BlockData? GetLastBlock(Notus.Variable.Struct.IpInfo NodeIp, Notus.Variable.Common.ClassSetting? objSettings = null)
         {
             return GetLastBlock(Notus.Network.Node.MakeHttpListenerPath(NodeIp.IpAddress, NodeIp.Port), objSettings);
         }
@@ -69,8 +69,8 @@ namespace Notus.Toolbox
             try
             {
                 string MainResultStr = Notus.Communication.Request.GetSync(
-                    NodeAddress + "block/last/raw", 
-                    10, 
+                    NodeAddress + "block/last/raw",
+                    10,
                     true,
                     true,
                     objSettings
@@ -83,7 +83,7 @@ namespace Notus.Toolbox
                     return PreBlockData;
                 }
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 Notus.Print.Log(
                     Notus.Variable.Enum.LogLevel.Info,
@@ -207,7 +207,7 @@ namespace Notus.Toolbox
                 response.EnsureSuccessStatusCode();
                 return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             }
-            catch(Exception err)
+            catch (Exception err)
             {
                 Notus.Print.Log(
                     Notus.Variable.Enum.LogLevel.Info,
@@ -227,15 +227,15 @@ namespace Notus.Toolbox
             {
                 return address;
             }
-            
+
             address = ReadFromNet("http://checkip.dyndns.org/");
             if (address.Length > 0)
             {
-                if(address.Contains("</body>")==true && address.Contains("Address: ")==true)
+                if (address.Contains("</body>") == true && address.Contains("Address: ") == true)
                 {
                     int first = address.IndexOf("Address: ") + 9;
                     return address.Substring(
-                        first, 
+                        first,
                         address.LastIndexOf("</body>") - first
                     );
                 }

@@ -14,7 +14,6 @@ namespace Notus.Cache
 
         public bool Add(Notus.Variable.Struct.BlockStruct_160 TokenObj)
         {
-            Console.WriteLine("Con")
             bool returnVal = false;
 
             string tmpTokenTagHexName = Notus.Core.Function.ConvertTagName(TokenObj.Info.Tag);

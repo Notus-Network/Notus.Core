@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 using System.Text.Json;
 namespace Notus.Wallet
@@ -229,8 +230,36 @@ namespace Notus.Wallet
             }
             return false;
         }
+        private void StoreToTemp(Notus.Variable.Class.BlockData? tmpBlockData)
+        {
+            if (tmpBlockData != null)
+            {
+                string fileName = tmpBlockData.info.uID + ".tmp";
+                string folderName = Notus.IO.GetFolderName(Obj_Settings, Notus.Variable.Constant.StorageFolderName.TempBlock);
+                string fullPath = folderName + fileName;
+                string blockStr = JsonSerializer.Serialize(tmpBlockData);
+                using (StreamWriter writer = new StreamWriter(fullPath))
+                {
+                    writer.WriteLine(blockStr);
+                }
+            }
+            else
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Error,
+                    1111199999,
+                    "Block Is NULL",
+                    "BlockRowNo",
+                    Obj_Settings,
+                    null
+                );
+            }
+        }
         public void Control(Notus.Variable.Class.BlockData tmpBlockForBalance)
         {
+            //bloklar geçici dosyaya kaydediliyor...
+            StoreToTemp(tmpBlockForBalance);
+
             // genesis block
             if (tmpBlockForBalance.info.type == 360)
             {
