@@ -331,11 +331,11 @@ namespace Notus.Validator
                 {
                     if (IncomeData.UrlList[0].ToLower() == "multi")
                     {
-                        if (IncomeData.UrlList[1].ToLower() == "wallet") 
+                        if (IncomeData.UrlList[1].ToLower() == "wallet")
                         {
                             if (IncomeData.UrlList[2].ToLower() == "add")
                             {
-
+                                return Request_AddMultiWallet(IncomeData);
                             }
                         }
                     }
@@ -1957,6 +1957,149 @@ namespace Notus.Validator
             return JsonSerializer.Serialize(false);
         }
 
+        private string Request_AddMultiWallet(Notus.Variable.Struct.HttpRequestDetails IncomeData)
+        {
+            if (IncomeData.PostParams.ContainsKey("data") == false)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "WrongParameter",
+                    Result = Notus.Variable.Enum.BlockStatusCode.WrongParameter
+                });
+            }
+
+            if (Obj_Settings == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "Unknown",
+                    Result = Notus.Variable.Enum.BlockStatusCode.Unknown
+                });
+            }
+            if (Obj_Settings.Genesis == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "Unknown",
+                    Result = Notus.Variable.Enum.BlockStatusCode.Unknown
+                });
+            }
+            if (Obj_Settings.NodeWallet == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "Unknown",
+                    Result = Notus.Variable.Enum.BlockStatusCode.Unknown
+                });
+            }
+
+            string tmpLockAccountStr = IncomeData.PostParams["data"];
+            Notus.Variable.Struct.MultiWalletStruct? WalletObj = JsonSerializer.Deserialize<Notus.Variable.Struct.MultiWalletStruct>(tmpLockAccountStr);
+            if (WalletObj == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "AnErrorOccurred",
+                    Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
+                });
+            }
+
+
+            ulong totalCoinNeed = (ulong) WalletObj.WalletList.Count * (ulong)Obj_Settings.Genesis.Fee.MultiWallet.Addition;
+            bool hasCoin = Obj_Balance.HasEnoughCoin(
+                WalletObj.Founder.WalletKey,
+                BigInteger.Parse(totalCoinNeed.ToString())
+            );
+            if (hasCoin == false)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "InsufficientBalance",
+                    Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
+                });
+            }
+
+            return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+            {
+                UID = string.Empty,
+                Status = "NotFinishedYet -> " + totalCoinNeed.ToString(),
+                Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
+            });
+
+            if (Func_AddToChainPool == null)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "Unknown",
+                    Result = Notus.Variable.Enum.BlockStatusCode.Unknown
+                });
+            }
+            /*
+            if (Notus.Wallet.ID.CheckAddress(LockObj.WalletKey, Obj_Settings.Network) == false)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "WrongWallet",
+                    Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet
+                });
+            }
+
+            string tmpChunkIdKey = Notus.Block.Key.Generate(
+                GetNtpTime(),
+                Obj_Settings.NodeWallet.WalletKey
+            );
+            BigInteger howMuchCoinNeed = BigInteger.Parse(Obj_Settings.Genesis.Fee.BlockAccount.ToString());
+            Notus.Variable.Struct.WalletBalanceStruct tmpGeneratorBalanceObj = Obj_Balance.Get(LockObj.WalletKey, 0);
+
+            BigInteger currentVolume = Obj_Balance.GetCoinBalance(tmpGeneratorBalanceObj, Obj_Settings.Genesis.CoinInfo.Tag);
+            if (howMuchCoinNeed > currentVolume)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = string.Empty,
+                    Status = "InsufficientBalance",
+                    Result = Notus.Variable.Enum.BlockStatusCode.InsufficientBalance
+                });
+            }
+
+            Notus.Variable.Struct.LockWalletBeforeStruct tmpLockObj = new Notus.Variable.Struct.LockWalletBeforeStruct()
+            {
+                UID = tmpChunkIdKey,
+                WalletKey = LockObj.WalletKey,
+                UnlockTime = LockObj.UnlockTime,
+                PublicKey = LockObj.PublicKey,
+                Sign = LockObj.Sign
+            };
+            bool tmpAddResult = Func_AddToChainPool(new Notus.Variable.Struct.PoolBlockRecordStruct()
+            {
+                type = 40,
+                data = JsonSerializer.Serialize(tmpLockObj)
+            });
+            if (tmpAddResult == true)
+            {
+                return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+                {
+                    UID = tmpChunkIdKey,
+                    Status = "AddedToQueue",
+                    Result = Notus.Variable.Enum.BlockStatusCode.AddedToQueue
+                });
+            }
+            return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
+            {
+                UID = string.Empty,
+                Status = "Unknown",
+                Result = Notus.Variable.Enum.BlockStatusCode.Rejected
+            });
+            */
+        }
         private string Request_LockAccount(Notus.Variable.Struct.HttpRequestDetails IncomeData)
         {
             if (IncomeData.PostParams.ContainsKey("data") == false)

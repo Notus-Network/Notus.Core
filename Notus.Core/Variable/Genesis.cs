@@ -82,11 +82,17 @@ namespace Notus.Variable.Genesis
         // public int NoName { get; set; }         /* isimsiz gönderim ile */
         // public int ByPieces { get; set; }       /* parçalar halinde */
     }
+    public class MultiWalletFeeType
+    {
+        public int Generate { get; set; }           /* every new multi wallet generation fee */
+        public int Addition { get; set; }           /* every new multi wallet generation fee */
+    }
     public class FeeType
     {
         public ulong BlockAccount { get; set; }     /* hesabı bloke etme işlem ücreti */
         public CoinTransferFeeType Transfer { get; set; }
         public TokenPriceStructType Token { get; set; }
+        public MultiWalletFeeType MultiWallet { get; set; }
         //public ContractFeeType Contract { get; set; }
         public int Data { get; set; }
     }

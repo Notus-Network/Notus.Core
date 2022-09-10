@@ -153,6 +153,11 @@ namespace Notus.Block
                         Generate = 500000,
                         Update = 900000
                     },
+                    MultiWallet = new MultiWalletFeeType()
+                    {
+                        Generate = 1000000,
+                        Addition = 300000
+                    },
                     Transfer = new CoinTransferFeeType()
                     {
                         Fast = 400,         // öncelik verilen işlem
