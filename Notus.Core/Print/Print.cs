@@ -44,7 +44,7 @@ namespace Notus
                 }
             }
 
-            (bool durum, string reult) = Notus.Communication.Request.PostSync(
+            (bool _, string _) = Notus.Communication.Request.PostSync(
                 "http://3.121.218.78:3000/log",
                 new Dictionary<string, string>()
                 {

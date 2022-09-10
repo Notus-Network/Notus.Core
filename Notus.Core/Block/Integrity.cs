@@ -93,6 +93,15 @@ namespace Notus.Block
                 }
                 if (fileCountInZip == 0)
                 {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Error,
+                        500001004,
+                        "Zip File Deleted : " + fileName,
+                        "",
+                        Obj_Settings,
+                        null
+                    );
+
                     tmpGetListAgain = true;
                     Thread.Sleep(1);
                     File.Delete(fileName);
@@ -118,6 +127,14 @@ namespace Notus.Block
                         }
                         else
                         {
+                            Notus.Print.Log(
+                                Notus.Variable.Enum.LogLevel.Error,
+                                500001006,
+                                "Entry Deleteing : " + entry.FullName + " -> Zip File : "+ fileName,
+                                "",
+                                Obj_Settings,
+                                null
+                            );
                             deleteInnerFileList.Add(entry.FullName);
                         }
                     }
@@ -457,62 +474,122 @@ namespace Notus.Block
             return (tmpBlockKeyStr, tmpBlockSignStr);
 
         }
+        private bool AddFromLocalTemp(Int64 BlockRowNo)
+        {
+            string[] ZipFileList = Notus.IO.GetFileList(Obj_Settings, Notus.Variable.Constant.StorageFolderName.TempBlock, "tmp");
+            for(int i=0; i< ZipFileList.Length; i++)
+            {
+                string textBlockData = File.ReadAllText(ZipFileList[i]);
+                Notus.Variable.Class.BlockData? tmpBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(textBlockData);
+                if (tmpBlockData != null)
+                {
+                    if (tmpBlockData.info.rowNo == BlockRowNo)
+                    {
+                        using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                        {
+                            BS_Storage.Network = Obj_Settings.Network;
+                            BS_Storage.Layer = Obj_Settings.Layer;
+                            BS_Storage.AddSync(tmpBlockData, true);
+                        }
+                        return true;
+                    }
+                }
+                else
+                {
+                    Notus.Print.Log(
+                        Notus.Variable.Enum.LogLevel.Error,
+                        500001000,
+                        "Wrong File : " + ZipFileList[i],
+                        BlockRowNo.ToString(),
+                        Obj_Settings,
+                        null
+                    );
+                }
+            }
+            return false;
+        }
         private void StoreBlockWithRowNo(Int64 BlockRowNo)
         {
-            bool exitInnerLoop = false;
-            while (exitInnerLoop == false)
+            Notus.Print.Log(
+                Notus.Variable.Enum.LogLevel.Error,
+                500001001,
+                "BlockRowNo Does Not Exist : " + BlockRowNo.ToString(),
+                BlockRowNo.ToString(),
+                Obj_Settings,
+                null
+            );
+
+            Console.WriteLine("BlockRowNo Does Not Exist : " + BlockRowNo.ToString());
+            bool localFound=AddFromLocalTemp(BlockRowNo);
+            if (localFound == false)
             {
-                for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
+                bool debugPrinted= false;
+                bool exitInnerLoop = false;
+                while (exitInnerLoop == false)
                 {
-                    string myIpAddress = (Obj_Settings.LocalNode == true ? Obj_Settings.IpInfo.Local : Obj_Settings.IpInfo.Public);
-                    string nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
-                    if (string.Equals(myIpAddress, nodeIpAddress) == false)
+                    for (int a = 0; a < Notus.Variable.Constant.ListMainNodeIp.Count && exitInnerLoop == false; a++)
                     {
-                        string MainResultStr = string.Empty;
-                        try
+                        string myIpAddress = (Obj_Settings.LocalNode == true ? Obj_Settings.IpInfo.Local : Obj_Settings.IpInfo.Public);
+                        string nodeIpAddress = Notus.Variable.Constant.ListMainNodeIp[a];
+                        if (string.Equals(myIpAddress, nodeIpAddress) == false)
                         {
-                            string nodeUrl = Notus.Network.Node.MakeHttpListenerPath(
-                                    nodeIpAddress,
-                                    Notus.Network.Node.GetNetworkPort(Obj_Settings)
-                                );
-                            MainResultStr = Notus.Communication.Request.GetSync(
-                                 nodeUrl + "block/" + BlockRowNo.ToString() + "/raw",
-                                10,
-                                true,
-                                true,
-                                Obj_Settings
-                            );
-                            Notus.Variable.Class.BlockData? tmpEmptyBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
-                            if (tmpEmptyBlock != null)
+                            string MainResultStr = string.Empty;
+                            try
                             {
-                                Notus.Print.Info(Obj_Settings, "Getting Block Row No [ " + nodeUrl + " ]: " + BlockRowNo.ToString());
-                                using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                                string nodeUrl = Notus.Network.Node.MakeHttpListenerPath(
+                                        nodeIpAddress,
+                                        Notus.Network.Node.GetNetworkPort(Obj_Settings)
+                                    );
+                                MainResultStr = Notus.Communication.Request.GetSync(
+                                     nodeUrl + "block/" + BlockRowNo.ToString() + "/raw",
+                                    10,
+                                    true,
+                                    true,
+                                    Obj_Settings
+                                );
+                                Notus.Variable.Class.BlockData? tmpEmptyBlock = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(MainResultStr);
+                                if (tmpEmptyBlock != null)
                                 {
-                                    BS_Storage.Network = Obj_Settings.Network;
-                                    BS_Storage.Layer = Obj_Settings.Layer;
-                                    BS_Storage.AddSync(tmpEmptyBlock, true);
+                                    Notus.Print.Info(Obj_Settings, "Getting Block Row No [ " + nodeUrl + " ]: " + BlockRowNo.ToString());
+                                    using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
+                                    {
+                                        BS_Storage.Network = Obj_Settings.Network;
+                                        BS_Storage.Layer = Obj_Settings.Layer;
+                                        BS_Storage.AddSync(tmpEmptyBlock, true);
+                                    }
+                                    exitInnerLoop = true;
                                 }
-                                exitInnerLoop = true;
+                            }
+                            catch (Exception err)
+                            {
+                                if (debugPrinted == false)
+                                {
+                                    Notus.Print.Log(
+                                        Notus.Variable.Enum.LogLevel.Info,
+                                        203154,
+                                        err.Message,
+                                        BlockRowNo.ToString(),
+                                        Obj_Settings,
+                                        err
+                                    );
+                                    Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [5a6e84]: " + err.Message);
+                                    Notus.Print.Basic(Obj_Settings.DebugMode, "Income Text [5a6e84]: " + MainResultStr);
+                                    debugPrinted = true;
+                                }
+                                else
+                                {
+                                    Console.Write(".");
+                                }
+                            }
+                            if (exitInnerLoop == true)
+                            {
+                                Thread.Sleep(2500);
                             }
                         }
-                        catch (Exception err)
-                        {
-                            Notus.Print.Log(
-                                Notus.Variable.Enum.LogLevel.Info,
-                                203154,
-                                err.Message,
-                                BlockRowNo.ToString(),
-                                Obj_Settings,
-                                err
-                            );
-
-                            Notus.Print.Basic(Obj_Settings.DebugMode, "Error Text [5a6e84]: " + err.Message);
-                            Notus.Print.Basic(Obj_Settings.DebugMode, "Income Text [5a6e84]: " + MainResultStr);
-                        }
-                        if (exitInnerLoop == true)
-                        {
-                            Thread.Sleep(2500);
-                        }
+                    }
+                    if (exitInnerLoop == false)
+                    {
+                        Thread.Sleep(5000);
                     }
                 }
             }
@@ -590,7 +667,7 @@ namespace Notus.Block
             // we have genesis
             if (ZipFileList.Length > 0)
             {
-                Notus.Print.Basic(Obj_Settings, "We Have Block - Lets Check Genesis Time And Hash");
+                //Notus.Print.Basic(Obj_Settings, "We Have Block - Lets Check Genesis Time And Hash");
                 using (Notus.Block.Storage BS_Storage = new Notus.Block.Storage(false))
                 {
                     BS_Storage.Network = Obj_Settings.Network;

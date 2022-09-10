@@ -4,23 +4,40 @@ namespace Notus
 {
     public static class IO
     {
-        public static string[] GetZipFiles(
+        public static string[] GetFileList(
             Notus.Variable.Enum.NetworkType networkType,
-            Notus.Variable.Enum.NetworkLayer networkLayer
+            Notus.Variable.Enum.NetworkLayer networkLayer,
+            string directoryName,
+            string extension
         )
         {
-            if (Directory.Exists(Notus.IO.GetFolderName(networkType, networkLayer, Notus.Variable.Constant.StorageFolderName.Block)) == false)
+            if (Directory.Exists(Notus.IO.GetFolderName(networkType, networkLayer,
+                directoryName)) == false)
             {
                 return new string[] { };
             }
             return Directory.GetFiles(
-                Notus.IO.GetFolderName(
-                    networkType, 
-                    networkLayer, 
-                    Notus.Variable.Constant.StorageFolderName.Block
-                ), 
-                "*.zip"
+                Notus.IO.GetFolderName(networkType,networkLayer,directoryName),"*." + extension
             );
+        }
+        public static string[] GetFileList(
+            Notus.Variable.Common.ClassSetting objSettings,
+            string directoryName,
+            string extension
+        )
+        {
+            if (Directory.Exists(Notus.IO.GetFolderName(objSettings.Network, objSettings.Layer,
+                directoryName)) == false)
+            {
+                return new string[] { };
+            }
+            return Directory.GetFiles(
+                Notus.IO.GetFolderName(objSettings.Network, objSettings.Layer, directoryName),"*." + extension
+            );
+        }
+        public static string[] GetZipFiles(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
+        {
+            return GetFileList(networkType,networkLayer,Notus.Variable.Constant.StorageFolderName.Block,"zip");
         }
         public static string[] GetZipFiles(Notus.Variable.Common.ClassSetting objSettings)
         {

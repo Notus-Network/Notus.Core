@@ -60,21 +60,11 @@ namespace Notus
         }
         public static void DeleteFromInside(string ZipFileName, List<string> insideFileList, bool deleteZipIfEmpty = false)
         {
-
             bool removeFile = false;
             using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Update))
             {
                 for (int i = 0; i < insideFileList.Count; i++)
                 {
-                    Notus.Print.Log(
-                        Notus.Variable.Enum.LogLevel.Info,
-                        20,
-                        "DeleteFromInside",
-                        "DeleteFromInside",
-                        null,
-                        null
-                    );
-
                     bool fileDeleted = false;
                     while(fileDeleted == false)
                     {
@@ -105,15 +95,6 @@ namespace Notus
         }
         public static void DeleteFromInside(string ZipFileName, string insideFileName, bool deleteZipIfEmpty = false)
         {
-            Notus.Print.Log(
-                Notus.Variable.Enum.LogLevel.Info,
-                30,
-                "DeleteFromInside",
-                "DeleteFromInside",
-                null,
-                null
-            );
-
             bool removeFile = false;
             using (ZipArchive archive = ZipFile.Open(ZipFileName, ZipArchiveMode.Update))
             {

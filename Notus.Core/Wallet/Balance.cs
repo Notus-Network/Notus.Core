@@ -108,9 +108,9 @@ namespace Notus.Wallet
             return tmpResult;
         }
         public (bool, Notus.Variable.Struct.WalletBalanceStruct) SubtractVolumeWithUnlockTime(
-            Notus.Variable.Struct.WalletBalanceStruct balanceObj, 
-            string volume, 
-            string coinTagName, 
+            Notus.Variable.Struct.WalletBalanceStruct balanceObj,
+            string volume,
+            string coinTagName,
             ulong unlockTime
         )
         {
@@ -212,9 +212,9 @@ namespace Notus.Wallet
         }
         public bool AccountIsLock(string WalletKey)
         {
-            
+
             string unlockTimeStr = ObjMp_LockWallet.Get(
-                Notus.Toolbox.Text.ToHex(WalletKey), 
+                Notus.Toolbox.Text.ToHex(WalletKey),
                 ""
             );
             if (unlockTimeStr.Length > 0)
@@ -410,11 +410,11 @@ namespace Notus.Wallet
                             tmpBlockForBalance.cipher.data
                         )
                     );
-                        ObjMp_LockWallet.Set(
-                            Notus.Toolbox.Text.ToHex(tmpLockBalance.WalletKey),
-                            tmpLockBalance.UnlockTime.ToString(),
-                            true
-                        );
+                    ObjMp_LockWallet.Set(
+                        Notus.Toolbox.Text.ToHex(tmpLockBalance.WalletKey),
+                        tmpLockBalance.UnlockTime.ToString(),
+                        true
+                    );
                 }
             }
             if (tmpBlockForBalance.info.type == 120)
@@ -555,7 +555,8 @@ namespace Notus.Wallet
                     ObjMp_Balance.Dispose();
                 }
             }
-            catch(Exception err) {
+            catch (Exception err)
+            {
                 Notus.Print.Log(
                     Notus.Variable.Enum.LogLevel.Info,
                     897989784,
@@ -572,7 +573,8 @@ namespace Notus.Wallet
                     ObjMp_LockWallet.Dispose();
                 }
             }
-            catch (Exception err){
+            catch (Exception err)
+            {
                 Notus.Print.Log(
                     Notus.Variable.Enum.LogLevel.Info,
                     8754213,

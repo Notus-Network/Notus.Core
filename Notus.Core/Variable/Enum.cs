@@ -4,7 +4,6 @@ using System.Numerics;
 
 namespace Notus.Variable.Enum
 {
-
     public enum NetworkNodeType
     {
         All = 2048,
@@ -152,7 +151,6 @@ namespace Notus.Variable.Enum
         DataStorage = 7                 /* blok içeriğinde kaydedilen verinin her byte'ı için  */
 
     }
-
     public enum LogLevel
     {
         Info = 0,
@@ -160,5 +158,9 @@ namespace Notus.Variable.Enum
         Fatal=9,
         Warning = 2
     }
-
+    public enum MultiWalletType
+    {
+        AllRequired = 0,
+        MajorityRequired = 1
+    }
 }

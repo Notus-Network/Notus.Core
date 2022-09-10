@@ -523,11 +523,11 @@ namespace Notus.Variable.Struct
         public string Sign { get; set; }
     }
 
-    public class MultiWalletPart
+    public class MultiWalletStruct
     {
         public string PublicKey { get; set; }
         public string Sign { get; set; }
-        //public 
+        public List<string> WalletList { get; set; }
     }
     public class LogStruct
     {
