@@ -327,6 +327,19 @@ namespace Notus.Validator
                     }
                 }
 
+                if (IncomeData.UrlList.Length > 2)
+                {
+                    if (IncomeData.UrlList[0].ToLower() == "multi")
+                    {
+                        if (IncomeData.UrlList[1].ToLower() == "wallet") 
+                        {
+                            if (IncomeData.UrlList[2].ToLower() == "add")
+                            {
+
+                            }
+                        }
+                    }
+                }
                 if (IncomeData.UrlList.Length > 1)
                 {
                     if (IncomeData.UrlList[0].ToLower() == "pool")

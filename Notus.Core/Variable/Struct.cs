@@ -523,11 +523,18 @@ namespace Notus.Variable.Struct
         public string Sign { get; set; }
     }
 
+    public class MultiWalletFounderStruct
+    {
+        public string WalletKey { get; set; }
+        public string PublicKey { get; set; }
+    }
     public class MultiWalletStruct
     {
-        public string PublicKey { get; set; }
-        public string Sign { get; set; }
+        public MultiWalletFounderStruct Founder { get; set; }
         public List<string> WalletList { get; set; }
+        public string MultiWalletKey { get; set; }
+        public Notus.Variable.Enum.MultiWalletType VoteType { get; set; }
+        public string Sign { get; set; }
     }
     public class LogStruct
     {
