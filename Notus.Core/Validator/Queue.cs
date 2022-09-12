@@ -831,7 +831,7 @@ namespace Notus.Validator
                     string tmpFirstWallet = tmpWalletList.First().Value;
                     if (string.Equals(tmpFirstWallet, MyWallet))
                     {
-                        StartingTimeAfterEnoughNode = RefreshNtpTime(20);
+                        StartingTimeAfterEnoughNode = RefreshNtpTime(Notus.Variable.Constant.NodeStartingSync);
                         Notus.Print.Info(Obj_Settings, 
                             "I'm Sending Starting (When) Time / Current : " + 
                             StartingTimeAfterEnoughNode.ToString("HH:mm:ss.fff") +
@@ -982,15 +982,11 @@ namespace Notus.Validator
             // Console.WriteLine(JsonSerializer.Serialize(NodeOrderList));
             MyTurn_Val = (string.Equals(MyWallet, NodeOrderList[1]));
 
-
-            // if(NodeTurnCount)
-            // Console.WriteLine(MyTurn_Val);
-            // Console.WriteLine("+++++++++++++++++++++++++++++++++++++++++");
             if (MyTurn_Val == true)
             {
                 //Notus.Print.Info(Obj_Settings, "My Turn");
                 CalculateTimeDifference(false);
-                NextQueueValidNtpTime = RefreshNtpTime(3);
+                NextQueueValidNtpTime = RefreshNtpTime(Notus.Variable.Constant.NodeSortFrequency);
                 foreach (KeyValuePair<string, NodeQueueInfo> entry in PreviousNodeList)
                 {
                     if (
@@ -1007,12 +1003,10 @@ namespace Notus.Validator
                         );
                     }
                 }
-                //Console.WriteLine("Control-Point-5");
             }
             else
             {
                 //Notus.Print.Info(Obj_Settings, "Waiting For Turn");
-                //Console.WriteLine("Control-Point-4");
             }
             NodeList[MyNodeHexKey].Time.Node = DateTime.Now;
             NodeList[MyNodeHexKey].Time.World = NtpTime;

@@ -115,6 +115,7 @@ namespace Notus.Variable.Enum
         WrongSignature = 2,
         WrongVolume = 5,
         WrongWallet = 67,
+        WalletUsing = 75,
 
         WrongWallet_Sender = 6,
         WrongWallet_Receiver = 9,

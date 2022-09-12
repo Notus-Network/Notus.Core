@@ -13,12 +13,38 @@ namespace Notus.Wallet
             get { return Obj_Settings; }
             set { Obj_Settings = value; }
         }
+        private Notus.Mempool ObjMp_WalletUsage;
         private Notus.Mempool ObjMp_LockWallet;
         private Notus.Mempool ObjMp_Balance;
 
+
+        // bu fonksiyonlar ile cüzdanın kilitlenmesi durumuna bakalım
+        public bool WalletUsageAvailable(string walletKey)
+        {
+
+            return (ObjMp_WalletUsage.Get(walletKey, "").Length == 0 ? true : false);
+        }
+        public bool StartWalletUsage(string walletKey)
+        {
+            if (WalletUsageAvailable(walletKey) == false)
+            {
+                return ObjMp_WalletUsage.Add(
+                    walletKey,
+                    DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+                );
+            }
+            return false;
+        }
+        public void StopWalletUsage(string walletKey)
+        {
+            ObjMp_WalletUsage.Remove(walletKey);
+        }
         private void StoreToDb(Notus.Variable.Struct.WalletBalanceStruct BalanceObj)
         {
             ObjMp_Balance.Set(BalanceObj.Wallet, JsonSerializer.Serialize(BalanceObj), true);
+            
+            //burada cüzdan kilidi açılacak...
+            StopWalletUsage(BalanceObj.Wallet);
         }
         public Notus.Variable.Struct.WalletBalanceResponseStruct ReadFromNode(string WalletKey)
         {
@@ -57,7 +83,6 @@ namespace Notus.Wallet
             }
             return null;
         }
-
         public Notus.Variable.Struct.WalletBalanceStruct Get(string WalletKey, ulong timeYouCanUse)
         {
             string BalanceValStr = ObjMp_Balance.Get(WalletKey, string.Empty);
@@ -107,6 +132,21 @@ namespace Notus.Wallet
             }
             return tmpResult;
         }
+        /*
+
+        controlpoint
+        controlpoint
+        controlpoint
+        controlpoint
+
+
+        BURAYA CÜZDAN KİLİTLEME İŞLEMİ EKLE
+        KİLİTLEME OLAYI ŞU : AYNI ANDA BİRDEN FAZLA BAKİYE GİRİŞ VE ÇIKIŞI İŞLEMİNE İZİN VERMEMESİ
+        İÇİN GEÇİCİ OLARAK İŞLEMİN KİLİTLENMESİ DURUMU
+
+        AYRICA ÇÖZMEK İÇİNDE BİR FONKSİYON VEYA İŞLEM EKLE
+
+        */
         public (bool, Notus.Variable.Struct.WalletBalanceStruct) SubtractVolumeWithUnlockTime(
             Notus.Variable.Struct.WalletBalanceStruct balanceObj,
             string volume,
@@ -289,6 +329,7 @@ namespace Notus.Wallet
 
                 ObjMp_Balance.Clear();
                 ObjMp_LockWallet.Clear();
+                ObjMp_WalletUsage.Clear();
                 string tmpBalanceStr = Obj_Settings.Genesis.Premining.PreSeed.Volume.ToString();
                 if (Obj_Settings.Genesis.Premining.PreSeed.DecimalContains == false)
                 {
@@ -439,7 +480,26 @@ namespace Notus.Wallet
                     });
                 }
             }
-
+            if (tmpBlockForBalance.info.type == 90)
+            {
+                // wallet-lock
+                string tmpRawDataStr = System.Text.Encoding.UTF8.GetString(
+                    System.Convert.FromBase64String(
+                        tmpBlockForBalance.cipher.data
+                    )
+                );
+                Notus.Variable.Struct.MultiWalletStoreStruct? tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Struct.MultiWalletStoreStruct>(tmpRawDataStr);
+                if (tmpBalanceVal == null)
+                {
+                    Console.WriteLine("tmpRawDataStr -> Balance.Cs -> 493. Line");
+                    Console.WriteLine(tmpRawDataStr);
+                }
+                else
+                {
+                    Console.WriteLine("Multi Signature Wallet -> Balance.Cs -> 498. Line");
+                    Console.WriteLine(JsonSerializer.Serialize(tmpBalanceVal, Notus.Variable.Constant.JsonSetting));
+                }
+            }
             /*
             if (tmpBlockForBalance.info.type == 240)
             {
@@ -538,6 +598,13 @@ namespace Notus.Wallet
             );
             ObjMp_LockWallet.AsyncActive = false;
             ObjMp_LockWallet.Clear();
+
+            ObjMp_WalletUsage = new Notus.Mempool(
+                Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Balance) +
+                "wallet_usage"
+            );
+            ObjMp_WalletUsage.AsyncActive = false;
+            ObjMp_WalletUsage.Clear();
         }
         public Balance()
         {
@@ -578,6 +645,24 @@ namespace Notus.Wallet
                 Notus.Print.Log(
                     Notus.Variable.Enum.LogLevel.Info,
                     8754213,
+                    err.Message,
+                    "BlockRowNo",
+                    null,
+                    err
+                );
+            }
+            try
+            {
+                if (ObjMp_WalletUsage != null)
+                {
+                    ObjMp_WalletUsage.Dispose();
+                }
+            }
+            catch (Exception err)
+            {
+                Notus.Print.Log(
+                    Notus.Variable.Enum.LogLevel.Info,
+                    8754293,
                     err.Message,
                     "BlockRowNo",
                     null,

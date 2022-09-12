@@ -241,8 +241,6 @@ namespace Notus.Validator
                 if (CryptoTransferTimerIsRunning == false)
                 {
                     CryptoTransferTimerIsRunning = true;
-                    bool executedCryptoTransfer = false;
-                    //int howManySeconds = (int)Math.Floor((DateTime.Now - EmptyBlockTime).TotalSeconds);
                     int tmpRequestSend_ListCount = Obj_Api.RequestSend_ListCount();
                     if (tmpRequestSend_ListCount > 0)
                     {
@@ -278,163 +276,188 @@ namespace Notus.Validator
                         ulong transactionCount = 0;
                         foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in tmpTransactionList)
                         {
-                            bool walletHaveEnoughCoinOrToken = true;
-                            Notus.Variable.Struct.CryptoTransactionStoreStruct tmpObjPoolCrypto = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionStoreStruct>(entry.Value.Data);
-
-                            bool senderExist = tmpWalletList.IndexOf(tmpObjPoolCrypto.Sender) >= 0 ? true : false;
-                            bool receiverExist = tmpWalletList.IndexOf(tmpObjPoolCrypto.Receiver) >= 0 ? true : false;
-                            if (senderExist == false && receiverExist == false)
+                            Notus.Variable.Struct.CryptoTransactionStoreStruct? tmpObjPoolCrypto = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionStoreStruct>(entry.Value.Data);
+                            if (tmpObjPoolCrypto != null)
                             {
-                                tmpWalletList.Add(tmpObjPoolCrypto.Sender);
-                                tmpWalletList.Add(tmpObjPoolCrypto.Receiver);
-                            }
-                            if (senderExist == false && receiverExist == false)
-                            {
-                                Notus.Variable.Struct.WalletBalanceStruct tmpSenderBalance = Obj_Api.BalanceObj.Get(tmpObjPoolCrypto.Sender, unlockTimeForNodeWallet);
-                                Notus.Variable.Struct.WalletBalanceStruct tmpReceiverBalance = Obj_Api.BalanceObj.Get(tmpObjPoolCrypto.Receiver, unlockTimeForNodeWallet);
-                                string tmpTokenTagStr = "";
-                                BigInteger tmpTokenVolume = 0;
-
-                                if (string.Equals(tmpObjPoolCrypto.Currency, Obj_Settings.Genesis.CoinInfo.Tag))
+                                bool thisRecordCanBeAdded = false;
+                                bool senderAvailable = Obj_Api.BalanceObj.WalletUsageAvailable(tmpObjPoolCrypto.Sender);
+                                if (senderAvailable == true)
                                 {
-                                    tmpTokenTagStr = Obj_Settings.Genesis.CoinInfo.Tag;
-                                    BigInteger WalletBalanceInt = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, tmpTokenTagStr);
-                                    BigInteger RequiredBalanceInt = BigInteger.Parse(tmpObjPoolCrypto.Volume);
-                                    tmpTokenVolume = RequiredBalanceInt;
-                                    if ((RequiredBalanceInt + transferFee) > WalletBalanceInt)
+                                    bool receiverAvailable = Obj_Api.BalanceObj.WalletUsageAvailable(tmpObjPoolCrypto.Receiver);
+                                    if (receiverAvailable == true)
                                     {
-                                        walletHaveEnoughCoinOrToken = false;
+                                        bool senderLocked = Obj_Api.BalanceObj.StartWalletUsage(tmpObjPoolCrypto.Sender);
+                                        if (senderLocked == true)
+                                        {
+                                            bool receiverLocked = Obj_Api.BalanceObj.StartWalletUsage(tmpObjPoolCrypto.Receiver);
+                                            if (receiverLocked == true)
+                                            {
+                                                thisRecordCanBeAdded = true;
+                                            }
+                                        }
                                     }
                                 }
-                                else
+
+                                if (thisRecordCanBeAdded == true)
                                 {
-                                    if (tmpSenderBalance.Balance.ContainsKey(Obj_Settings.Genesis.CoinInfo.Tag) == false)
+                                    bool walletHaveEnoughCoinOrToken = true;
+                                    Obj_Api.BalanceObj.StartWalletUsage(tmpObjPoolCrypto.Sender);
+                                    Obj_Api.BalanceObj.StartWalletUsage(tmpObjPoolCrypto.Receiver);
+
+                                    bool senderExist = tmpWalletList.IndexOf(tmpObjPoolCrypto.Sender) >= 0 ? true : false;
+                                    bool receiverExist = tmpWalletList.IndexOf(tmpObjPoolCrypto.Receiver) >= 0 ? true : false;
+                                    if (senderExist == false && receiverExist == false)
                                     {
-                                        walletHaveEnoughCoinOrToken = false;
-                                    }
-                                    else
-                                    {
-                                        BigInteger coinFeeBalance = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, Obj_Settings.Genesis.CoinInfo.Tag);
-                                        if (transferFee > coinFeeBalance)
+                                        tmpWalletList.Add(tmpObjPoolCrypto.Sender);
+                                        tmpWalletList.Add(tmpObjPoolCrypto.Receiver);
+
+                                        Notus.Variable.Struct.WalletBalanceStruct tmpSenderBalance = Obj_Api.BalanceObj.Get(tmpObjPoolCrypto.Sender, unlockTimeForNodeWallet);
+                                        Notus.Variable.Struct.WalletBalanceStruct tmpReceiverBalance = Obj_Api.BalanceObj.Get(tmpObjPoolCrypto.Receiver, unlockTimeForNodeWallet);
+                                        string tmpTokenTagStr = "";
+                                        BigInteger tmpTokenVolume = 0;
+
+                                        if (string.Equals(tmpObjPoolCrypto.Currency, Obj_Settings.Genesis.CoinInfo.Tag))
                                         {
-                                            walletHaveEnoughCoinOrToken = false;
+                                            tmpTokenTagStr = Obj_Settings.Genesis.CoinInfo.Tag;
+                                            BigInteger WalletBalanceInt = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, tmpTokenTagStr);
+                                            BigInteger RequiredBalanceInt = BigInteger.Parse(tmpObjPoolCrypto.Volume);
+                                            tmpTokenVolume = RequiredBalanceInt;
+                                            if ((RequiredBalanceInt + transferFee) > WalletBalanceInt)
+                                            {
+                                                walletHaveEnoughCoinOrToken = false;
+                                            }
                                         }
                                         else
                                         {
-                                            BigInteger tokenCurrentBalance = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, tmpObjPoolCrypto.Currency);
-                                            BigInteger RequiredBalanceInt = BigInteger.Parse(tmpObjPoolCrypto.Volume);
-                                            if (RequiredBalanceInt > tokenCurrentBalance)
+                                            if (tmpSenderBalance.Balance.ContainsKey(Obj_Settings.Genesis.CoinInfo.Tag) == false)
                                             {
                                                 walletHaveEnoughCoinOrToken = false;
                                             }
                                             else
                                             {
-                                                tmpTokenTagStr = tmpObjPoolCrypto.Currency;
-                                                tmpTokenVolume = RequiredBalanceInt;
+                                                BigInteger coinFeeBalance = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, Obj_Settings.Genesis.CoinInfo.Tag);
+                                                if (transferFee > coinFeeBalance)
+                                                {
+                                                    walletHaveEnoughCoinOrToken = false;
+                                                }
+                                                else
+                                                {
+                                                    BigInteger tokenCurrentBalance = Obj_Api.BalanceObj.GetCoinBalance(tmpSenderBalance, tmpObjPoolCrypto.Currency);
+                                                    BigInteger RequiredBalanceInt = BigInteger.Parse(tmpObjPoolCrypto.Volume);
+                                                    if (RequiredBalanceInt > tokenCurrentBalance)
+                                                    {
+                                                        walletHaveEnoughCoinOrToken = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        tmpTokenTagStr = tmpObjPoolCrypto.Currency;
+                                                        tmpTokenVolume = RequiredBalanceInt;
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
-                                }
 
 
-                                if (walletHaveEnoughCoinOrToken == false)
-                                {
-                                    Obj_Api.RequestSend_Remove(entry.Key);
-                                    Obj_Api.CryptoTranStatus.Set(entry.Key, JsonSerializer.Serialize(
-                                        new Notus.Variable.Struct.CryptoTransferStatus()
+                                        if (walletHaveEnoughCoinOrToken == false)
                                         {
-                                            Code = Notus.Variable.Enum.BlockStatusCode.Rejected,
-                                            RowNo = 0,
-                                            UID = "",
-                                            Text = "Rejected"
+                                            Obj_Api.RequestSend_Remove(entry.Key);
+                                            Obj_Api.CryptoTranStatus.Set(entry.Key, JsonSerializer.Serialize(
+                                                new Notus.Variable.Struct.CryptoTransferStatus()
+                                                {
+                                                    Code = Notus.Variable.Enum.BlockStatusCode.Rejected,
+                                                    RowNo = 0,
+                                                    UID = "",
+                                                    Text = "Rejected"
+                                                }
+                                            ));
                                         }
-                                    ));
-                                }
-                                else
-                                {
-                                    totalBlockReward = totalBlockReward + transferFee;
-                                    transactionCount++;
-                                    if (tmpBlockCipherData.Out.ContainsKey(tmpObjPoolCrypto.Sender) == false)
-                                    {
-                                        tmpBlockCipherData.Out.Add(tmpObjPoolCrypto.Sender, GetWalletBalanceDictionary(tmpObjPoolCrypto.Sender, unlockTimeForNodeWallet));
-                                    }
-                                    if (tmpBlockCipherData.Out.ContainsKey(tmpObjPoolCrypto.Receiver) == false)
-                                    {
-                                        tmpBlockCipherData.Out.Add(tmpObjPoolCrypto.Receiver, GetWalletBalanceDictionary(tmpObjPoolCrypto.Receiver, unlockTimeForNodeWallet));
-                                    }
+                                        else
+                                        {
+                                            totalBlockReward = totalBlockReward + transferFee;
+                                            transactionCount++;
+                                            if (tmpBlockCipherData.Out.ContainsKey(tmpObjPoolCrypto.Sender) == false)
+                                            {
+                                                tmpBlockCipherData.Out.Add(tmpObjPoolCrypto.Sender, GetWalletBalanceDictionary(tmpObjPoolCrypto.Sender, unlockTimeForNodeWallet));
+                                            }
+                                            if (tmpBlockCipherData.Out.ContainsKey(tmpObjPoolCrypto.Receiver) == false)
+                                            {
+                                                tmpBlockCipherData.Out.Add(tmpObjPoolCrypto.Receiver, GetWalletBalanceDictionary(tmpObjPoolCrypto.Receiver, unlockTimeForNodeWallet));
+                                            }
 
-                                    tmpBlockCipherData.In.Add(entry.Key, new Notus.Variable.Class.BlockStruct_120_In_Struct()
-                                    {
-                                        Fee = tmpObjPoolCrypto.Fee,
-                                        PublicKey = tmpObjPoolCrypto.PublicKey,
-                                        Sign = tmpObjPoolCrypto.Sign,
-                                        Volume = tmpObjPoolCrypto.Volume,
-                                        Currency = tmpObjPoolCrypto.Currency,
-                                        Receiver = new Notus.Variable.Class.WalletBalanceStructForTransaction()
-                                        {
-                                            Balance = Obj_Api.BalanceObj.ReAssign(tmpReceiverBalance.Balance),
-                                            Wallet = tmpObjPoolCrypto.Receiver,
-                                            WitnessBlockUid = tmpReceiverBalance.UID,
-                                            WitnessRowNo = tmpReceiverBalance.RowNo
-                                        },
-                                        Sender = new Notus.Variable.Class.WalletBalanceStructForTransaction()
-                                        {
-                                            Balance = Obj_Api.BalanceObj.ReAssign(tmpSenderBalance.Balance),
-                                            Wallet = tmpObjPoolCrypto.Sender,
-                                            WitnessBlockUid = tmpSenderBalance.UID,
-                                            WitnessRowNo = tmpSenderBalance.RowNo
+                                            tmpBlockCipherData.In.Add(entry.Key, new Notus.Variable.Class.BlockStruct_120_In_Struct()
+                                            {
+                                                Fee = tmpObjPoolCrypto.Fee,
+                                                PublicKey = tmpObjPoolCrypto.PublicKey,
+                                                Sign = tmpObjPoolCrypto.Sign,
+                                                Volume = tmpObjPoolCrypto.Volume,
+                                                Currency = tmpObjPoolCrypto.Currency,
+                                                Receiver = new Notus.Variable.Class.WalletBalanceStructForTransaction()
+                                                {
+                                                    Balance = Obj_Api.BalanceObj.ReAssign(tmpReceiverBalance.Balance),
+                                                    Wallet = tmpObjPoolCrypto.Receiver,
+                                                    WitnessBlockUid = tmpReceiverBalance.UID,
+                                                    WitnessRowNo = tmpReceiverBalance.RowNo
+                                                },
+                                                Sender = new Notus.Variable.Class.WalletBalanceStructForTransaction()
+                                                {
+                                                    Balance = Obj_Api.BalanceObj.ReAssign(tmpSenderBalance.Balance),
+                                                    Wallet = tmpObjPoolCrypto.Sender,
+                                                    WitnessBlockUid = tmpSenderBalance.UID,
+                                                    WitnessRowNo = tmpSenderBalance.RowNo
+                                                }
+                                            });
+
+                                            // transfer fee added to validator wallet
+
+                                            tmpValidatorWalletBalance = Obj_Api.BalanceObj.AddVolumeWithUnlockTime(
+                                                tmpValidatorWalletBalance,
+                                                transferFee.ToString(),
+                                                Obj_Settings.Genesis.CoinInfo.Tag,
+                                                unlockTimeForNodeWallet
+                                            );
+                                            //tmpBlockCipherData.Out[Obj_Settings.NodeWallet.WalletKey] = tmpValidatorWalletBalance.Balance;
+
+                                            // sender pays transfer fee
+                                            (bool tmpErrorStatusForFee, Notus.Variable.Struct.WalletBalanceStruct tmpNewResultForFee) =
+                                            Obj_Api.BalanceObj.SubtractVolumeWithUnlockTime(
+                                                tmpSenderBalance,
+                                                transferFee.ToString(),
+                                                Obj_Settings.Genesis.CoinInfo.Tag,
+                                                unlockTimeForNodeWallet
+                                            );
+                                            if (tmpErrorStatusForFee == true)
+                                            {
+                                                Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
+                                                Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
+                                                Console.ReadLine();
+                                            }
+
+                                            // sender give coin or token
+                                            (bool tmpErrorStatusForTransaction, Notus.Variable.Struct.WalletBalanceStruct tmpNewResultForTransaction) =
+                                            Obj_Api.BalanceObj.SubtractVolumeWithUnlockTime(
+                                                tmpNewResultForFee,
+                                                tmpTokenVolume.ToString(),
+                                                tmpTokenTagStr,
+                                                unlockTimeForNodeWallet
+                                            );
+                                            if (tmpErrorStatusForTransaction == true)
+                                            {
+                                                Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
+                                                Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
+                                                Console.ReadLine();
+                                            }
+                                            tmpBlockCipherData.Out[tmpObjPoolCrypto.Sender] = tmpNewResultForTransaction.Balance;
+
+                                            //receiver get coin or token
+                                            Notus.Variable.Struct.WalletBalanceStruct tmpNewReceiverBalance = Obj_Api.BalanceObj.AddVolumeWithUnlockTime(
+                                                tmpReceiverBalance,
+                                                tmpObjPoolCrypto.Volume,
+                                                tmpObjPoolCrypto.Currency,
+                                                tmpObjPoolCrypto.UnlockTime
+                                            );
+                                            tmpBlockCipherData.Out[tmpObjPoolCrypto.Receiver] = tmpNewReceiverBalance.Balance;
                                         }
-                                    });
-
-                                    // transfer fee added to validator wallet
-
-                                    tmpValidatorWalletBalance = Obj_Api.BalanceObj.AddVolumeWithUnlockTime(
-                                        tmpValidatorWalletBalance,
-                                        transferFee.ToString(),
-                                        Obj_Settings.Genesis.CoinInfo.Tag,
-                                        unlockTimeForNodeWallet
-                                    );
-                                    //tmpBlockCipherData.Out[Obj_Settings.NodeWallet.WalletKey] = tmpValidatorWalletBalance.Balance;
-
-                                    // sender pays transfer fee
-                                    (bool tmpErrorStatusForFee, Notus.Variable.Struct.WalletBalanceStruct tmpNewResultForFee) =
-                                    Obj_Api.BalanceObj.SubtractVolumeWithUnlockTime(
-                                        tmpSenderBalance,
-                                        transferFee.ToString(),
-                                        Obj_Settings.Genesis.CoinInfo.Tag,
-                                        unlockTimeForNodeWallet
-                                    );
-                                    if (tmpErrorStatusForFee == true)
-                                    {
-                                        Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
-                                        Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
-                                        Console.ReadLine();
                                     }
-
-                                    // sender give coin or token
-                                    (bool tmpErrorStatusForTransaction, Notus.Variable.Struct.WalletBalanceStruct tmpNewResultForTransaction) =
-                                    Obj_Api.BalanceObj.SubtractVolumeWithUnlockTime(
-                                        tmpNewResultForFee,
-                                        tmpTokenVolume.ToString(),
-                                        tmpTokenTagStr,
-                                        unlockTimeForNodeWallet
-                                    );
-                                    if (tmpErrorStatusForTransaction == true)
-                                    {
-                                        Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
-                                        Console.WriteLine("Coin Needed - Main.Cs -> Line 498");
-                                        Console.ReadLine();
-                                    }
-                                    tmpBlockCipherData.Out[tmpObjPoolCrypto.Sender] = tmpNewResultForTransaction.Balance;
-
-                                    //receiver get coin or token
-                                    Notus.Variable.Struct.WalletBalanceStruct tmpNewReceiverBalance = Obj_Api.BalanceObj.AddVolumeWithUnlockTime(
-                                        tmpReceiverBalance,
-                                        tmpObjPoolCrypto.Volume,
-                                        tmpObjPoolCrypto.Currency,
-                                        tmpObjPoolCrypto.UnlockTime
-                                    );
-                                    tmpBlockCipherData.Out[tmpObjPoolCrypto.Receiver] = tmpNewReceiverBalance.Balance;
                                 }
                             }
                         }
@@ -461,7 +484,8 @@ namespace Notus.Validator
                                 }
                             }
                             tmpBlockCipherData.Validator.Reward = totalBlockReward.ToString();
-
+                            
+                            // wallet-lock
                             Obj_BlockQueue.Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
                             {
                                 type = 120,
@@ -534,6 +558,10 @@ namespace Notus.Validator
             {
                 return Obj_BlockQueue.GetPoolList(blockTypeNo);
             };
+            Obj_Api.Func_GetPoolCount = () =>
+            {
+                return Obj_BlockQueue.GetPoolCount();
+            };
 
             Obj_Api.Func_OnReadFromChain = blockKeyIdStr =>
             {
@@ -546,8 +574,7 @@ namespace Notus.Validator
             };
             Obj_Api.Func_AddToChainPool = blockStructForQueue =>
             {
-                Obj_BlockQueue.Add(blockStructForQueue);
-                return true;
+                return Obj_BlockQueue.Add(blockStructForQueue);
             };
             Obj_Api.Prepare();
 
@@ -766,6 +793,8 @@ namespace Notus.Validator
                         */
 
                         //blok sıra ve önceki değerleri düzenleniyor...
+
+                        /*
                         if (PreBlockData != null)
                         {
                             PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
@@ -778,6 +807,7 @@ namespace Notus.Validator
                         {
                             Notus.Print.Danger(Obj_Settings, "Pre Block Is NULL");
                         }
+                        */
                     }
                     else
                     {
@@ -1101,7 +1131,8 @@ namespace Notus.Validator
                 {
                     Obj_BlockQueue.Dispose();
                 }
-                catch (Exception err){
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         66000505,
@@ -1119,7 +1150,8 @@ namespace Notus.Validator
                 {
                     ValidatorQueueObj.Dispose();
                 }
-                catch(Exception err) {
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         900000845,
@@ -1137,7 +1169,8 @@ namespace Notus.Validator
                 {
                     Obj_Api.Dispose();
                 }
-                catch (Exception err){
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         7000777,
@@ -1155,7 +1188,8 @@ namespace Notus.Validator
                 {
                     HttpObj.Dispose();
                 }
-                catch (Exception err){
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         9000805,
@@ -1173,7 +1207,8 @@ namespace Notus.Validator
                 {
                     Obj_Integrity.Dispose();
                 }
-                catch (Exception err){
+                catch (Exception err)
+                {
                     Notus.Print.Log(
                         Notus.Variable.Enum.LogLevel.Info,
                         10012540,

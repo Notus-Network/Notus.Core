@@ -34,6 +34,15 @@ namespace Notus.Block
             }
             return null;
         }
+        public Dictionary<int,int>? GetPoolCount()
+        {
+            Dictionary<int, int> resultList = new Dictionary<int, int>();
+            foreach (KeyValuePair<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>> entry in Obj_PoolTransactionList)
+            {
+                resultList.Add(entry.Key, entry.Value.Count);
+            }
+            return resultList;
+        }
 
         public Notus.Variable.Class.BlockData OrganizeBlockOrder(Notus.Variable.Class.BlockData CurrentBlock)
         {
@@ -488,7 +497,7 @@ namespace Notus.Block
             Queue_PoolTransaction.Clear();
             Obj_PoolTransactionList.Clear();
         }
-        public void Add(Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData)
+        public bool Add(Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData)
         {
             if (PreBlockData != null)
             {
@@ -517,9 +526,11 @@ namespace Notus.Block
                         {
                             MP_BlockPoolList.Set(keyStr, PreBlockDataStr, true);
                         }
+                        return true;
                     }
                 }
             }
+            return false;
         }
 
         public void AddEmptyBlock()

@@ -21,7 +21,6 @@ namespace Notus.Validator
                     Notus.Time.GetNtpTime()
                 )
             );
-            Console.WriteLine("Control-Point-Notus.Validator.Node.Start() -> Line 19");
             Console.ReadLine();
             */
 

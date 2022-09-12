@@ -9,6 +9,10 @@ namespace Notus.Variable
     {
         public static readonly JsonSerializerOptions JsonSetting = new JsonSerializerOptions() { WriteIndented = true };
 
+        //node'ların sıralama frekansları - saniye cinsinden
+        public static readonly ulong NodeStartingSync = 20;
+        public static readonly ulong NodeSortFrequency = 3;
+
         // wallet constant
         public static readonly int SingleWalletTextLength = 39;
         public static readonly int MultiWalletTextLength = 39;
