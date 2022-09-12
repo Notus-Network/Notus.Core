@@ -780,6 +780,7 @@ namespace Notus.Validator
                     );
                     if (TmpBlockStruct != null)
                     {
+                        //Console.WriteLine(JsonSerializer.Serialize(TmpBlockStruct));
                         Notus.Variable.Class.BlockData? PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockData>(TmpBlockStruct.data);
 
                         // omergoksoy
@@ -795,6 +796,7 @@ namespace Notus.Validator
                         //blok sıra ve önceki değerleri düzenleniyor...
 
                         /*
+                        */
                         if (PreBlockData != null)
                         {
                             PreBlockData = Obj_BlockQueue.OrganizeBlockOrder(PreBlockData);
@@ -807,7 +809,6 @@ namespace Notus.Validator
                         {
                             Notus.Print.Danger(Obj_Settings, "Pre Block Is NULL");
                         }
-                        */
                     }
                     else
                     {

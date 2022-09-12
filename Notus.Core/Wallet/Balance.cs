@@ -21,19 +21,18 @@ namespace Notus.Wallet
         // bu fonksiyonlar ile cüzdanın kilitlenmesi durumuna bakalım
         public bool WalletUsageAvailable(string walletKey)
         {
-
             return (ObjMp_WalletUsage.Get(walletKey, "").Length == 0 ? true : false);
         }
         public bool StartWalletUsage(string walletKey)
         {
             if (WalletUsageAvailable(walletKey) == false)
             {
-                return ObjMp_WalletUsage.Add(
-                    walletKey,
-                    DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
-                );
+                return false;
             }
-            return false;
+            return ObjMp_WalletUsage.Add(
+                walletKey,
+                DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
+            );
         }
         public void StopWalletUsage(string walletKey)
         {
@@ -42,7 +41,7 @@ namespace Notus.Wallet
         private void StoreToDb(Notus.Variable.Struct.WalletBalanceStruct BalanceObj)
         {
             ObjMp_Balance.Set(BalanceObj.Wallet, JsonSerializer.Serialize(BalanceObj), true);
-            
+
             //burada cüzdan kilidi açılacak...
             StopWalletUsage(BalanceObj.Wallet);
         }
@@ -151,9 +150,13 @@ namespace Notus.Wallet
             Notus.Variable.Struct.WalletBalanceStruct balanceObj,
             string volume,
             string coinTagName,
-            ulong unlockTime
+            ulong unlockTime = 0
         )
         {
+            if (unlockTime == 0)
+            {
+                unlockTime = Notus.Time.NowToUlong();
+            }
             bool volumeError = true;
             // first parametre hata oluşması durumunda
             if (balanceObj.Balance.ContainsKey(coinTagName) == false)
@@ -496,6 +499,32 @@ namespace Notus.Wallet
                 }
                 else
                 {
+                    
+                    StoreToDb(new Notus.Variable.Struct.WalletBalanceStruct()
+                    {
+                        UID = tmpBalanceVal.Balance.UID,
+                        RowNo = tmpBalanceVal.Balance.RowNo,
+                        Wallet = tmpBalanceVal.Founder.WalletKey,
+                        Balance = tmpBalanceVal.Balance.Balance
+                    });
+                    
+                    StoreToDb(new Notus.Variable.Struct.WalletBalanceStruct()
+                    {
+                        UID = tmpBlockForBalance.info.uID,
+                        RowNo = tmpBlockForBalance.info.rowNo,
+                        Wallet = tmpBalanceVal.MultiWalletKey,
+                        Balance = new Dictionary<string, Dictionary<ulong, string>>(){
+                        {
+                            Obj_Settings.Genesis.CoinInfo.Tag,
+                            new Dictionary<ulong, string>(){
+                                {
+                                    Notus.Time.BlockIdToUlong(tmpBalanceVal.Balance.UID) , "0"
+                                }
+                            }
+                        }
+                    }
+                    });
+
                     Console.WriteLine("Multi Signature Wallet -> Balance.Cs -> 498. Line");
                     Console.WriteLine(JsonSerializer.Serialize(tmpBalanceVal, Notus.Variable.Constant.JsonSetting));
                 }
@@ -545,7 +574,12 @@ namespace Notus.Wallet
                     );
 
                     (bool tmpErrorStatus, var newBalanceVal) =
-                        SubtractVolumeWithUnlockTime(CurrentBalance, BlockFee.ToString(), Obj_Settings.Genesis.CoinInfo.Tag, tmpBlockTime);
+                        SubtractVolumeWithUnlockTime(
+                            CurrentBalance,
+                            BlockFee.ToString(),
+                            Obj_Settings.Genesis.CoinInfo.Tag,
+                            tmpBlockTime
+                        );
                     /*
                     CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag] =
                         (BigInteger.Parse(CurrentBalance.Balance[Obj_Settings.Genesis.CoinInfo.Tag]) -

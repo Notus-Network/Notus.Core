@@ -1913,8 +1913,7 @@ namespace Notus.Validator
                         BalanceObj.SubtractVolumeWithUnlockTime(
                             Obj_Balance.Get(WalletKeyStr, 0),
                             tmpFeeVolume.ToString(),
-                            Obj_Settings.Genesis.CoinInfo.Tag,
-                            0
+                            Obj_Settings.Genesis.CoinInfo.Tag
                         );
 
                     tmpTokenObj.Out = tmpNewGeneratorBalance.Balance;
@@ -2012,6 +2011,8 @@ namespace Notus.Validator
             Notus.Variable.Struct.MultiWalletStruct? WalletObj = JsonSerializer.Deserialize<Notus.Variable.Struct.MultiWalletStruct>(tmpLockAccountStr);
             if (WalletObj == null)
             {
+                Console.WriteLine("Control-Point-c19");
+                Console.WriteLine(tmpLockAccountStr);
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
                 {
                     UID = string.Empty,
@@ -2019,7 +2020,8 @@ namespace Notus.Validator
                     Result = Notus.Variable.Enum.BlockStatusCode.AnErrorOccurred
                 });
             }
-
+            Console.WriteLine(JsonSerializer.Serialize(WalletObj, Notus.Variable.Constant.JsonSetting));
+            Console.WriteLine("--------------------------------------------");
             if (Obj_Balance.WalletUsageAvailable(WalletObj.Founder.WalletKey) == false) {
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
                 {
@@ -2031,6 +2033,7 @@ namespace Notus.Validator
 
             if (Obj_Balance.StartWalletUsage(WalletObj.Founder.WalletKey) == false)
             {
+                Console.WriteLine("Control-Point-a16");
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
                 {
                     UID = string.Empty,
@@ -2095,11 +2098,11 @@ namespace Notus.Validator
                 Obj_Balance.SubtractVolumeWithUnlockTime(
                     tmpGeneratorBalanceObj,
                     howMuchCoinNeed.ToString(),
-                    Obj_Settings.Genesis.CoinInfo.Tag,
-                    0
+                    Obj_Settings.Genesis.CoinInfo.Tag
                 );
             if (volumeError == true)
             {
+                Console.WriteLine("Balance-Error");
                 Obj_Balance.StopWalletUsage(WalletObj.Founder.WalletKey);
                 return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponse()
                 {

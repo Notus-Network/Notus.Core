@@ -267,8 +267,7 @@ namespace Notus.Block
                             BalanceObj.SubtractVolumeWithUnlockTime(
                                 BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0),
                                 lockAccountFee,
-                                Obj_Settings.Genesis.CoinInfo.Tag,
-                                Notus.Time.NowToUlong()
+                                Obj_Settings.Genesis.CoinInfo.Tag
                             );
                         if (tmpBalanceResult == false)
                         {
