@@ -2,6 +2,11 @@
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
+using System.Linq;
+using System.Collections.Concurrent;
+using System.Text.Json;
+using Notus.Compression.TGZ;
+using System;
 
 namespace Notus
 {
@@ -38,12 +43,12 @@ namespace Notus
             }
         }
         public static void DeleteFromInside(
-            string blockUid, 
+            string blockUid,
             Notus.Variable.Common.ClassSetting objSettings,
-            bool deleteZipIfEmpty=false
+            bool deleteZipIfEmpty = false
         )
         {
-            DeleteFromInside(blockUid, objSettings.Network, objSettings.Layer, deleteZipIfEmpty );
+            DeleteFromInside(blockUid, objSettings.Network, objSettings.Layer, deleteZipIfEmpty);
         }
         public static void DeleteFromInside(
             string blockUid,
@@ -66,7 +71,7 @@ namespace Notus
                 for (int i = 0; i < insideFileList.Count; i++)
                 {
                     bool fileDeleted = false;
-                    while(fileDeleted == false)
+                    while (fileDeleted == false)
                     {
                         ZipArchiveEntry? entry = archive.GetEntry(AddExtensionToBlockUid(insideFileList[i]));
                         if (entry == null)
@@ -103,7 +108,7 @@ namespace Notus
                 {
                     entry.Delete();
                 }
-                if(deleteZipIfEmpty == true)
+                if (deleteZipIfEmpty == true)
                 {
                     if (archive.Entries.Count == 0)
                     {
@@ -122,4 +127,5 @@ namespace Notus
             return blockUid + (blockUid.IndexOf(".") >= 0 ? "" : ".json");
         }
     }
+
 }

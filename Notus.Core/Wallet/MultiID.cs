@@ -10,6 +10,26 @@ namespace Notus.Wallet
 {
     public static class MultiID
     {
+        public static bool IsMultiId(
+            string walletId,
+            Notus.Variable.Enum.NetworkType whichNetworkFor = Notus.Variable.Enum.NetworkType.MainNet
+        )
+        {
+            string keyPrefix = Notus.Variable.Constant.MultiWalletPrefix_MainNetwork;
+            if (whichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
+            {
+                keyPrefix = Notus.Variable.Constant.MultiWalletPrefix_TestNetwork;
+            }
+            if (whichNetworkFor == Notus.Variable.Enum.NetworkType.DevNet)
+            {
+                keyPrefix = Notus.Variable.Constant.MultiWalletPrefix_DevelopmentNetwork;
+            }
+
+            return string.Equals(
+                walletId.Substring(0, keyPrefix.Length),
+                keyPrefix
+            );
+        }
         public static string GetWalletID
         (
             string creatorWallet,

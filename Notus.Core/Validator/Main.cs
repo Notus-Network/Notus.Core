@@ -30,6 +30,7 @@ namespace Notus.Validator
         private Notus.Communication.Http HttpObj = new Notus.Communication.Http(true);
         private Notus.Block.Integrity Obj_Integrity;
         private Notus.Validator.Api Obj_Api;
+        private Notus.TGZArchiver ArchiverObj;
         //private Notus.Cache.Main Obj_MainCache;
         //private Notus.Token.Storage Obj_TokenStorage;
 
@@ -548,6 +549,8 @@ namespace Notus.Validator
             {
                 Notus.Print.Basic(Obj_Settings, "Notus.Validator.Main -> Genesis Is NULL");
             }
+            ArchiverObj = new TGZArchiver(Obj_Settings);
+
             Obj_Api = new Notus.Validator.Api();
             Obj_Api.Settings = Obj_Settings;
 
