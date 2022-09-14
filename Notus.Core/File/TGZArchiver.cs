@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Notus.Compression.TGZ;
 using System;
+using System.Threading.Tasks;
 
 namespace Notus
 {

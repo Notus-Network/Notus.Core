@@ -206,15 +206,21 @@ namespace Notus.Wallet
         {
             try
             {
-                bool transactionVerify = Verify(preTransfer);
-                if (transactionVerify == false)
+                if (Notus.Wallet.MultiID.IsMultiId(preTransfer.Sender) == true)
                 {
-                    return new Notus.Variable.Struct.CryptoTransactionResult()
+
+                }
+                else
+                {
+                    if (Verify(preTransfer) == false)
                     {
-                        ErrorText = "WrongSignature",
-                        ID = string.Empty,
-                        Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature,
-                    };
+                        return new Notus.Variable.Struct.CryptoTransactionResult()
+                        {
+                            ErrorText = "WrongSignature",
+                            ID = string.Empty,
+                            Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature,
+                        };
+                    }
                 }
 
                 bool exitInnerLoop = false;

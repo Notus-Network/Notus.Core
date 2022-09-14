@@ -628,7 +628,6 @@ namespace Notus.Wallet
                     Balance = tmpBalanceVal.Balance.Balance
                 });
             }
-
             */
 
             if (tmpBlockForBalance.info.type == 160)

@@ -1385,7 +1385,15 @@ namespace Notus.Validator
             Notus.Variable.Struct.CryptoTransactionStruct tmpTransfer
         )
         {
+            return JsonSerializer.Serialize(new Notus.Variable.Struct.CryptoTransactionResult()
+            {
+                ErrorNo = 7546,
+                ErrorText = "multi signature send",
+                ID = string.Empty,
+                Result = Notus.Variable.Enum.BlockStatusCode.WrongWallet_Sender
+            });
 
+            return "multi signature send";
             return string.Empty;
         }
         private string Request_Send(Notus.Variable.Struct.HttpRequestDetails IncomeData)
@@ -1456,8 +1464,15 @@ namespace Notus.Validator
                 });
             }
 
+            Console.WriteLine(Notus.Wallet.MultiID.IsMultiId(tmpTransfer.Sender));
+            Console.WriteLine(Notus.Wallet.MultiID.IsMultiId(tmpTransfer.Sender));
+            Console.WriteLine(Notus.Wallet.MultiID.IsMultiId(tmpTransfer.Sender));
             if (Notus.Wallet.MultiID.IsMultiId(tmpTransfer.Sender) == true)
             {
+                Console.WriteLine("Multi Wallet Is Sender");
+                Console.WriteLine("Multi Wallet Is Sender");
+                Console.WriteLine("Multi Wallet Is Sender");
+                Console.WriteLine("Multi Wallet Is Sender");
                 return Request_MultiSignatureSend(IncomeData, tmpTransfer);
             }
 
