@@ -208,7 +208,15 @@ namespace Notus.Wallet
             {
                 if (Notus.Wallet.MultiID.IsMultiId(preTransfer.Sender) == true)
                 {
-
+                    if (MultiSignatureVerify(preTransfer) == false)
+                    {
+                        return new Notus.Variable.Struct.CryptoTransactionResult()
+                        {
+                            ErrorText = "WrongSignature",
+                            ID = string.Empty,
+                            Result = Notus.Variable.Enum.BlockStatusCode.WrongSignature,
+                        };
+                    }
                 }
                 else
                 {
@@ -345,6 +353,34 @@ namespace Notus.Wallet
             );
         }
 
+        /// <summary>
+        /// Validates sent transaction information.
+        /// </summary>
+        /// <param name="preTransfer">Crypto Transaction informations.</param>
+        /// <returns>Returns Result of the Verification.</returns>
+        public static bool MultiSignatureVerify(Notus.Variable.Struct.CryptoTransactionStruct preTransfer)
+        {
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Sender, preTransfer.Network) == false)
+            {
+                return false;
+            }
+
+            if (Notus.Wallet.ID.CheckAddress(preTransfer.Receiver, preTransfer.Network) == false)
+            {
+                return false;
+            }
+
+            return Notus.Wallet.ID.Verify(Notus.Core.MergeRawData.Transaction(
+                   preTransfer.Sender,
+                   preTransfer.Receiver,
+                   preTransfer.Volume,
+                   preTransfer.UnlockTime.ToString(),
+                   preTransfer.Currency
+                ), preTransfer.Sign,
+                preTransfer.PublicKey,
+                preTransfer.CurveName
+            );
+        }
         /// <summary>
         /// Signs current transaction informations
         /// </summary>
