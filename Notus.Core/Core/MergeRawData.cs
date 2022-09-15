@@ -46,11 +46,30 @@ namespace Notus.Core
                 Sign = Notus.Wallet.ID.Sign(PublicKeyStr + TimeStr, PrivateKey)
             };
         }
-        public static string Transaction(string Sender, string Receiver, string Volume, string UnlockTime, string Currency)
+        public static string Transaction(Notus.Variable.Struct.CryptoTransactionStruct transactionData)
+        {
+            return Transaction(
+                transactionData.Sender,
+                transactionData.Receiver,
+                transactionData.Volume,
+                transactionData.CurrentTime.ToString(),
+                transactionData.UnlockTime.ToString(),
+                transactionData.Currency
+            );
+        }
+        public static string Transaction(
+            string Sender, 
+            string Receiver, 
+            string Volume, 
+            string CurrentTime, 
+            string UnlockTime, 
+            string Currency
+        )
         {
             return Sender + Notus.Variable.Constant.CommonDelimeterChar +
             Receiver + Notus.Variable.Constant.CommonDelimeterChar +
             Volume + Notus.Variable.Constant.CommonDelimeterChar +
+            CurrentTime + Notus.Variable.Constant.CommonDelimeterChar +
             UnlockTime + Notus.Variable.Constant.CommonDelimeterChar +
             Currency;
         }

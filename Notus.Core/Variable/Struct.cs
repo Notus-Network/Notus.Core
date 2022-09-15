@@ -162,6 +162,7 @@ namespace Notus.Variable.Struct
     public class CryptoTransactionStruct
     {
         public int ErrorNo { get; set; }
+        public ulong CurrentTime { get; set; }
         public ulong UnlockTime { get; set; }
         public string Currency { get; set; }
         public string Sender { get; set; }
@@ -185,6 +186,7 @@ namespace Notus.Variable.Struct
 
     public class CryptoTransactionBeforeStruct
     {
+        public ulong CurrentTime { get; set; }
         public ulong UnlockTime { get; set; }
         public string Currency { get; set; }
         public string Sender { get; set; }
@@ -204,6 +206,7 @@ namespace Notus.Variable.Struct
 
     public class CryptoTransactionStoreStruct
     {
+        public ulong CurrentTime { get; set; }
         public ulong UnlockTime { get; set; }
         public int Version { get; set; }
         public string TransferId { get; set; }              // transfer control id

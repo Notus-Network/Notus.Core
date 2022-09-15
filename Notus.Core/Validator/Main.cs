@@ -390,6 +390,7 @@ namespace Notus.Validator
                                                 Fee = tmpObjPoolCrypto.Fee,
                                                 PublicKey = tmpObjPoolCrypto.PublicKey,
                                                 Sign = tmpObjPoolCrypto.Sign,
+                                                CurrentTime = tmpObjPoolCrypto.CurrentTime,
                                                 Volume = tmpObjPoolCrypto.Volume,
                                                 Currency = tmpObjPoolCrypto.Currency,
                                                 Receiver = new Notus.Variable.Class.WalletBalanceStructForTransaction()

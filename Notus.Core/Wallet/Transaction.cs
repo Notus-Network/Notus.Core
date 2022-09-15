@@ -206,7 +206,7 @@ namespace Notus.Wallet
         {
             try
             {
-                if (Notus.Wallet.MultiID.IsMultiId(preTransfer.Sender) == true)
+                if (Notus.Wallet.MultiID.IsMultiId(preTransfer.Sender, currentNetwork) == true)
                 {
                     if (MultiSignatureVerify(preTransfer) == false)
                     {
@@ -345,6 +345,7 @@ namespace Notus.Wallet
                    preTransfer.Sender,
                    preTransfer.Receiver,
                    preTransfer.Volume,
+                   preTransfer.CurrentTime.ToString(),
                    preTransfer.UnlockTime.ToString(),
                    preTransfer.Currency
                 ), preTransfer.Sign,
@@ -374,6 +375,7 @@ namespace Notus.Wallet
                    preTransfer.Sender,
                    preTransfer.Receiver,
                    preTransfer.Volume,
+                   preTransfer.CurrentTime.ToString(),
                    preTransfer.UnlockTime.ToString(),
                    preTransfer.Currency
                 ), preTransfer.Sign,
@@ -409,6 +411,7 @@ namespace Notus.Wallet
             {
                 Currency = preTransfer.Currency,
                 ErrorNo = 0,
+                CurrentTime = preTransfer.CurrentTime,
                 UnlockTime = preTransfer.UnlockTime,
                 Sender = preTransfer.Sender,
                 Receiver = preTransfer.Receiver,
@@ -422,6 +425,7 @@ namespace Notus.Wallet
                         preTransfer.Sender,
                         preTransfer.Receiver,
                         preTransfer.Volume,
+                        preTransfer.CurrentTime.ToString(),
                         preTransfer.UnlockTime.ToString(),
                         preTransfer.Currency
                     ),

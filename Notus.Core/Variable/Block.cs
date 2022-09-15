@@ -306,6 +306,7 @@ namespace Notus.Variable.Class
     {
         public WalletBalanceStructForTransaction Sender { get; set; }             // sender wallet id
         public WalletBalanceStructForTransaction Receiver { get; set; }           // recevier wallet id
+        public ulong CurrentTime { get; set; }          // how much coin
         public string Currency { get; set; }          // how much coin
         public string Volume { get; set; }          // how much coin
         public string Fee { get; set; }             // transfer fee

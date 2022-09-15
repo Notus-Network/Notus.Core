@@ -12,7 +12,7 @@ namespace Notus.Wallet
     {
         public static bool IsMultiId(
             string walletId,
-            Notus.Variable.Enum.NetworkType whichNetworkFor = Notus.Variable.Enum.NetworkType.MainNet
+            Notus.Variable.Enum.NetworkType whichNetworkFor
         )
         {
             string keyPrefix = Notus.Variable.Constant.MultiWalletPrefix_MainNetwork;
