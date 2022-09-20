@@ -71,6 +71,7 @@ namespace Notus
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Common));
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.File));
             CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Node));
+            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Pool));
         }
     }
 }

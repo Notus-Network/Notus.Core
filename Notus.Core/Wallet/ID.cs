@@ -1,4 +1,5 @@
-﻿// Copyright (C) 2020-2022 Notus Network
+﻿
+// Copyright (C) 2020-2022 Notus Network
 // 
 // Notus Network is free software distributed under the MIT software license, 
 // see the accompanying file LICENSE in the main directory of the
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Notus.Wallet
 {
@@ -19,6 +21,63 @@ namespace Notus.Wallet
     /// </summary>
     public class ID
     {
+        public static Notus.Variable.Enum.NetworkType GetNetworkType(string walletId)
+        {
+            
+            if (
+                walletId.Length == Notus.Variable.Constant.SingleWalletTextLength
+                ||
+                walletId.Length == Notus.Variable.Constant.MultiWalletTextLength
+            )
+            {
+                if (
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_MainNetwork.Length),
+                        Notus.Variable.Constant.SingleWalletPrefix_MainNetwork
+                    )
+                    ||
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_MainNetwork.Length),
+                        Notus.Variable.Constant.MultiWalletPrefix_MainNetwork
+                    )
+                )
+                {
+                    return Notus.Variable.Enum.NetworkType.MainNet;
+                }
+                
+                if (
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_TestNetwork.Length),
+                        Notus.Variable.Constant.SingleWalletPrefix_TestNetwork
+                    )
+                    ||
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_TestNetwork.Length),
+                        Notus.Variable.Constant.MultiWalletPrefix_TestNetwork
+                    )
+                )
+                {
+                    return Notus.Variable.Enum.NetworkType.TestNet;
+                }
+                if (
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork.Length),
+                        Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork
+                    )
+                    ||
+                    string.Equals(
+                        walletId.Substring(0, Notus.Variable.Constant.MultiWalletPrefix_DevelopmentNetwork.Length),
+                        Notus.Variable.Constant.MultiWalletPrefix_DevelopmentNetwork
+                    )
+                )
+                {
+                    return Notus.Variable.Enum.NetworkType.DevNet;
+                }
+
+            }
+
+            return Notus.Variable.Enum.NetworkType.Unknown;
+        }
         /// <summary>
         /// Verifies data and returns verify status
         /// </summary>
@@ -49,13 +108,18 @@ namespace Notus.Wallet
             try
             {
                 PublicKey yPubKey = PublicKey.fromString(
-                    Notus.Convert.Hex2Byte(publicKey),
+                    Notus.Convert.Hex2Byte(
+                        CheckPublicKeyPrefix(
+                            publicKey
+                        )
+                    ),
                     curveName,
                     true
                 );
                 verifyResult = Ecdsa.verify(
                     messageData,
-                    Signature.fromBase64(System.Convert.ToBase64String(Notus.Convert.Hex2Byte(signHex))),
+                    Signature.fromBase64(
+                        System.Convert.ToBase64String(Notus.Convert.Hex2Byte(signHex))),
                     yPubKey
                 );
             }
@@ -102,7 +166,6 @@ namespace Notus.Wallet
             PrivateKey yPrivKey;
             if (curveName == "secp256k1")
             {
-
                 yPrivKey = new PrivateKey("secp256k1", Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(privateKey));
             }
             else
@@ -223,7 +286,14 @@ namespace Notus.Wallet
             }
             return false;
         }
-
+        private static string CheckPublicKeyPrefix(string publicKeyHex)
+        {
+            if (publicKeyHex.Length == 130 && publicKeyHex.Substring(0, 2) == "04")
+            {
+                return publicKeyHex.Substring(2);
+            }
+            return publicKeyHex;
+        }
         /// <summary>
         /// Returns wallet key via given public key.
         /// </summary>
@@ -232,7 +302,14 @@ namespace Notus.Wallet
         /// <returns>Returns Wallet Address</returns>
         public static string GetAddressWithPublicKey(string publicKey, Notus.Variable.Enum.NetworkType WhichNetworkFor)
         {
-            return GetAddress_SubFunction_FromPublicKey(PublicKey.fromString(Notus.Convert.Hex2Byte(publicKey), Notus.Variable.Constant.Default_EccCurveName, true), WhichNetworkFor, Notus.Variable.Constant.Default_EccCurveName);
+            return GetAddress_SubFunction_FromPublicKey(
+                PublicKey.fromString(
+                    Notus.Convert.Hex2Byte(
+                        CheckPublicKeyPrefix(publicKey)
+                    ),
+                    Notus.Variable.Constant.Default_EccCurveName,
+                    true
+                ), WhichNetworkFor, Notus.Variable.Constant.Default_EccCurveName);
         }
 
         /// <summary>
@@ -251,7 +328,9 @@ namespace Notus.Wallet
             return GetAddress_SubFunction_FromPublicKey(
                 PublicKey.fromString(
                     Notus.Convert.Hex2Byte(
-                        publicKey
+                        CheckPublicKeyPrefix(
+                            publicKey
+                        )
                     ), 
                     CurveName, 
                     true
@@ -317,22 +396,47 @@ namespace Notus.Wallet
         private static string GetAddress_SubFunction_FromPublicKey(
             PublicKey yPubKey,
             Notus.Variable.Enum.NetworkType WhichNetworkFor,
-            string CurveName = "secp256k1"
+            //string CurveName = "secp256k1"
+            string CurveName = Notus.Variable.Constant.Default_EccCurveName
         )
         {
-            BigInteger pkPointVal = yPubKey.point.x;
-            string fullPublicKey = yPubKey.point.x.ToString("x") + yPubKey.point.y.ToString("x");
+            
+            //BigInteger pkPointVal = yPubKey.point.x;
+            string pubXval = yPubKey.point.x.ToString("x").PadLeft(64,'0');
+            string pubYval = yPubKey.point.y.ToString("x").PadLeft(64, '0');
+            if (pubXval.Length == 65 && pubXval[0] == '0')
+            {
+                pubXval = pubXval.Substring(1);
+            }
+            if (pubYval.Length == 65 && pubYval[0] == '0')
+            {
+                pubYval = pubYval.Substring(1);
+            }
+            string fullPublicKey = pubXval+ pubYval;
+            /*
+            Console.WriteLine("pubXval : " + pubXval);
+            Console.WriteLine("pubYval : " + pubYval);
+            Console.WriteLine("pubXval : " + pubXval.Length.ToString());
+            Console.WriteLine("pubYval : " + pubYval.Length.ToString());
+            Console.WriteLine("fullPublicKey      : " + fullPublicKey);
 
-            string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
+pubCorsX : 0000f5d044d93197f31a147b6a4e373b21d36b9948b3f37349f1afd00c372485
+              0f5d044d93197f31a147b6a4e373b21d36b9948b3f37349f1afd00c372485
+pubCorsY : 03ad8a16c44c21e26806261b1dfb4b5bcd2e6ffea30f2504a40c8685c2551269
+            3ad8a16c44c21e26806261b1dfb4b5bcd2e6ffea30f2504a40c8685c2551269
+pubCorsMain: 030000f5d044d93197f31a147b6a4e373b21d36b9948b3f37349f1afd00c372485
+             030000f5d044d93197f31a147b6a4e373b21d36b9948b3f37349f1afd00c372485
+hashPubKeyStr : 7ba5c091090c84ebb093d2fae98acabe3176ca23d7ed
+checkSumStr : 451829de
+walletAddress : EDAqkHFMPF8v9thkjbzCazUf6uDYzPHHdRXK
+             NTSEDAqkHFMPF8v9thkjbzCazUf6uDYzPHHdRXK
+            Console.WriteLine(fullPublicKey.Length);
+             */
+            //string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pkPointVal.ToString("x");
+            string publicKeyX = (yPubKey.point.y % 2 == 0 ? "02" : "03") + pubXval;
 
             string keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_MainNetwork;
-            string networkByteStr = "00";
-
-            if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.MainNet)
-            {
-                keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_MainNetwork;
-                networkByteStr = "10";
-            }
+            string networkByteStr = "10";
 
             if (WhichNetworkFor == Notus.Variable.Enum.NetworkType.TestNet)
             {
@@ -345,14 +449,14 @@ namespace Notus.Wallet
                 keyPrefix = Notus.Variable.Constant.SingleWalletPrefix_DevelopmentNetwork;
                 networkByteStr = "30";
             }
-
+            //Console.WriteLine("publicKeyX : " + publicKeyX);
             Notus.HashLib.Sasha sashaObj = new Notus.HashLib.Sasha();
             string hashPubKeyStr = Notus.Toolbox.Text.ShrinkHex(
                 sashaObj.Calculate(
                     sashaObj.Calculate(publicKeyX)
                 ), 22
             );
-
+            //Console.WriteLine("networkByteStr + fullPublicKey : " + networkByteStr + fullPublicKey);
             string checkSumStr = Notus.Toolbox.Text.ShrinkHex(
                 sashaObj.Calculate(
                     sashaObj.Calculate(networkByteStr + fullPublicKey)
@@ -363,9 +467,7 @@ namespace Notus.Wallet
                 networkByteStr + hashPubKeyStr + checkSumStr,
                 NumberStyles.AllowHexSpecifier);
 
-            int howManyLen = 0;
-            howManyLen = Notus.Variable.Constant.SingleWalletTextLength - Notus.Variable.Constant.SingleWalletPrefix_MainNetwork.Length;
-            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number, howManyLen);
+            string walletAddressStr = Notus.Wallet.Toolbox.EncodeBase58(number, Notus.Variable.Constant.WalletEncodeTextLength);
             return keyPrefix + walletAddressStr;
         }
 
@@ -839,11 +941,28 @@ namespace Notus.Wallet
             {
                 string hashMessage = hashCalculate(message);
                 BigInteger numberMessage = Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(hashMessage);
+
+                //Console.WriteLine("hashMessage [sign]: " + hashMessage);
+                //Console.WriteLine("numberMessage.ToString() : " + numberMessage.ToString());
+
                 CurveFp curve = privateKey.curve;
+
+                //javascript ile senkron yapmak için random değeri 1 ile sabitlendi
+                //javascript ile senkron yapmak için random değeri 1 ile sabitlendi
+                //javascript ile senkron yapmak için random değeri 1 ile sabitlendi
+                //javascript ile senkron yapmak için random değeri 1 ile sabitlendi
+                //javascript ile senkron yapmak için random değeri 1 ile sabitlendi
                 BigInteger randNum = Notus.Wallet.Toolbox.Integer_randomBetween(BigInteger.One, curve.N - 1);
+                //BigInteger randNum = BigInteger.Parse("1");
                 CurvePointStruct randSignPoint = EcdsaMath.multiply(curve.G, randNum, curve.N, curve.A, curve.P);
-                BigInteger r = Notus.Wallet.Toolbox.Integer_modulo(randSignPoint.x, curve.N);
-                BigInteger s = Notus.Wallet.Toolbox.Integer_modulo((numberMessage + r * privateKey.secret) * (EcdsaMath.inv(randNum, curve.N)), curve.N);
+                BigInteger r = Notus.Wallet.Toolbox.Integer_modulo(
+                    randSignPoint.x, 
+                    curve.N
+                );
+                BigInteger s = Notus.Wallet.Toolbox.Integer_modulo(
+                    (numberMessage + r * privateKey.secret) * (EcdsaMath.inv(randNum, curve.N)), 
+                    curve.N
+                );
 
                 return new Signature(r, s);
             }
@@ -851,6 +970,8 @@ namespace Notus.Wallet
             public static bool verify(string message, Signature signature, PublicKey publicKey)
             {
                 string hashMessage = hashCalculate(message);
+                //Console.WriteLine("hashMessage [verify]: " + hashMessage);
+
                 BigInteger numberMessage = Notus.Wallet.Toolbox.BinaryAscii_numberFromHex(hashMessage);
                 CurveFp curve = publicKey.curve;
                 BigInteger sigR = signature.r;

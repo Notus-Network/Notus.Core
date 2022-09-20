@@ -576,6 +576,7 @@ namespace Notus.Validator
                 string urlPath =
                     Notus.Network.Node.MakeHttpListenerPath(receiverIpAddress, receiverPortNo) +
                     "queue/node/" + tmpNodeHexStr;
+                //Console.WriteLine("Sending : " + urlPath);
                 (bool worksCorrent, string incodeResponse) = Notus.Communication.Request.PostSync(
                     urlPath,
                     new Dictionary<string, string>()

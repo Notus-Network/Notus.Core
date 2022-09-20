@@ -18,6 +18,7 @@ namespace Notus.Wallet
         private Notus.Mempool ObjMp_Balance;
         private Notus.Mempool ObjMp_MultiWalletParticipant;
         private Notus.Mempool ObjMp_WalletsICanApprove;
+        private Dictionary<string, Notus.Variable.Enum.MultiWalletType> MultiWalletTypeList=new Dictionary<string, Variable.Enum.MultiWalletType>();
         
         public List<string> WalletsICanApprove(string WalletId)
         {
@@ -39,6 +40,14 @@ namespace Notus.Wallet
                 return new List<string>();
             }
             return participantList;
+        }
+        public Notus.Variable.Enum.MultiWalletType GetMultiWalletType(string MultiSignatureWalletId)
+        {
+            if (MultiWalletTypeList.ContainsKey(MultiSignatureWalletId))
+            {
+                return MultiWalletTypeList[MultiSignatureWalletId];
+            }
+            return Variable.Enum.MultiWalletType.Unknown;
         }
         public List<string> GetParticipant(string MultiSignatureWalletId)
         {
@@ -378,6 +387,7 @@ namespace Notus.Wallet
                 ObjMp_WalletUsage.Clear();
                 ObjMp_MultiWalletParticipant.Clear();
                 ObjMp_WalletsICanApprove.Clear();
+                MultiWalletTypeList.Clear();
                 string tmpBalanceStr = Obj_Settings.Genesis.Premining.PreSeed.Volume.ToString();
                 if (Obj_Settings.Genesis.Premining.PreSeed.DecimalContains == false)
                 {
@@ -571,6 +581,14 @@ namespace Notus.Wallet
                         //
                     }
 
+                    if (MultiWalletTypeList.ContainsKey(tmpBalanceVal.MultiWalletKey) == false)
+                    {
+                        MultiWalletTypeList.Add(tmpBalanceVal.MultiWalletKey, tmpBalanceVal.VoteType);
+                    }
+                    else
+                    {
+                        MultiWalletTypeList[tmpBalanceVal.MultiWalletKey]=tmpBalanceVal.VoteType;
+                    }
                     ObjMp_MultiWalletParticipant.Set(
                         tmpBalanceVal.MultiWalletKey,
                         JsonSerializer.Serialize(participantList),
@@ -737,7 +755,7 @@ namespace Notus.Wallet
 
             ObjMp_WalletsICanApprove.AsyncActive = false;
             ObjMp_WalletsICanApprove.Clear();
-            
+            MultiWalletTypeList.Clear();
         }
         public Balance()
         {
@@ -821,7 +839,8 @@ namespace Notus.Wallet
                     err
                 );
             }
-            
+            MultiWalletTypeList.Clear();
+
             try
             {
                 if (ObjMp_WalletsICanApprove != null)

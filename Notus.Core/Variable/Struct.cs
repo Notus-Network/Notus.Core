@@ -568,5 +568,23 @@ namespace Notus.Variable.Struct
         public string ExceptionType { get; set; }
         public string StackTrace { get; set; }
     }
+
+    public class MultiWalletTransactionApproveStruct
+    {
+        public ulong TransferTime { get; set; }
+        public ulong CurrentTime { get; set; }
+        public string Sign { get; set; }
+        public string PublicKey { get; set; }
+    }
+
+    public class MultiWalletTransactionVoteStruct
+    {
+        public string BlockUid { get; set; }
+        public Notus.Variable.Struct.CryptoTransactionStruct Sender { get; set; }
+        public Dictionary<string, MultiWalletTransactionApproveStruct> Approve { get; set; }
+        public Notus.Variable.Enum.BlockStatusCode Status { get; set; }
+        public Notus.Variable.Enum.MultiWalletType VoteType { get; set; }
+    }
+
 }
 

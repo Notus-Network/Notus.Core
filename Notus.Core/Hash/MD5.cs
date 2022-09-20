@@ -69,6 +69,16 @@ namespace Notus.HashLib
         /// <inheritdoc cref="ComputeHash(byte[])"/>
         public string Calculate(byte[] input)
         {
+            byte[] hashBytes = System.Security.Cryptography.MD5.Create().ComputeHash(input);
+
+            // Step 2, convert byte array to hex string
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("x2"));
+            }
+            return sb.ToString();
+
             uint a0 = 0x67452301;
             uint b0 = 0xefcdab89;
             uint c0 = 0x98badcfe;
