@@ -73,6 +73,32 @@ namespace Notus.Communication
         /// <summary>
         /// TO DO.
         /// </summary>
+        public static Dictionary<string, Notus.Variable.Enum.BlockStatusCode> GetWhichMultiTransactionNeedMySign(
+            string WalletKey, 
+            Notus.Variable.Enum.NetworkType CurrentNetwork , bool isSsl = false)
+        {
+            Dictionary<string, Notus.Variable.Enum.BlockStatusCode>? resultList = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
+            string responseData = Notus.Network.Node.FindAvailableSync(
+                "multi/pool/"+ WalletKey,CurrentNetwork,
+                Notus.Variable.Enum.NetworkLayer.Layer1
+            );
+            if (responseData.Length > 0)
+            {
+                try
+                {
+                    resultList = JsonSerializer.Deserialize<Dictionary<string, Notus.Variable.Enum.BlockStatusCode>>(responseData);
+                }
+                catch
+                {
+
+                }
+            }
+            if (resultList == null)
+            {
+                return new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
+            }
+            return resultList;
+        }
         public static Notus.Variable.Enum.BlockStatusCode StoreFileOnChain(string PrivateKeyHex, string FileAddress, bool LocalFile, Notus.Variable.Enum.NetworkType CurrentNetwork = Notus.Variable.Enum.NetworkType.MainNet, bool isSsl = false)
         {
             int sleepTime = 2500;

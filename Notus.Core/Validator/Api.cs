@@ -38,7 +38,13 @@ namespace Notus.Validator
             get { return Obj_Balance; }
             set { Obj_Balance = value; }
         }
+
         private Notus.Mempool ObjMp_MultiSignPool;
+        public Notus.Mempool Obj_MultiSignPool
+        {
+            get { return ObjMp_MultiSignPool; }
+        }
+
         private Notus.Mempool ObjMp_BlockOrderList;
         private Notus.Mempool ObjMp_CryptoTranStatus;
         public Notus.Mempool CryptoTranStatus
@@ -313,52 +319,102 @@ namespace Notus.Validator
             {
                 return Request_GenerateToken(IncomeData);
             }
+
+
             if (incomeFullUrlPath.StartsWith("multi/"))
             {
+
+                // burada block uid verilirse, blok detayları gösterilecek
+                // eğer cüzdan adresi verilirse hangi block id olduğu listesi verilir.
                 if (incomeFullUrlPath.StartsWith("multi/pool/"))
                 {
-                    string controlWalletId = IncomeData.UrlList[2];
-                    bool multiWalletId = Notus.Wallet.MultiID.IsMultiId(controlWalletId, Obj_Settings.Network);
-
-                    Dictionary<string, Notus.Variable.Enum.BlockStatusCode> SignList
-                        = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
-                    ObjMp_MultiSignPool.Each((string multiKeyId, string multiTransferList) =>
+                    if (IncomeData.UrlList[2].Length== 90)
                     {
-                        Console.WriteLine(multiKeyId);
-                        Console.WriteLine(multiTransferList);
-                        Dictionary<ulong, Notus.Variable.Struct.MultiWalletTransactionVoteStruct>? uidList =
-                            JsonSerializer.Deserialize<Dictionary<
-                                ulong,
-                                Notus.Variable.Struct.MultiWalletTransactionVoteStruct>
-                            >(multiTransferList);
-
-                        if (uidList != null)
+                        string tmpBlockUid = IncomeData.UrlList[2];
+                        Notus.Variable.Struct.MultiWalletTransactionVoteStruct? tmpResult = null;
+                        Dictionary<string, Notus.Variable.Enum.BlockStatusCode> SignList
+                            = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
+                        ObjMp_MultiSignPool.Each((string multiKeyId, string multiTransferList) =>
                         {
-                            foreach (KeyValuePair<ulong, Variable.Struct.MultiWalletTransactionVoteStruct> entry in uidList)
+                            Console.WriteLine(multiKeyId);
+                            Console.WriteLine(multiTransferList);
+                            if (tmpResult == null)
                             {
-                                if (multiWalletId == true)
+                                Dictionary<ulong, Notus.Variable.Struct.MultiWalletTransactionVoteStruct>? uidList =
+                                    JsonSerializer.Deserialize<Dictionary<
+                                        ulong,
+                                        Notus.Variable.Struct.MultiWalletTransactionVoteStruct>
+                                    >(multiTransferList);
+
+                                if (uidList != null)
                                 {
-                                    if(string.Equals(entry.Value.Sender.Sender, controlWalletId))
+                                    foreach (KeyValuePair<ulong, Variable.Struct.MultiWalletTransactionVoteStruct> entry in uidList)
                                     {
-                                        SignList.Add(entry.Value.BlockUid, entry.Value.Status);
-                                    }
-                                }
-                                else
-                                {
-                                    foreach(var innerEntry in entry.Value.Approve)
-                                    {
-                                        if (string.Equals(innerEntry.Key, controlWalletId))
+                                        if (string.Equals(tmpBlockUid, entry.Value.BlockUid))
                                         {
-                                            SignList.Add(entry.Value.BlockUid, entry.Value.Status);
+                                            if (tmpResult == null)
+                                            {
+                                                tmpResult = entry.Value;
+                                            }
                                         }
                                     }
                                 }
                             }
+                        });
+                        if (tmpResult == null)
+                        {
+                            return JsonSerializer.Serialize(false);
                         }
-                    });
-                    return JsonSerializer.Serialize(SignList);
+                        return JsonSerializer.Serialize(tmpResult);
+                    }
+
+                    //burada seçilen cüzdan detayları verilecek...
+                    if (IncomeData.UrlList[2].Length== Notus.Variable.Constant.SingleWalletTextLength)
+                    {
+                        string controlWalletId = IncomeData.UrlList[2];
+                        bool multiWalletId = Notus.Wallet.MultiID.IsMultiId(controlWalletId, Obj_Settings.Network);
+
+                        Dictionary<string, Notus.Variable.Enum.BlockStatusCode> SignList
+                            = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
+                        ObjMp_MultiSignPool.Each((string multiKeyId, string multiTransferList) =>
+                        {
+                            Console.WriteLine(multiKeyId);
+                            Console.WriteLine(multiTransferList);
+                            Dictionary<ulong, Notus.Variable.Struct.MultiWalletTransactionVoteStruct>? uidList =
+                                JsonSerializer.Deserialize<Dictionary<
+                                    ulong,
+                                    Notus.Variable.Struct.MultiWalletTransactionVoteStruct>
+                                >(multiTransferList);
+
+                            if (uidList != null)
+                            {
+                                foreach (KeyValuePair<ulong, Variable.Struct.MultiWalletTransactionVoteStruct> entry in uidList)
+                                {
+                                    if (multiWalletId == true)
+                                    {
+                                        if (string.Equals(entry.Value.Sender.Sender, controlWalletId))
+                                        {
+                                            SignList.Add(entry.Value.BlockUid, entry.Value.Status);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var innerEntry in entry.Value.Approve)
+                                        {
+                                            if (string.Equals(innerEntry.Key, controlWalletId))
+                                            {
+                                                SignList.Add(entry.Value.BlockUid, entry.Value.Status);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        return JsonSerializer.Serialize(SignList);
+                    }
                 }
 
+                //burada pool listesinde bekleyen işlemler id ile listelenecek...
                 if (string.Equals(incomeFullUrlPath, "multi/pool"))
                 {
                     Dictionary<string, Notus.Variable.Enum.BlockStatusCode> SignList
