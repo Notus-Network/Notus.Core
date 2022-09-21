@@ -100,6 +100,13 @@ namespace Notus.Core
                 StorageData.PublicKey;
         }
 
+        public static string ApproveMultiWalletTransaction(bool Approve, string TransactionId, ulong CurrentTime)
+        {
+            return
+                Notus.Toolbox.Text.BoolToStr(Approve) + Notus.Variable.Constant.CommonDelimeterChar +
+                TransactionId + Notus.Variable.Constant.CommonDelimeterChar +
+                CurrentTime.ToString().Substring(0, 14);
+        }
         public static string TokenGenerate(
             string PublicKey,
             Notus.Variable.Struct.TokenInfoStruct InfoData,

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
 using System.Web;
 
 namespace Notus.Communication
@@ -24,6 +24,7 @@ namespace Notus.Communication
             string tmpResult = await Notus.Network.Node.FindAvailable("currency/list/", currentNetwork, Notus.Variable.Enum.NetworkLayer.Layer1, isSsl);
             return JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(tmpResult);
         }
+
         /// <summary>
         /// Gets Currency List with given network via HTTP request. 
         /// </summary>
@@ -34,6 +35,7 @@ namespace Notus.Communication
             string tmpResult = await Notus.Network.Node.FindAvailable("currency/list/", currentNetwork, Notus.Variable.Enum.NetworkLayer.Layer1, isSsl);
             return JsonSerializer.Deserialize<List<Notus.Variable.Struct.CurrencyList>>(tmpResult);
         }
+
         /// <summary>
         /// Gets Balance with given network and wallet key via HTTP request. 
         /// </summary>
@@ -49,6 +51,7 @@ namespace Notus.Communication
             Notus.Variable.Struct.WalletBalanceStruct tmpBalanceVal = JsonSerializer.Deserialize<Notus.Variable.Struct.WalletBalanceStruct>(tmpResult);
             return tmpBalanceVal.Balance;
         }
+
         /// <summary>
         /// It performs the airdrop operation with the given wallet address and network type via HTTP request.
         /// </summary>
@@ -61,6 +64,7 @@ namespace Notus.Communication
             Notus.Variable.Struct.CryptoTransactionResult tmpAirDrop = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(tmpResult);
             return tmpAirDrop;
         }
+
         /// <summary>
         /// TO DO.
         /// </summary>
@@ -70,16 +74,17 @@ namespace Notus.Communication
             Notus.Variable.Enum.BlockStatusCode tmpAirDrop = JsonSerializer.Deserialize<Notus.Variable.Enum.BlockStatusCode>(tmpResult);
             return tmpAirDrop;
         }
+
         /// <summary>
         /// TO DO.
         /// </summary>
         public static Dictionary<string, Notus.Variable.Enum.BlockStatusCode> GetWhichMultiTransactionNeedMySign(
-            string WalletKey, 
-            Notus.Variable.Enum.NetworkType CurrentNetwork , bool isSsl = false)
+            string WalletKey,
+            Notus.Variable.Enum.NetworkType CurrentNetwork, bool isSsl = false)
         {
             Dictionary<string, Notus.Variable.Enum.BlockStatusCode>? resultList = new Dictionary<string, Notus.Variable.Enum.BlockStatusCode>();
             string responseData = Notus.Network.Node.FindAvailableSync(
-                "multi/pool/"+ WalletKey,CurrentNetwork,
+                "multi/pool/" + WalletKey, CurrentNetwork,
                 Notus.Variable.Enum.NetworkLayer.Layer1
             );
             if (responseData.Length > 0)
@@ -99,6 +104,63 @@ namespace Notus.Communication
             }
             return resultList;
         }
+
+        public static Notus.Variable.Struct.CryptoTransactionResult ApproveMultiWalletTransaction(
+            string MultiWalletKey,
+            bool Approve,
+            string TransactionId,
+            ulong currentTime,
+            string Sign,
+            string PublicKey,
+            Notus.Variable.Enum.NetworkType CurrentNetwork, 
+            bool isSsl = false
+        )
+        {
+            Notus.Variable.Struct.CryptoTransactionResult? resultList = new Notus.Variable.Struct.CryptoTransactionResult();
+            string responseData = Notus.Network.Node.FindAvailableSync(
+                "multi/transaction/approve", 
+                new Dictionary<string, string>()
+                {
+                    { "data", 
+                        JsonSerializer.Serialize(
+                            new Notus.Variable.Struct.MultiWalletTransactionApproveStruct()
+                            {
+                                Approve=Approve,
+                                CurrentTime=currentTime,
+                                PublicKey=PublicKey,
+                                TransactionId= TransactionId,
+                                Sign=Sign
+                            }
+                        ) 
+                    }
+                }, 
+                CurrentNetwork,
+                Notus.Variable.Enum.NetworkLayer.Layer1
+            );
+            if (responseData.Length > 0)
+            {
+                try
+                {
+                    resultList = JsonSerializer.Deserialize<Notus.Variable.Struct.CryptoTransactionResult>(responseData);
+                }
+                catch
+                {
+
+                }
+            }
+            if (resultList == null)
+            {
+                return new Notus.Variable.Struct.CryptoTransactionResult()
+                {
+                    ErrorNo = 0,
+                    ErrorText = "",
+                    ID = "",
+                    Result = Variable.Enum.BlockStatusCode.WrongParameter
+                };
+            }
+            return resultList;
+        }
+
         public static Notus.Variable.Enum.BlockStatusCode StoreFileOnChain(string PrivateKeyHex, string FileAddress, bool LocalFile, Notus.Variable.Enum.NetworkType CurrentNetwork = Notus.Variable.Enum.NetworkType.MainNet, bool isSsl = false)
         {
             int sleepTime = 2500;
