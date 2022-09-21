@@ -112,16 +112,16 @@ namespace Notus.Communication
             ulong currentTime,
             string Sign,
             string PublicKey,
-            Notus.Variable.Enum.NetworkType CurrentNetwork, 
+            Notus.Variable.Enum.NetworkType CurrentNetwork,
             bool isSsl = false
         )
         {
             Notus.Variable.Struct.CryptoTransactionResult? resultList = new Notus.Variable.Struct.CryptoTransactionResult();
             string responseData = Notus.Network.Node.FindAvailableSync(
-                "multi/transaction/approve", 
+                "multi/transaction/approve/" + MultiWalletKey,
                 new Dictionary<string, string>()
                 {
-                    { "data", 
+                    { "data",
                         JsonSerializer.Serialize(
                             new Notus.Variable.Struct.MultiWalletTransactionApproveStruct()
                             {
@@ -131,9 +131,9 @@ namespace Notus.Communication
                                 TransactionId= TransactionId,
                                 Sign=Sign
                             }
-                        ) 
+                        )
                     }
-                }, 
+                },
                 CurrentNetwork,
                 Notus.Variable.Enum.NetworkLayer.Layer1
             );
