@@ -356,7 +356,7 @@ namespace Notus.Validator
                 return Request_Replicant();
             }
 
-            if (string.Equals(incomeFullUrlPath, "token"))
+            if (incomeFullUrlPath.StartsWith("token/generate/"))
             {
                 return Request_GenerateToken(IncomeData);
             }
@@ -2012,7 +2012,12 @@ namespace Notus.Validator
             {
                 if (IncomeData.UrlList[1].ToLower() != "generate")
                 {
-                    return JsonSerializer.Serialize(false);
+                    return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponseStruct()
+                    {
+                        UID = "",
+                        Code = Notus.Variable.Constant.ErrorNoList.UnknownError,
+                        Status = JsonSerializer.Serialize(IncomeData.UrlList)
+                    });
                 }
                 string WalletKeyStr = IncomeData.UrlList[2];
                 if (IncomeData.PostParams.ContainsKey("data") == false)
@@ -2185,7 +2190,13 @@ namespace Notus.Validator
                     });
                 }
             }
-            return JsonSerializer.Serialize(false);
+
+            return JsonSerializer.Serialize(new Notus.Variable.Struct.BlockResponseStruct()
+            {
+                UID = "",
+                Code = Notus.Variable.Constant.ErrorNoList.UnknownError,
+                Status = JsonSerializer.Serialize(IncomeData.UrlList)
+            });
         }
 
         private string Request_ApproveMultiTransaction(Notus.Variable.Struct.HttpRequestDetails IncomeData)
