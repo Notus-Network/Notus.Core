@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus.Core
 {
     public class MergeRawData
@@ -38,7 +38,7 @@ namespace Notus.Core
         public static Notus.Variable.Struct.GenericSignStruct GenericSign(string PrivateKey)
         {
             string PublicKeyStr = Notus.Wallet.ID.Generate(PrivateKey);
-            string TimeStr = DateTime.Now.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
+            string TimeStr = NVG.NOW.Obj.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
             return new Notus.Variable.Struct.GenericSignStruct()
             {
                 PublicKey = PublicKeyStr,

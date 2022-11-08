@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using NP = Notus.Print;
 namespace Notus
 {
     public class Mempool : IDisposable
@@ -31,8 +35,8 @@ namespace Notus
         private string PoolNameForDb = string.Empty;
         private Notus.Data.Sql SqlObj;
         private Notus.Threads.Timer TimerObj;
-        private Dictionary<string, Notus.Variable.Struct.MempoolDataList> Obj_DataList = new Dictionary<string, Notus.Variable.Struct.MempoolDataList>();
-        public Dictionary<string, Notus.Variable.Struct.MempoolDataList> DataList
+        private ConcurrentDictionary<string, Notus.Variable.Struct.MempoolDataList> Obj_DataList = new ConcurrentDictionary<string, Notus.Variable.Struct.MempoolDataList>();
+        public ConcurrentDictionary<string, Notus.Variable.Struct.MempoolDataList> DataList
         {
             get { return Obj_DataList; }
         }
@@ -67,15 +71,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    70008854,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab593] : " + err.Message);
+                NP.Basic(DebugModeActive, "Error Text [90ecab593] : " + err.Message);
             }
 
             SqlObj.Select("key_value",
@@ -110,7 +106,7 @@ namespace Notus
                         }
                     }
 
-                    Obj_DataList.Add(yKeyName, new Notus.Variable.Struct.MempoolDataList()
+                    Obj_DataList.TryAdd(yKeyName, new Notus.Variable.Struct.MempoolDataList()
                     {
                         Data = yData,
                         expire = int.Parse(yExpire),
@@ -202,39 +198,38 @@ namespace Notus
                 }
                 catch (Exception err)
                 {
-                    Notus.Print.Log(
-                        Notus.Variable.Enum.LogLevel.Info,
-                        90008877,
-                        err.Message,
-                        "BlockRowNo",
-                        null,
-                        err
-                    );
-                    Notus.Print.Basic(DebugModeActive, "Error Text [90ecab567]   : " + err.Message);
-                    Notus.Print.Basic(DebugModeActive, "Mempool Name [90ecab567] : " + PoolNameForDb);
+                    NP.Basic(DebugModeActive, "Error Text [90ecab567]   : " + err.Message);
+                    NP.Basic(DebugModeActive, "Mempool Name [90ecab567] : " + PoolNameForDb);
                 }
             }
             return false;
         }
-        private void DeleteFromTable_SubMethod(string KeyName)
-        {
-            SqlObj.Delete("key_value", new Dictionary<string, string>(){
-                    { "key",KeyName}
-                });
+        private void DeleteFromTable_SubMethod(string KeyName,bool showError = false) {
+            bool resultVal=SqlObj.Delete("key_value", new Dictionary<string, string>(){
+                { "key", KeyName }
+            });
+            if (showError == true)
+            {
+                //Console.WriteLine("Control-Point-a41234");
+                //Console.WriteLine("--------------------------");
+                //Console.WriteLine(resultVal);
+                //Console.WriteLine("KeyName");
+                //Console.WriteLine(KeyName);
+            }
         }
-        private void DeleteFromTable(string KeyName)
+        private void DeleteFromTable(string KeyName,bool showError=false)
         {
             if (AsyncMethodActivated == true)
             {
                 Task.Run(() =>
                 {
-                    DeleteFromTable_SubMethod(KeyName);
+                    DeleteFromTable_SubMethod(KeyName, showError);
                 }
                 );
             }
             else
             {
-                DeleteFromTable_SubMethod(KeyName);
+                DeleteFromTable_SubMethod(KeyName, showError);
             }
         }
         private bool SubAdd(string KeyName, string Data, int Expire)
@@ -248,7 +243,7 @@ namespace Notus
             }
             else
             {
-                Obj_DataList.Add(KeyName, new Notus.Variable.Struct.MempoolDataList()
+                Obj_DataList.TryAdd(KeyName, new Notus.Variable.Struct.MempoolDataList()
                 {
                     Data = Data,
                     expire = Expire,
@@ -260,13 +255,8 @@ namespace Notus
         }
         public void Clear()
         {
-            if (Obj_DataList.Count > 0)
-            {
-                foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
-                {
-                    Remove(entry.Key);
-                }
-            }
+            Obj_DataList.Clear();
+            SqlObj.Clear("key_value");
         }
         public int Count()
         {
@@ -276,9 +266,10 @@ namespace Notus
         {
             if (Obj_DataList.Count > 0)
             {
+                KeyValuePair<string, Variable.Struct.MempoolDataList>[] tmpObj_DataList = Obj_DataList.ToArray();
                 DateTime startTime = DateTime.Now;
                 int recordCount = 0;
-                foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
+                for (int i = 0; i < tmpObj_DataList.Count(); i++)
                 {
                     if (UseThisNumberAsCountOrMiliSeconds > 0)
                     {
@@ -292,13 +283,13 @@ namespace Notus
                         }
                         else
                         {
-                            if ((DateTime.Now - startTime).TotalMilliseconds > UseThisNumberAsCountOrMiliSeconds)
+                            if ((DateTime.Now- startTime).TotalMilliseconds > UseThisNumberAsCountOrMiliSeconds)
                             {
                                 break;
                             }
                         }
                     }
-                    incomeAction(entry.Key, entry.Value.Data);
+                    incomeAction(tmpObj_DataList[i].Key, tmpObj_DataList[i].Value.Data);
                 }
             }
         }
@@ -306,11 +297,8 @@ namespace Notus
         {
             if (Obj_DataList.Count > 0)
             {
-                foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
-                {
-                    incomeAction(entry.Key, entry.Value.Data);
-                    break;
-                }
+                KeyValuePair<string, Variable.Struct.MempoolDataList>[] tmpObj_DataList = Obj_DataList.ToArray();
+                incomeAction(tmpObj_DataList[0].Key, tmpObj_DataList[0].Value.Data);
             }
         }
         public bool Expire(string KeyName, int Expire)
@@ -324,38 +312,40 @@ namespace Notus
             }
             else
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    300000002,
-                    "KeyName Does Not Exist -> " + KeyName,
-                    "BlockRowNo",
-                    null,
-                    null
-                );
             }
             return false;
         }
-        public void Remove(string KeyName)
+        public void Remove(string KeyName,bool showError=false)
         {
             if (Obj_DataList.ContainsKey(KeyName) == false)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    300000001,
-                    "KeyName Does Not Exist -> " + KeyName,
-                    "BlockRowNo",
-                    null,
-                    null
-                );
+                if (showError == true)
+                {
+                    //Console.WriteLine("ContainsKey == false");
+                }
             }
-            Obj_DataList.Remove(KeyName);
-            DeleteFromTable(KeyName);
-        }
-        public string Get(string KeyName, string ReturnIfKeyDoesntExist = null)
+            bool tst=Obj_DataList.TryRemove(KeyName,out _);
+            if(showError== true)
+            {
+                //Console.WriteLine(tst);
+                //Console.WriteLine("bool tst=Obj_DataList.TryRemove(KeyName,out _);");
+                //Console.WriteLine(JsonSerializer.Serialize(Obj_DataList));
+            }
+            DeleteFromTable(KeyName,showError);
+        }   
+        public string Get(string KeyName, string? ReturnIfKeyDoesntExist = null)
         {
             if (Obj_DataList.ContainsKey(KeyName))
             {
                 return Obj_DataList[KeyName].Data;
+            }
+            if (ReturnIfKeyDoesntExist == null)
+            {
+                return string.Empty;
+            }
+            if (ReturnIfKeyDoesntExist.Length==0)
+            {
+                return string.Empty;
             }
             return ReturnIfKeyDoesntExist;
         }
@@ -407,15 +397,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    900770077,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab524] : " + err.Message);
+                NP.Basic(DebugModeActive, "Error Text [90ecab524] : " + err.Message);
                 return "19810125020000000";
             }
         }
@@ -427,15 +409,7 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    800077700,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-                Notus.Print.Basic(DebugModeActive, "Error Text [90ecab547] : " + err.Message);
+                NP.Basic(DebugModeActive, "Error Text [90ecab547] : " + err.Message);
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }
@@ -446,17 +420,21 @@ namespace Notus
                 LoopIsWorking = true;
                 if (Obj_DataList.Count > 0)
                 {
-                    foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
+                    try
                     {
-                        if (entry.Value.expire > 0)
+                        foreach (KeyValuePair<string, Notus.Variable.Struct.MempoolDataList> entry in Obj_DataList)
                         {
-                            if (0 > (entry.Value.remove - DateTime.Now).TotalSeconds)
+                            if (entry.Value.expire > 0)
                             {
-                                Obj_DataList.Remove(entry.Key);
-                                DeleteFromTable(entry.Key);
+                                if (0 > (entry.Value.remove - DateTime.Now).TotalSeconds)
+                                {
+                                    Obj_DataList.TryRemove(entry.Key,out _);
+                                    DeleteFromTable(entry.Key);
+                                }
                             }
                         }
                     }
+                    catch { }
                 }
                 LoopIsWorking = false;
             }
@@ -473,14 +451,6 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Error,
-                    300000005,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
             }
 
             Obj_DataList.Clear();
@@ -492,14 +462,6 @@ namespace Notus
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Error,
-                    300000004,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
             }
         }
     }

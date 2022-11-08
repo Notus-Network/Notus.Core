@@ -46,10 +46,15 @@ namespace Notus.Block
         {
             return SubGenerateBlockKey(currentUtcTime, nodeWalletKey, "");
         }
+        public static ulong BlockIdToUlong(string blockUid)
+        {
+            return ulong.Parse(Notus.Block.Key.GetTimeFromKey(blockUid).Substring(0, 17));
+        }
+
         /*
         public static string Generate()
         {
-            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, "", ""));
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(NVG.NOW.Obj, "", ""));
         }
         public static string Generate(bool ResultAsHex)
         {
@@ -59,19 +64,19 @@ namespace Notus.Block
         {
             if (ResultAsHex == true)
             {
-                return SubGenerateBlockKey(DateTime.Now, SeedForKey, PreText);
+                return SubGenerateBlockKey(NVG.NOW.Obj, SeedForKey, PreText);
             }
-            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, SeedForKey, PreText));
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(NVG.NOW.Obj, SeedForKey, PreText));
         }
 
         public static string Generate(bool ResultAsHex = false, string SeedForKey = "")
         {
             if (ResultAsHex == true)
             {
-                return SubGenerateBlockKey(DateTime.Now, SeedForKey, "");
+                return SubGenerateBlockKey(NVG.NOW.Obj, SeedForKey, "");
             }
-            return Notus.Convert.ToBase35(SubGenerateBlockKey(DateTime.Now, SeedForKey, ""));
-            //DateTime.Now.ToString("yyyyMMddHHmmssffffff")
+            return Notus.Convert.ToBase35(SubGenerateBlockKey(NVG.NOW.Obj, SeedForKey, ""));
+            //NVG.NOW.Obj.ToString("yyyyMMddHHmmssffffff")
         }
         */
         public static int CalculateStorageNumber(string timeKey)

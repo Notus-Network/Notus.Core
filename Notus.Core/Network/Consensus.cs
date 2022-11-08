@@ -15,7 +15,7 @@ namespace Notus
             string MyWalletKey
         )
         {
-            //string tmpBlockStr = DateTime.Now.ToString("yyyyMMddHHmmssffffff");
+            //string tmpBlockStr = NVG.NOW.Obj.ToString("yyyyMMddHHmmssffffff");
             string tmpBlockStr = JsonSerializer.Serialize(NewBlockStruct);
             SortedDictionary<BigInteger, string> WalletOrder = new SortedDictionary<BigInteger, string>();
             for (int a = 0; a < NodeList.Count; a++)

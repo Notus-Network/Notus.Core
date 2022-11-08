@@ -296,6 +296,14 @@ namespace Notus.Variable.Class
         public long WitnessRowNo { get; set; }
         public string WitnessBlockUid { get; set; }
     }
+    public class BlockStruct_125
+    {
+        //public string Sender { get; set; }
+        public Dictionary<string, Notus.Variable.Struct.WalletBalanceStruct> In { get; set; }
+        public Dictionary<string, Dictionary<string, Dictionary<ulong, string>>> Out { get; set; }
+        public string Validator { get; set; }
+    }
+
     public class BlockStruct_120
     {
         public Dictionary<string, BlockStruct_120_In_Struct> In { get; set; }

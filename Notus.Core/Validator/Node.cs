@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Text.Json;
 using System.Threading;
-
+using NVG = Notus.Variable.Globals;
+using NGF = Notus.Variable.Globals.Functions;
+using NVC = Notus.Variable.Constant;
+using NVE = Notus.Variable.Enum;
+using NVS = Notus.Variable.Struct;
+using NP = Notus.Print;
 namespace Notus.Validator
 {
     public static class Node
@@ -9,108 +14,121 @@ namespace Notus.Validator
         public static void Start(string[] argsFromCLI)
         {
             bool LightNodeActive = false;
-            Notus.Variable.Common.ClassSetting NodeSettings = new Notus.Variable.Common.ClassSetting();
-
-            /*
-            
-            burada ntp zaman bilgisi çekilecek
-            burada ntp zaman bilgisi çekilecek
-
-            Console.WriteLine(
-                JsonSerializer.Serialize(
-                    Notus.Time.GetNtpTime()
-                )
-            );
-            Console.ReadLine();
-            */
+            NGF.PreStart();
 
             using (Notus.Validator.Menu menuObj = new Notus.Validator.Menu())
             {
-                NodeSettings = menuObj.PreStart(argsFromCLI);
+                menuObj.PreStart(argsFromCLI);
                 menuObj.Start();
-                NodeSettings = menuObj.DefineMySetting(NodeSettings);
+                menuObj.DefineMySetting();
             }
-            if (NodeSettings.NodeType != Notus.Variable.Enum.NetworkNodeType.Replicant)
+
+            if (NVG.Settings.NodeType != NVE.NetworkNodeType.Replicant)
             {
                 LightNodeActive = false;
             }
 
-            if (NodeSettings.DevelopmentNode == true)
+            if (NVG.Settings.DevelopmentNode == true)
             {
-                NodeSettings.Network = Notus.Variable.Enum.NetworkType.DevNet;
-                Notus.Validator.Node.Start(NodeSettings, LightNodeActive);
+                NVG.Settings.Network = NVE.NetworkType.DevNet;
+                Notus.Validator.Node.Start(LightNodeActive);
             }
             else
             {
-                NodeSettings.Network = Notus.Variable.Enum.NetworkType.MainNet;
-                Notus.Validator.Node.Start(NodeSettings, LightNodeActive);
+                NVG.Settings.Network = NVE.NetworkType.MainNet;
+                Notus.Validator.Node.Start(LightNodeActive);
             }
         }
-        public static void Start(Notus.Variable.Common.ClassSetting NodeSettings, bool LightNodeActive)
+        public static void Start(bool LightNodeActive)
         {
-            if (NodeSettings.LocalNode == true)
+            if (NVG.Settings.LocalNode == true)
             {
-                Notus.Print.Info(NodeSettings, "LocalNode Activated");
+                NP.Info(NVG.Settings, "LocalNode Activated");
             }
-            Notus.IO.NodeFolderControl(NodeSettings.Network, NodeSettings.Layer);
+            Notus.IO.NodeFolderControl();
 
-            Notus.Print.Info(NodeSettings, "Activated DevNET for " + Notus.Variable.Constant.LayerText[NodeSettings.Layer]);
-            NodeSettings = Notus.Toolbox.Network.IdentifyNodeType(NodeSettings, 5);
-            switch (NodeSettings.NodeType)
+
+            /*
+            Notus.Block.Storage storageObj = new Notus.Block.Storage(false);
+
+            //tgz-exception
+            string LastBlockUid = "1348c02274960011734a5d9a654b68e8355d6a80586560b60a9cd4f6314f6234dd43851e7d88da27b4f879f02d";
+            Notus.Variable.Class.BlockData? tmpBlockData = storageObj.ReadBlock(LastBlockUid);
+            Console.WriteLine(JsonSerializer.Serialize(tmpBlockData, NVC.JsonSetting));
+            Console.ReadLine();
+            Console.ReadLine();
+            */
+
+            NP.Info(NVG.Settings, "Activated DevNET for " + NVC.LayerText[NVG.Settings.Layer]);
+            Notus.Toolbox.Network.IdentifyNodeType(5);
+            NGF.Start();
+
+            switch (NVG.Settings.NodeType)
             {
                 // if IP and port node written in the code
-                case Notus.Variable.Enum.NetworkNodeType.Main:
-                    StartAsMain(NodeSettings);
+                case NVE.NetworkNodeType.Main:
+                    StartAsMain();
                     break;
 
                 // if node join the network
-                case Notus.Variable.Enum.NetworkNodeType.Master:
-                    //StartAsMaster(NodeSettings);
-                    StartAsMain(NodeSettings);
-                    //StartAsMaster(NodeSettings);
+                case NVE.NetworkNodeType.Master:
+                    StartAsMain();
                     break;
 
                 // if node only store the data
-                case Notus.Variable.Enum.NetworkNodeType.Replicant:
-                    StartAsReplicant(NodeSettings, LightNodeActive);
+                case NVE.NetworkNodeType.Replicant:
+                    StartAsReplicant( LightNodeActive);
                     break;
 
                 default:
                     break;
             }
-            Notus.Print.Warning(NodeSettings, "Task Ended");
+            if(NVG.Settings.NodeClosing == false)
+            {
+                NP.Warning(NVG.Settings, "Task Ended");
+            }
         }
-        private static void StartAsMaster(Notus.Variable.Common.ClassSetting NodeSettings)
+        private static void StartAsMaster()
         {
             bool exitOuterLoop = false;
             while (exitOuterLoop == false)
             {
                 using (Notus.Validator.Main MainObj = new Notus.Validator.Main())
                 {
-                    MainObj.Settings = NodeSettings;
+                    //MainObj.Settings = NodeSettings;
                     MainObj.Start();
                 }
 
-                Notus.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
-                Thread.Sleep(2500);
+                if (NVG.Settings.NodeClosing == false)
+                {
+                    NP.Basic(NVG.Settings, "Sleep For 2.5 Seconds");
+                    Thread.Sleep(2500);
+                }
             }
         }
-        private static void StartAsMain(Notus.Variable.Common.ClassSetting NodeSettings)
+        private static void StartAsMain()
         {
             bool exitOuterLoop = false;
-            while (exitOuterLoop == false)
+            while (exitOuterLoop == false && NVG.Settings.NodeClosing==false)
             {
                 using (Notus.Validator.Main MainObj = new Notus.Validator.Main())
                 {
-                    MainObj.Settings = NodeSettings;
                     MainObj.Start();
                 }
 
-                Notus.Print.Basic(NodeSettings, "Sleep For 2.5 Seconds");
-                Thread.Sleep(2500);
+                if (NVG.Settings.GenesisCreated == true)
+                {
+                    Environment.Exit(0);
+                }
+
+                if (NVG.Settings.NodeClosing == false)
+                {
+                    NP.Basic(NVG.Settings, "Sleep For 2.5 Seconds");
+                    Thread.Sleep(2500);
+                }
             }
         }
-        private static void StartAsReplicant(Notus.Variable.Common.ClassSetting NodeSettings, bool LightNodeActive)
+        private static void StartAsReplicant(bool LightNodeActive)
         {
             bool exitOuterLoop = false;
             while (exitOuterLoop == false)
@@ -119,23 +137,13 @@ namespace Notus.Validator
                 {
                     using (Notus.Validator.Replicant ReplicantObj = new Notus.Validator.Replicant())
                     {
-                        ReplicantObj.Settings = NodeSettings;
                         ReplicantObj.LightNode = LightNodeActive;
                         ReplicantObj.Start();
                     }
                 }
                 catch (Exception err)
                 {
-                    Notus.Print.Log(
-                        Notus.Variable.Enum.LogLevel.Info,
-                        660050,
-                        err.Message,
-                        "BlockRowNo",
-                        null,
-                        err
-                    );
-
-                    Notus.Print.Danger(NodeSettings, "Replicant Outer Error Text : " + err.Message);
+                    NP.Danger(NVG.Settings, "Replicant Outer Error Text : " + err.Message);
                 }
             }
         }

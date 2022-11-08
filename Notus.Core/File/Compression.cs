@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Buffers;
 using System.Text.RegularExpressions;
 using System.Linq;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus.Compression.TGZ
 {
     /// <summary>
@@ -4064,7 +4064,7 @@ namespace Notus.Compression.TGZ
 
             bool copying = true;
 
-            DateTime marker = DateTime.Now;
+            DateTime marker = NVG.NOW.Obj;
             long processed = 0;
             long target = 0;
 
@@ -4098,10 +4098,10 @@ namespace Notus.Compression.TGZ
                     copying = false;
                 }
 
-                if (DateTime.Now - marker > updateInterval)
+                if (NVG.NOW.Obj - marker > updateInterval)
                 {
                     progressFired = true;
-                    marker = DateTime.Now;
+                    marker = NVG.NOW.Obj;
                     args = new ProgressEventArgs(name, processed, target);
                     progressHandler(sender, args);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -134,6 +135,11 @@ namespace Notus.Variable.Struct
         public string ErrorText { get; set; }
         public Notus.Variable.Enum.BlockStatusCode Result { get; set; }
         public string ID { get; set; }
+    }
+    public class BeforeBalanceStruct
+    {
+        public Dictionary<string, Dictionary<ulong, string>> Balance { get; set; }      // account current balance                                                                                        //public string Currency { get; set; }       // account curreny
+        public WitnessBlock Witness { get; set; }           // witness row no
     }
 
     public class WalletBalanceStruct
@@ -332,6 +338,7 @@ namespace Notus.Variable.Struct
 
     public class PoolBlockRecordStruct
     {
+        public string uid { get; set; }
         public int type { get; set; }
         public string data { get; set; }
     }
@@ -375,7 +382,7 @@ namespace Notus.Variable.Struct
         public string PublicKey { get; set; }
         public string Sign { get; set; }
     }
-    public class NodeInfo
+    public class NodeInfoForMenu
     {
         public NodeWalletInfo Wallet { get; set; }
         public LayerInfo Layer { get; set; }
@@ -463,7 +470,21 @@ namespace Notus.Variable.Struct
         public string IpAddress { get; set; }
         public int Port { get; set; }
     }
-
+    public class NodeInfo
+    {
+        public string IpAddress { get; set; }
+        public int Port { get; set; }
+        public string Wallet { get; set; }                  // node'un cüzdan adresi
+        //public Dictionary<string, Notus.Communication.Sync.Socket.Client> Client { get; set; }
+        public int GroupNo { get; set; }
+    }
+    public class NodeQueueList
+    {
+        //public ConcurrentDictionary<string, Notus.Communication.Sync.Socket.Server> Listener { get; set; }
+        public NodeQueueInfo My { get; set; }             // node ile alınan zaman bilgisi
+        public List<IpInfo> Lists { get; set; }             // node ile alınan zaman bilgisi
+        public Dictionary<ulong, NodeInfo> Queue { get; set; }             // node ile alınan zaman bilgisi
+    }
     public class NodeQueueInfo_Time
     {
         public DateTime Error { get; set; }             // node ile alınan zaman bilgisi
@@ -472,26 +493,44 @@ namespace Notus.Variable.Struct
     }
     public class NodeQueueInfo
     {
-        public bool InTheCode { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
+        public string PublicKey { get; set; }
+        public string HexKey { get; set; }
         public bool Ready { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
-        public IpInfo IP { get; set; }
+        public NodeInfo IP { get; set; }
         public NodeStatus Status { get; set; }
-        public string Wallet { get; set; }                  // node'un cüzdan adresi
-        public string NodeHash { get; set; }                // nodu'un elindeki listenin özeti
-        public NodeQueueInfo_Time Time { get; set; }             // node'un son hata verme zamanı
-        public int ErrorCount { get; set; }                 // node'un verdiği error sayısı peşpeşe 10 olursa, kontrol sıklığı azalacak
-        public long LastRowNo { get; set; }                 // node'un sahip olduğu son blok numarası
-        public string LastPrev { get; set; }                 // node'un sahip olduğu son blok numarası
-        public string LastUid { get; set; }                 // node'un sahip olduğu son blok numarası
-        public string LastSign { get; set; }                 // node'un sahip olduğu son blok numarası
+        public ulong Tick { get; set; }             // node'un son hata verme zamanı
+        public ulong Begin { get; set; }             // node'un son hata verme zamanı
+        public ulong SyncNo { get; set; }             // node'ların senkronizasyon için kullandıkları numara
+        public ulong JoinTime { get; set; }             // node'ların senkronizasyon için kullandıkları numara
+
+        //public bool InTheCode { get; set; }                 // eğer IP adresi kodun içine gömülü ise, tru değeri olacak, gömülü olanlar önemli
+        //public string NodeHash { get; set; }                // nodu'un elindeki listenin özeti
+        //public DateTime Nodes { get; set; }             // node'un son hata verme zamanı
+        //public ulong ErrorTime { get; set; }             // node'un son hata verme zamanı
+        //public NodeQueueInfo_Time Time { get; set; }             // node'un son hata verme zamanı
+        //public int ErrorCount { get; set; }                 // node'un verdiği error sayısı peşpeşe 10 olursa, kontrol sıklığı azalacak
+
+        //sync-disable-exception
+        //geçici olarak devre dışı bırakıldı
+        //public long LastRowNo { get; set; }                 // node'un sahip olduğu son blok numarası
+        //public string LastPrev { get; set; }                 // node'un sahip olduğu son blok numarası
+        //public string LastUid { get; set; }                 // node'un sahip olduğu son blok numarası
+        //public string LastSign { get; set; }                 // node'un sahip olduğu son blok numarası
     }
 
     public class UTCTimeStruct
     {
+        public DateTime Now { get; set; }
+        public ulong ulongNow { get; set; }
+
+        public string PingServerUrl { get; set; }
         public DateTime UtcTime { get; set; }
+        public ulong ulongUtc { get; set; }
+
         public bool After { get; set; }
         public TimeSpan Difference { get; set; }
-        public DateTime Now { get; set; }
+
+        public TimeSpan pingTime { get; set; }
     }
 
     public class EmptyBlockRewardStruct
@@ -503,7 +542,7 @@ namespace Notus.Variable.Struct
         public ulong Left { get; set; }
         public Dictionary<string, Dictionary<ulong, string>> LuckyNode { get; set; }  // after 
         public Dictionary<string, Dictionary<ulong, string>> Addition { get; set; }  // after 
-        public Dictionary<string,List<long>> List { get; set; }
+        public Dictionary<string, List<long>> List { get; set; }
     }
 
     public class LockWalletBeforeStruct
@@ -514,11 +553,13 @@ namespace Notus.Variable.Struct
         public string PublicKey { get; set; }
         public string Sign { get; set; }
     }
+    /*
     public class WitnessBlock
     {
         public Int64 RowNo { get; set; }           // witness row no
         public string UID { get; set; }            // witness uid
     }
+    */
     public class LockWalletStruct
     {
         public string WalletKey { get; set; }
@@ -553,7 +594,6 @@ namespace Notus.Variable.Struct
         public Notus.Variable.Struct.WalletBalanceStruct? Balance { get; set; }
         public Dictionary<string, Dictionary<ulong, string>>? Out { get; set; }
         public string Fee { get; set; }
-
         public string Sign { get; set; }
     }
     public class LogStruct
@@ -585,5 +625,13 @@ namespace Notus.Variable.Struct
         public Notus.Variable.Enum.MultiWalletType VoteType { get; set; }
     }
 
+
+    /*
+    public class MultiWalletTransactionVoteStruct
+    {
+        public Dictionary<string, Dictionary<ulong, string>>? Out { get; set; }
+        public string Fee { get; set; }
+    }
+    */
 }
 

@@ -9,9 +9,28 @@ namespace Notus.Variable
     {
         public static readonly JsonSerializerOptions JsonSetting = new JsonSerializerOptions() { WriteIndented = true };
 
+
+        // kaç saniye boyunca pool'u dinleyecek
+        public static readonly int WalletMemoryCountLimit = 1000000;
+
+        // kaç saniye boyunca pool'u dinleyecek
+        public static readonly int BlockListeningForPoolTime = 200;
+
+        // node kaç milisaniye çalışacak
+        public static readonly int BlockGeneratingTime = 100;
+
+        // node çalışma süresi sonunda kaç mili saniye dağıtmaya geçecek
+        public static readonly int BlockDistributingTime = 200;
+
+        public static readonly byte RegenerateNodeQueueCount = 4;
+
+
+        public static readonly string NetworkProgramWallet = "111111111111111111111111111111111111111";
+        public static readonly int BlockTransactionLimit = 1000;
+        
         //node'ların sıralama frekansları - saniye cinsinden
         public static readonly ulong NodeStartingSync = 20;
-        public static readonly ulong NodeSortFrequency = 3;
+        public static readonly ulong NodeSortFrequency = 2;
 
         // wallet constant
         public static readonly int WalletEncodeTextLength = 36;
@@ -32,6 +51,7 @@ namespace Notus.Variable
         //date time
         public static readonly DateTime DefaultTime = new DateTime(2000, 01, 1, 0, 00, 00);
         public static readonly string DefaultDateTimeFormatText = "yyyyMMddHHmmssfff";
+        public static readonly string DefaultDateTimeFormatTextWithourMiliSecond = "yyyyMMddHHmmss";
 
         //alphabet constant
         public static readonly string DefaultHexAlphabetString = "0123456789abcdef";
@@ -55,6 +75,10 @@ namespace Notus.Variable
         public static readonly string CommonDelimeterChar = ":";
 
         public static readonly string GenesisBlockUid = "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
+        //socket-exception
+        //public static readonly int DefaultMessagePortNo = 5100;
+        
         private static readonly int DefaultPortNo = 5000;
         public static readonly int DefaultChunkSize = 2048;
 
@@ -69,6 +93,12 @@ namespace Notus.Variable
                 }
             }
         };
+
+        public static readonly int MinimumNodeCount = 2;
+        public static readonly int TimeSyncCommPort = 27000;
+
+        public static readonly string TimeSyncNodeIpAddress = "89.252.134.111";
+        public static readonly int TimeSyncAddingCommPort = 25000;
 
         // layer 1 - main layer for crypto & token generate and transfer
         public static readonly Dictionary<NetworkLayer, Dictionary<NetworkType, int>> PortNo = new Dictionary<NetworkLayer, Dictionary<NetworkType, int>>()
@@ -144,6 +174,7 @@ namespace Notus.Variable
                 }
             }
         };
+
         public static Dictionary<NetworkLayer, string> LayerText = new Dictionary<NetworkLayer, string>() {
             { NetworkLayer.Layer1,"Layer 1 ( Crypto Layer )" },
             { NetworkLayer.Layer2,"Layer 2 ( File Storage Layer )" },
@@ -155,10 +186,23 @@ namespace Notus.Variable
             { NetworkType.TestNet,"testnet.notus.network" },
             { NetworkType.DevNet,"devnet.notus.network" }
         };
+        
+        /*
+        standart bizim sunucularımız
+        */
         public static readonly List<string> ListMainNodeIp = new List<string> {
             "89.252.134.91",
             "89.252.184.151"
         };
+
+        /*
+        aws üzerindeki sunucular
+        public static readonly List<string> ListMainNodeIp = new List<string> {
+            "3.75.110.186",
+            "13.229.56.127"
+        };
+        */
+
         public const string Default_EccCurveName = "prime256v1";
         public const int Default_WordListArrayCount = 16;
 
@@ -245,6 +289,7 @@ namespace Notus.Variable
 
         public class StorageFolderName
         {
+            public const string BlockForTgz = "blocks_tgz";
             public const string Block = "blocks";
             public const string Balance = "balance";
             public const string Node = "node";

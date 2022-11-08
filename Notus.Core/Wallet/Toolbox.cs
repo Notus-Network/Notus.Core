@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-
+//using NVG = Notus.Variable.Globals;
 namespace Notus.Wallet
 {
     public static class Toolbox
@@ -703,3 +703,21 @@ namespace Notus.Wallet
 
     }
 }
+
+/*
+Contains BlockKeyStr : 1348c5220b3a0158ae2f9ef79759f60faf00fe0fd1763c67bcfbf68c00b1f4d36d972488170f7dc9eb4fb1c3cc
+Unhandled exception. System.InvalidOperationException: Collection was modified; enumeration operation may not execute.
+   at System.Collections.Generic.Dictionary`2.Enumerator.MoveNext()
+   at Notus.Mempool.Each(Action`2 incomeAction, Int32 UseThisNumberAsCountOrMiliSeconds, MempoolEachRecordLimitType UseThisNumberType) in /Users/goksoy/Projects/cnodefull/Data/Mempool.cs:line 284
+   at Notus.Validator.Main.Start() in /Users/goksoy/Projects/cnodefull/Validator/Main.cs:line 839
+   at Notus.Validator.Node.StartAsMain() in /Users/goksoy/Projects/cnodefull/Validator/Node.cs:line 105
+   at Notus.Validator.Node.Start(Boolean LightNodeActive) in /Users/goksoy/Projects/cnodefull/Validator/Node.cs:line 62
+   at Notus.Validator.Node.Start(String[] argsFromCLI) in /Users/goksoy/Projects/cnodefull/Validator/Node.cs:line 27
+   at Program.<Main>$(String[] args) in /Users/goksoy/Projects/cnodefull/Program.cs:line 56
+
+
+
+
+
+
+*/

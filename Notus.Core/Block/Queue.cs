@@ -1,28 +1,25 @@
-﻿using System;
+﻿using Notus.Compression.TGZ;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text.Json;
+using NGF = Notus.Variable.Globals.Functions;
+using NVG = Notus.Variable.Globals;
+using NP = Notus.Print;
 
 namespace Notus.Block
 {
     public class Queue : IDisposable
     {
-        private DateTime LastNtpTime = Notus.Variable.Constant.DefaultTime;
-        private TimeSpan NtpTimeDifference;
-        private bool NodeTimeAfterNtpTime = false;      // time difference before or after NTP Server
-
-        private Notus.Variable.Common.ClassSetting Obj_Settings;
-        public Notus.Variable.Common.ClassSetting Settings
-        {
-            get { return Obj_Settings; }
-            set { Obj_Settings = value; }
-        }
+        public bool CheckPoolDb = false;                // time difference before or after NTP Server
 
         private Notus.Mempool MP_BlockPoolList;
         private Notus.Block.Storage BS_Storage;
-        private Dictionary<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>> Obj_PoolTransactionList =
-            new Dictionary<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>>();
+        private ConcurrentDictionary<string, byte> PoolIdList = new ConcurrentDictionary<string, byte>();
+        private ConcurrentDictionary<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>> Obj_PoolTransactionList =
+            new ConcurrentDictionary<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>>();
         private Queue<Notus.Variable.Struct.List_PoolBlockRecordStruct> Queue_PoolTransaction = new Queue<Notus.Variable.Struct.List_PoolBlockRecordStruct>();
 
         //bu foknsiyonun görevi blok sırası ve önceki değerlerini blok içeriğine eklemek
@@ -34,7 +31,7 @@ namespace Notus.Block
             }
             return null;
         }
-        public Dictionary<int,int>? GetPoolCount()
+        public Dictionary<int, int>? GetPoolCount()
         {
             Dictionary<int, int> resultList = new Dictionary<int, int>();
             foreach (KeyValuePair<int, List<Notus.Variable.Struct.List_PoolBlockRecordStruct>> entry in Obj_PoolTransactionList)
@@ -46,11 +43,11 @@ namespace Notus.Block
 
         public Notus.Variable.Class.BlockData OrganizeBlockOrder(Notus.Variable.Class.BlockData CurrentBlock)
         {
-            CurrentBlock.info.rowNo = Obj_Settings.LastBlock.info.rowNo + 1;
+            CurrentBlock.info.rowNo = NVG.Settings.LastBlock.info.rowNo + 1;
 
-            CurrentBlock.prev = Obj_Settings.LastBlock.info.uID + Obj_Settings.LastBlock.sign;
+            CurrentBlock.prev = NVG.Settings.LastBlock.info.uID + NVG.Settings.LastBlock.sign;
             CurrentBlock.info.prevList.Clear();
-            foreach (KeyValuePair<int, string> entry in Obj_Settings.LastBlock.info.prevList)
+            foreach (KeyValuePair<int, string> entry in NVG.Settings.LastBlock.info.prevList)
             {
                 if (entry.Value != "")
                 {
@@ -70,22 +67,48 @@ namespace Notus.Block
 
 
         //bu fonksiyon ile işlem yapılacak aynı türden bloklar sırası ile listeden çekilip geri gönderilecek
-        public Notus.Variable.Struct.PoolBlockRecordStruct? Get(DateTime currentUtcTime, Notus.Wallet.Balance BalanceObj)
+        public Notus.Variable.Struct.PoolBlockRecordStruct? Get(
+            ulong WaitingForPool
+            //, 
+            //DateTime BlockGenerationTime
+        )
         {
-            DateTime startingTime = DateTime.Now;
             if (Queue_PoolTransaction.Count == 0)
             {
+                //Console.WriteLine("sifir");
+                //PoolIdList.Clear();
                 return null;
             }
 
+            int diffBetween = System.Convert.ToInt32(MP_BlockPoolList.Count() / Queue_PoolTransaction.Count);
+            if (diffBetween > 10)
+            {
+                CheckPoolDb = true;
+                //Console.WriteLine("CheckPoolDb = true;");
+            }
+            else
+            {
+                //Console.WriteLine("CheckPoolDb = false;");
+                if (MP_BlockPoolList.Count() < 10)
+                {
+                    CheckPoolDb = true;
+                }
+                if (Queue_PoolTransaction.Count < 10)
+                {
+                    CheckPoolDb = true;
+                }
+            }
+
             int CurrentBlockType = -1;
-            List<string> TempWalletList = new List<string>() { Obj_Settings.NodeWallet.WalletKey };
+            List<string> TempWalletList = new List<string>() { NVG.Settings.NodeWallet.WalletKey };
 
             List<string> TempBlockList = new List<string>();
             List<Notus.Variable.Struct.List_PoolBlockRecordStruct> TempPoolTransactionList = new List<Notus.Variable.Struct.List_PoolBlockRecordStruct>();
             bool exitLoop = false;
+            string transactionId = string.Empty;
             while (exitLoop == false)
             {
+                //NGF.UpdateUtcNowValue();
                 if (Queue_PoolTransaction.Count > 0)
                 {
                     Notus.Variable.Struct.List_PoolBlockRecordStruct? TmpPoolRecord = Queue_PoolTransaction.Peek();
@@ -103,7 +126,59 @@ namespace Notus.Block
                         if (CurrentBlockType == TmpPoolRecord.type)
                         {
                             bool addToList = true;
-                            if (CurrentBlockType == 120)
+                            if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.MultiWalletCryptoTransfer)
+                            {
+                                Dictionary<string, Notus.Variable.Struct.MultiWalletTransactionStruct>? multiTx =
+                                    JsonSerializer.Deserialize<
+                                        Dictionary<string, Notus.Variable.Struct.MultiWalletTransactionStruct>
+                                    >(TmpPoolRecord.data);
+                                if (multiTx == null)
+                                {
+                                    addToList = false;
+                                }
+                                else
+                                {
+                                    foreach (var iEntry in multiTx)
+                                    {
+                                        if (transactionId.Length == 0)
+                                        {
+                                            transactionId = iEntry.Key;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.AirDrop)
+                            {
+                                Notus.Variable.Class.BlockStruct_125? tmpBlockCipherData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_125>(TmpPoolRecord.data);
+                                if (tmpBlockCipherData == null)
+                                {
+                                    addToList = false;
+                                }
+                                else
+                                {
+                                    // out işlemindeki cüzdanları kontrol ediyor...
+                                    foreach (KeyValuePair<string, Dictionary<string, Dictionary<ulong, string>>> tmpEntry in tmpBlockCipherData.Out)
+                                    {
+                                        if (TempWalletList.IndexOf(tmpEntry.Key) == -1)
+                                        {
+                                            TempWalletList.Add(tmpEntry.Key);
+                                        }
+                                        else
+                                        {
+                                            addToList = false;
+                                        }
+                                    }
+
+                                    if (addToList == false)
+                                    {
+                                        Queue_PoolTransaction.Enqueue(TmpPoolRecord);
+                                        Obj_PoolTransactionList[CurrentBlockType].Add(TmpPoolRecord);
+                                    }
+                                }
+                            }
+
+                            if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.CryptoTransfer)
                             {
                                 Notus.Variable.Class.BlockStruct_120? tmpBlockCipherData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_120>(TmpPoolRecord.data);
                                 if (tmpBlockCipherData == null)
@@ -129,7 +204,7 @@ namespace Notus.Block
                                     {
                                         Queue_PoolTransaction.Enqueue(TmpPoolRecord);
                                         Obj_PoolTransactionList[CurrentBlockType].Add(TmpPoolRecord);
-                                        exitLoop = true;
+                                        //exitLoop = true;
                                     }
                                 }
                             }
@@ -139,13 +214,15 @@ namespace Notus.Block
                                 TempPoolTransactionList.Add(TmpPoolRecord);
                                 TempBlockList.Add(TmpPoolRecord.data);
                             }
+
                             Queue_PoolTransaction.Dequeue();
                             Obj_PoolTransactionList[CurrentBlockType].RemoveAt(0);
                             if (
-                                TempPoolTransactionList.Count == 1000 ||
+                                TempPoolTransactionList.Count == Notus.Variable.Constant.BlockTransactionLimit ||
                                 CurrentBlockType == 240 || // layer1 - > dosya ekleme isteği
                                 CurrentBlockType == 250 || // layer3 - > dosya içeriği
-                                CurrentBlockType == 300
+                                CurrentBlockType == Notus.Variable.Enum.BlockTypeList.EmptyBlock ||
+                                CurrentBlockType == Notus.Variable.Enum.BlockTypeList.MultiWalletCryptoTransfer
                             )
                             {
                                 exitLoop = true;
@@ -161,9 +238,11 @@ namespace Notus.Block
                 {
                     exitLoop = true;
                 }
+                if (NVG.NOW.Int >= WaitingForPool)
+                {
+                    exitLoop = true;
+                }
             }
-
-
             if (TempPoolTransactionList.Count == 0)
             {
                 return null;
@@ -201,9 +280,17 @@ namespace Notus.Block
             string LongNonceText = string.Empty;
 
             BlockStruct.cipher.ver = "NE";
-            BlockStruct.info.uID = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
+            if (transactionId.Length == 0)
+            {
+                BlockStruct.info.uID = NGF.GenerateTxUid();
+                //BlockStruct.info.uID = Notus.Block.Key.Generate(GetNtpTime(), NVG.Settings.NodeWallet.WalletKey);
+            }
+            else
+            {
+                BlockStruct.info.uID = transactionId;
+            }
 
-            if (CurrentBlockType == 360)
+            if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.GenesisBlock)
             {
                 LongNonceText = TempPoolTransactionList[0].data;
                 BlockStruct.info.rowNo = 1;
@@ -219,6 +306,7 @@ namespace Notus.Block
                 //BLOCK UNIQUE ID'Sİ BURADA EKLENİYOR....
                 // buraya UTC time verisi parametre olarak gönderilecek
                 // böylece blok için alınan zaman bilgisi ortak bir zaman olacak
+                //Notus.Variable.Enum.BlockTypeList.CryptoTransfer
 
                 if (CurrentBlockType == 240)
                 {
@@ -237,9 +325,10 @@ namespace Notus.Block
                     );
                 }
 
-                if (CurrentBlockType == 40)
+                if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.LockAccount)
                 {
                     string tmpLockWalletKey = TempBlockList[0];
+
                     Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletStruct = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(tmpLockWalletKey);
                     TempBlockList.Clear();
                     if (tmpLockWalletStruct == null)
@@ -260,14 +349,16 @@ namespace Notus.Block
                     }
                     else
                     {
-                        string lockAccountFee = Obj_Settings.Genesis.Fee.BlockAccount.ToString();
+                        Console.WriteLine("Queue.Cs -> Line 354");
+                        Console.WriteLine(tmpLockWalletStruct.WalletKey);
+                        string lockAccountFee = NVG.Settings.Genesis.Fee.BlockAccount.ToString();
                         Notus.Variable.Struct.WalletBalanceStruct currentBalance =
-                            BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0);
+                            NGF.Balance.Get(tmpLockWalletStruct.WalletKey, 0);
                         (bool tmpBalanceResult, Notus.Variable.Struct.WalletBalanceStruct tmpNewGeneratorBalance) =
-                            BalanceObj.SubtractVolumeWithUnlockTime(
-                                BalanceObj.Get(tmpLockWalletStruct.WalletKey, 0),
+                            NGF.Balance.SubtractVolumeWithUnlockTime(
+                                NGF.Balance.Get(tmpLockWalletStruct.WalletKey, 0),
                                 lockAccountFee,
-                                Obj_Settings.Genesis.CoinInfo.Tag
+                                NVG.Settings.Genesis.CoinInfo.Tag
                             );
                         if (tmpBalanceResult == false)
                         {
@@ -291,7 +382,7 @@ namespace Notus.Block
                                         WalletKey = tmpLockWalletStruct.WalletKey,
                                         Balance = new Notus.Variable.Class.WalletBalanceStructForTransaction()
                                         {
-                                            Balance = BalanceObj.ReAssign(currentBalance.Balance),
+                                            Balance = NGF.Balance.ReAssign(currentBalance.Balance),
                                             Wallet = tmpLockWalletStruct.WalletKey,
                                             WitnessBlockUid = currentBalance.UID,
                                             WitnessRowNo = currentBalance.RowNo
@@ -316,10 +407,55 @@ namespace Notus.Block
                     }
                 }
 
-                if (CurrentBlockType == 120)
+                if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.AirDrop)
+                {
+                    //Console.WriteLine(JsonSerializer.Serialize( TempBlockList));
+                    //Console.ReadLine();
+                    if (TempBlockList.Count > 1)
+                    {
+                        Notus.Variable.Class.BlockStruct_125 tmpBlockCipherData = new Variable.Class.BlockStruct_125()
+                        {
+                            //Sender=Notus.Variable.Constant.NetworkProgramWallet
+                            In = new Dictionary<string, Notus.Variable.Struct.WalletBalanceStruct>(),
+                            Out = new Dictionary<string, Dictionary<string, Dictionary<ulong, string>>>(),
+                            Validator = string.Empty
+                        };
+
+                        for (int i = 0; i < TempBlockList.Count; i++)
+                        {
+                            Notus.Variable.Class.BlockStruct_125? tmpInnerData = JsonSerializer.Deserialize<Notus.Variable.Class.BlockStruct_125>(TempBlockList[i]);
+                            if (tmpInnerData != null)
+                            {
+                                foreach (var iEntry in tmpInnerData.In)
+                                {
+                                    tmpBlockCipherData.In.Add(iEntry.Key, iEntry.Value);
+                                }
+                                foreach (var iEntry in tmpInnerData.Out)
+                                {
+                                    tmpBlockCipherData.Out.Add(iEntry.Key, iEntry.Value);
+                                }
+                                tmpBlockCipherData.Validator = tmpInnerData.Validator;
+                            }
+                            else
+                            {
+                                Console.WriteLine("TempBlockList[i] IS NULL");
+                                Console.WriteLine(TempBlockList[i]);
+                                Console.WriteLine("TempBlockList[i] IS NULL");
+                            }
+                        }
+                        TempBlockList.Clear();
+                        //Console.WriteLine(JsonSerializer.Serialize(tmpBlockCipherData, Notus.Variable.Constant.JsonSetting));
+                        //Console.ReadLine();
+                        TempBlockList.Add(JsonSerializer.Serialize(tmpBlockCipherData));
+                    }
+                    //Console.WriteLine(TempBlockList);
+                    //Console.ReadLine();
+                }
+                if (CurrentBlockType == Notus.Variable.Enum.BlockTypeList.CryptoTransfer)
                 {
                     if (TempBlockList.Count > 1)
                     {
+                        //Console.WriteLine(JsonSerializer.Serialize( TempBlockList));
                         Notus.Variable.Class.BlockStruct_120 tmpBlockCipherData = new Variable.Class.BlockStruct_120()
                         {
                             In = new Dictionary<string, Variable.Class.BlockStruct_120_In_Struct>(),
@@ -346,6 +482,7 @@ namespace Notus.Block
                                         BigInteger.Parse(tmpInnerData.Validator.Reward);
                                     tmpBlockCipherData.Validator.Reward = tmpFee.ToString();
                                 }
+
                                 foreach (KeyValuePair<string, Variable.Class.BlockStruct_120_In_Struct> iEntry in tmpInnerData.In)
                                 {
                                     tmpBlockCipherData.In.Add(iEntry.Key, iEntry.Value);
@@ -355,8 +492,15 @@ namespace Notus.Block
                                     tmpBlockCipherData.Out.Add(iEntry.Key, iEntry.Value);
                                 }
                             }
+                            else
+                            {
+                                Console.WriteLine("TempBlockList[i] IS NULL");
+                                Console.WriteLine(TempBlockList[i]);
+                                Console.WriteLine("TempBlockList[i] IS NULL");
+                            }
                         }
                         TempBlockList.Clear();
+                        //Console.WriteLine(tmpBlockCipherData.Out.Count)
                         TempBlockList.Add(JsonSerializer.Serialize(tmpBlockCipherData));
                     }
                 }
@@ -383,6 +527,17 @@ namespace Notus.Block
                     LongNonceText
                 )
             );
+
+            //burası pooldaki kayıtların fazla birikmesi ve para transferi işlemlerinin key'lerinin örtüşmemesinden
+            //dolayı eklendi
+            for (int i = 0; i < TempPoolTransactionList.Count; i++)
+            {
+                //Console.WriteLine("Control-Point-a001");
+                //Console.WriteLine("Remove Key : " + TempPoolTransactionList[i].key);
+                MP_BlockPoolList.Remove(TempPoolTransactionList[i].key,true);
+                PoolIdList.TryRemove(TempPoolTransactionList[i].key, out _);
+            }
+
             return
                 new Notus.Variable.Struct.PoolBlockRecordStruct()
                 {
@@ -425,48 +580,31 @@ namespace Notus.Block
         }
         */
 
-        private DateTime GetNtpTime()
-        {
-            if (
-                string.Equals(
-                    LastNtpTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText),
-                    Notus.Variable.Constant.DefaultTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText)
-                )
-            )
-            {
-                LastNtpTime = Notus.Time.GetFromNtpServer();
-                DateTime tmpNtpCheckTime = DateTime.Now;
-                NodeTimeAfterNtpTime = (tmpNtpCheckTime > LastNtpTime);
-                NtpTimeDifference = (NodeTimeAfterNtpTime == true ? (tmpNtpCheckTime - LastNtpTime) : (LastNtpTime - tmpNtpCheckTime));
-                return LastNtpTime;
-            }
-
-            if (NodeTimeAfterNtpTime == true)
-            {
-                LastNtpTime = DateTime.Now.Subtract(NtpTimeDifference);
-                return LastNtpTime;
-            }
-            LastNtpTime = DateTime.Now.Add(NtpTimeDifference);
-            return LastNtpTime;
-        }
-
         public Notus.Variable.Class.BlockData? ReadFromChain(string BlockId)
         {
+            //tgz-exception
             return BS_Storage.ReadBlock(BlockId);
         }
         //yeni blok hesaplanması tamamlandığı zaman buraya gelecek ve geçerli blok ise eklenecek.
         public void AddToChain(Notus.Variable.Class.BlockData NewBlock)
         {
-            Notus.Print.Log(
-                Notus.Variable.Enum.LogLevel.Info,
-                70,
-                JsonSerializer.Serialize(NewBlock),
-                "AddToChain",
-                null,
-                null
-            );
-
-            BS_Storage.Add(NewBlock);
+            /*
+            if (NewBlock.prev.Length < 20)
+            {
+                NP.Info("Block Added To Chain -> " +
+                    NewBlock.info.rowNo.ToString() + " -> " +
+                    "Prev is Empty [ " + NewBlock.prev + " ]"
+                );
+            }
+            else
+            {
+                NP.Info("Block Added To Chain -> " + 
+                    NewBlock.info.rowNo.ToString() + " -> " + 
+                    NewBlock.prev.Substring(0,20)
+                );
+            }
+            */
+            BS_Storage.AddSync(NewBlock);
 
             string rawDataStr = Notus.Toolbox.Text.RawCipherData2String(
                 NewBlock.cipher.data
@@ -475,7 +613,7 @@ namespace Notus.Block
             string RemoveKeyStr = string.Empty;
             if (NewBlock.info.type == 40)
             {
-                Notus.Variable.Struct.LockWalletStruct? tmpTransferResult = 
+                Notus.Variable.Struct.LockWalletStruct? tmpTransferResult =
                     JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletStruct>(rawDataStr);
                 if (tmpTransferResult != null)
                 {
@@ -484,75 +622,89 @@ namespace Notus.Block
             }
             else
             {
-                RemoveKeyStr = GiveBlockKey(rawDataStr);
+                //Console.WriteLine("Silinecek Block Anahtari Bilinmiyor");
+                //RemoveKeyStr = GiveBlockKey(rawDataStr);
             }
-            MP_BlockPoolList.Remove(RemoveKeyStr);
+            //Console.WriteLine("Control-Point-a055");
+            //Console.WriteLine("Remove Key From Pool : " + RemoveKeyStr);
+            MP_BlockPoolList.Remove(RemoveKeyStr,true);
         }
 
         public void Reset()
         {
-            Notus.Archive.ClearBlocks(Obj_Settings);
+            Notus.Archive.ClearBlocks(NVG.Settings);
             MP_BlockPoolList.Clear();
             Queue_PoolTransaction.Clear();
             Obj_PoolTransactionList.Clear();
         }
-        public bool Add(Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData)
+        public bool Add(Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData,bool addedToPoolDb=true)
         {
-            if (PreBlockData != null)
+            if (PreBlockData == null)
             {
-                if (Obj_Settings != null)
-                {
-                    if (Obj_Settings.NodeWallet != null)
-                    {
-                        string blockKeyStr = Notus.Block.Key.Generate(GetNtpTime(), Obj_Settings.NodeWallet.WalletKey);
-                        Add2Queue(PreBlockData, blockKeyStr);
-                        string PreBlockDataStr = JsonSerializer.Serialize(PreBlockData);
-                        string keyStr = GiveBlockKey(PreBlockData.data);
-                        if (PreBlockData.type == 40)
-                        {
-                            Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletData = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(PreBlockData.data);
-                            if (tmpLockWalletData != null)
-                            {
-                                keyStr = Notus.Toolbox.Text.ToHex("lock-" + tmpLockWalletData.WalletKey);
-                            }
-                            else
-                            {
-                                keyStr = "";
-                            }
-                        }
+                Console.WriteLine("Block.Queue.Cs -> Line 668 -> PreBlockData = NULL");
+                return false;
+            }
+            if (NVG.Settings == null)
+            {
+                Console.WriteLine("Block.Queue.Cs -> Line 673 -> NVG.Settings = NULL");
+                return false;
+            }
+            if (NVG.Settings.NodeWallet == null)
+            {
+                Console.WriteLine("Block.Queue.Cs -> Line 678 -> NVG.Settings.NodeWallet = NULL");
+                return false;
+            }
 
-                        if (keyStr.Length > 0)
-                        {
-                            MP_BlockPoolList.Set(keyStr, PreBlockDataStr, true);
-                        }
-                        return true;
-                    }
+            string PreBlockDataStr = JsonSerializer.Serialize(PreBlockData);
+            if (PreBlockData.uid == null)
+            {
+                PreBlockData.uid = NGF.GenerateTxUid();
+            }
+
+            Add2Queue(PreBlockData, PreBlockData.uid);
+            string keyStr = PreBlockData.uid;
+            if (PreBlockData.type == 40)
+            {
+                Notus.Variable.Struct.LockWalletBeforeStruct? tmpLockWalletData = JsonSerializer.Deserialize<Notus.Variable.Struct.LockWalletBeforeStruct>(PreBlockData.data);
+                if (tmpLockWalletData != null)
+                {
+                    keyStr = Notus.Toolbox.Text.ToHex("lock-" + tmpLockWalletData.WalletKey);
+                }
+                else
+                {
+                    keyStr = "";
                 }
             }
-            return false;
+            //Console.WriteLine("keyStr : " + keyStr);
+            if (keyStr.Length > 0)
+            {
+                if (addedToPoolDb == true)
+                {
+                    MP_BlockPoolList.Set(keyStr, PreBlockDataStr, true);
+                }
+            }
+            return true;
         }
 
         public void AddEmptyBlock()
         {
             Add(new Notus.Variable.Struct.PoolBlockRecordStruct()
             {
-                type = 300,
-                data = JsonSerializer.Serialize(Obj_Settings.LastBlock.info.rowNo)
-            });
+                uid = NGF.GenerateTxUid(),
+                type = Notus.Variable.Enum.BlockTypeList.EmptyBlock,
+                data = JsonSerializer.Serialize(NVG.Settings.LastBlock.info.rowNo)
+            },false);
         }
-        public string GiveBlockKey(string BlockDataStr)
+
+        private void Add2Queue(Notus.Variable.Struct.PoolBlockRecordStruct PreBlockData, string BlockKeyStr)
         {
-            return
-                new Notus.Hash().CommonHash("md5", BlockDataStr) +
-                new Notus.Hash().CommonHash("sha1", BlockDataStr);
-        }
-        private void Add2Queue(Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData, string BlockKeyStr)
-        {
-            if (PreBlockData != null)
+            //Console.WriteLine(PreBlockData.type.ToString() + " - " +BlockKeyStr.Substring(0, 20));
+            if (PoolIdList.ContainsKey(BlockKeyStr) == false)
             {
+                bool added = PoolIdList.TryAdd(BlockKeyStr, 1);
                 if (Obj_PoolTransactionList.ContainsKey(PreBlockData.type) == false)
                 {
-                    Obj_PoolTransactionList.Add(
+                    Obj_PoolTransactionList.TryAdd(
                         PreBlockData.type,
                         new List<Variable.Struct.List_PoolBlockRecordStruct>() { }
                     );
@@ -565,6 +717,7 @@ namespace Notus.Block
                         data = PreBlockData.data
                     }
                 );
+                //Console.WriteLine("BlockKeyStr : " + BlockKeyStr);
                 Queue_PoolTransaction.Enqueue(new Notus.Variable.Struct.List_PoolBlockRecordStruct()
                 {
                     key = BlockKeyStr,
@@ -573,25 +726,37 @@ namespace Notus.Block
                 });
             }
         }
-        public void Start()
+        public void LoadFromPoolDb()
         {
-            BS_Storage = new Notus.Block.Storage(false);
-            BS_Storage.Network = Obj_Settings.Network;
-            BS_Storage.Layer = Obj_Settings.Layer;
-            BS_Storage.Start();
-
-            MP_BlockPoolList = new Notus.Mempool(
-                Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
-                Notus.Variable.Constant.MemoryPoolName["BlockPoolList"]
-            );
             MP_BlockPoolList.Each((string blockTransactionKey, string TextBlockDataString) =>
             {
-                Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData = JsonSerializer.Deserialize<Notus.Variable.Struct.PoolBlockRecordStruct>(TextBlockDataString);
+                Notus.Variable.Struct.PoolBlockRecordStruct? PreBlockData =
+                JsonSerializer.Deserialize<Notus.Variable.Struct.PoolBlockRecordStruct>(TextBlockDataString);
                 if (PreBlockData != null)
                 {
                     Add2Queue(PreBlockData, blockTransactionKey);
                 }
-            });
+                else
+                {
+                    Console.WriteLine("Queue -> Line 687");
+                    Console.WriteLine("Queue -> Line 687");
+                    Console.WriteLine(blockTransactionKey);
+                    Console.WriteLine(TextBlockDataString);
+                }
+            }, 3000);
+        }
+        public void Start()
+        {
+            BS_Storage = new Notus.Block.Storage(false);
+            BS_Storage.Start();
+
+            MP_BlockPoolList = new Notus.Mempool(
+                Notus.IO.GetFolderName(NVG.Settings, Notus.Variable.Constant.StorageFolderName.Common) +
+                Notus.Variable.Constant.MemoryPoolName["BlockPoolList"]
+            );
+            MP_BlockPoolList.AsyncActive = false;
+            LoadFromPoolDb();
+            CheckPoolDb = false;
         }
         public Queue()
         {
@@ -611,18 +776,9 @@ namespace Notus.Block
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    864578,
-                    err.Message,
-                    "BlockRowNo",
-                    Obj_Settings,
-                    err
-                );
-
-                Notus.Print.Danger(Obj_Settings, "Error -> Notus.Block.Queue");
-                Notus.Print.Danger(Obj_Settings, err.Message);
-                Notus.Print.Danger(Obj_Settings, "Error -> Notus.Block.Queue");
+                NP.Danger(NVG.Settings, "Error -> Notus.Block.Queue");
+                NP.Danger(NVG.Settings, err.Message);
+                NP.Danger(NVG.Settings, "Error -> Notus.Block.Queue");
             }
         }
     }

@@ -4,21 +4,15 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-
+using ND = Notus.Date;
+using NP = Notus.Print;
+using NVG = Notus.Variable.Globals;
+using NVS = Notus.Variable.Struct;
 namespace Notus.Communication
 {
     public class Http : IDisposable
     {
-        private Notus.Variable.Common.ClassSetting Obj_Settings;
-        public Notus.Variable.Common.ClassSetting Settings
-        {
-            get { return Obj_Settings; }
-            set { Obj_Settings = value; }
-        }
-
         private int Val_Timeout = 30;
-        private IPAddress Val_NodeIPAddress;
-        private int Val_PortNo;
         public int Timeout
         {
             set
@@ -100,7 +94,7 @@ namespace Notus.Communication
             }
         }
         private bool OnReceiveFunctionDefined = false;
-        private System.Func<Notus.Variable.Struct.HttpRequestDetails, string> OnReceiveFunction;
+        private System.Func<NVS.HttpRequestDetails, string> OnReceiveFunction;
         public void Stop()
         {
             if (ListenerObj != null)
@@ -110,7 +104,7 @@ namespace Notus.Communication
             Value_ServerStoped = true;
         }
 
-        public void OnReceive(System.Func<Notus.Variable.Struct.HttpRequestDetails, string> OnReceiveFunc)
+        public void OnReceive(System.Func<NVS.HttpRequestDetails, string> OnReceiveFunc)
         {
             OnReceiveFunctionDefined = true;
             OnReceiveFunction = OnReceiveFunc;
@@ -118,16 +112,11 @@ namespace Notus.Communication
 
         private byte[] IncomeTextFunction(byte[] incomeArray, System.Net.IPEndPoint RemoteEndPoint, System.Net.IPEndPoint LocalEndPoint)
         {
-
-            //Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
-            //Console.WriteLine(System.Text.Encoding.ASCII.GetString(incomeArray));
-            //Console.WriteLine("Notus.Communication.Http.IncomeTextFunction -> Line 145");
-
-            Notus.Variable.Struct.HttpRequestDetails incomeData = ParseString(incomeArray);
+            NVS.HttpRequestDetails incomeData = ParseString(incomeArray);
             if (Val_StoreUrl == true)
             {
                 Mp_UrlList.Add(
-                    Date.ToString(DateTime.Now) + new Random().Next(10000000, 42949295).ToString(),
+                    ND.ToString(NVG.NOW.Obj) + new Random().Next(10000000, 42949295).ToString(),
                     JsonSerializer.Serialize(incomeData)
                 );
             }
@@ -143,11 +132,11 @@ namespace Notus.Communication
             string ResponseStr = Val_DefaultResult_OK;
             if (OnReceiveFunctionDefined == false)
             {
-                Notus.Print.Danger(Obj_Settings, "Url Doesn't Exist -> " + incomeData.Url);
+                NP.Danger(NVG.Settings, "Url Doesn't Exist -> " + incomeData.Url);
             }
             else
             {
-                //Notus.Print.Basic(Obj_Settings.DebugMode, "Url Call : " + incomeData.RawUrl);
+                //NP.Basic(NVG.Settings.DebugMode, "Url Call : " + incomeData.RawUrl);
                 ResponseStr = OnReceiveFunction(incomeData);
             }
             byte[] headerArray = Encoding.ASCII.GetBytes(
@@ -174,15 +163,12 @@ namespace Notus.Communication
         {
             if (Val_StoreUrl == true)
             {
-                Mp_UrlList = new Notus.Mempool(Notus.IO.GetFolderName(Obj_Settings.Network, Obj_Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
+                Mp_UrlList = new Notus.Mempool(Notus.IO.GetFolderName(NVG.Settings.Network, NVG.Settings.Layer, Notus.Variable.Constant.StorageFolderName.Common) +
                     "url_visit"
                 );
-                Mp_UrlList.DebugMode = Obj_Settings.DebugMode;
-                Mp_UrlList.InfoMode = Obj_Settings.InfoMode;
+                Mp_UrlList.DebugMode = NVG.Settings.DebugMode;
+                Mp_UrlList.InfoMode = NVG.Settings.InfoMode;
             }
-
-            Val_NodeIPAddress = NodeIPAddress;
-            Val_PortNo = PortNo;
 
             Value_ServerStarted = false;
             try
@@ -190,34 +176,26 @@ namespace Notus.Communication
                 ListenerObj = new Notus.Communication.Listener();
                 ListenerObj.KeepAlive = false;
                 ListenerObj.DataEndTextIsActive = false;
-                ListenerObj.SynchronousSocketIsActive = Obj_Settings.SynchronousSocketIsActive;
+                ListenerObj.SynchronousSocketIsActive = NVG.Settings.SynchronousSocketIsActive;
                 ListenerObj.PortNo = PortNo;
                 ListenerObj.IPAddress = NodeIPAddress.ToString();
-                ListenerObj.DebugMode = Obj_Settings.DebugMode;
+                ListenerObj.DebugMode = NVG.Settings.DebugMode;
                 ListenerObj.ReturnByteArray = true;
                 ListenerObj.Begin(true);
                 ListenerObj.OnError((int errorCode, string errorText) =>
                 {
-                    Notus.Print.Danger(Obj_Settings, "Error Code : " + errorCode.ToString());
-                    Notus.Print.Danger(Obj_Settings, "Error Text : " + errorText);
+                    NP.Danger("Error Code : " + errorCode.ToString());
+                    NP.Danger("Error Text : " + errorText);
                 });
                 ListenerObj.OnReceive(IncomeTextFunction);
             }
             catch (Exception e)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    356298,
-                    e.Message,
-                    "BlockRowNo",
-                    Obj_Settings,
-                    e
-                );
-                Notus.Print.Danger(Obj_Settings, "An Exception Occurred while Listening :" + e.ToString());
+                NP.Danger(NVG.Settings, "An Exception Occurred while Listening :" + e.ToString());
             }
         }
 
-        private Notus.Variable.Struct.HttpRequestDetails ParseString(byte[] rawArray)
+        private NVS.HttpRequestDetails ParseString(byte[] rawArray)
         {
             Dictionary<string, string> KeyNameList = new Dictionary<string, string>();
             List<string> queryList = new List<string>();
@@ -353,9 +331,9 @@ namespace Notus.Communication
                 }
             }
 
-            //Notus.Print.Basic(Obj_Settings.DebugMode, urlLine);
+            //NP.Basic(NVG.Settings.DebugMode, urlLine);
 
-            return new Notus.Variable.Struct.HttpRequestDetails()
+            return new NVS.HttpRequestDetails()
             {
                 KeepAlive = (KeyNameList.ContainsKey("connection") ? (KeyNameList["connection"] == "keep-alive" ? true : false) : false),
                 IsSecureConnection = false,

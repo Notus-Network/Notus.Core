@@ -36,7 +36,7 @@ namespace Notus.Nonce
             int arrLength = (HashResultLen - difficulty) + 1;
             int[] nonceArray = new int[arrLength];
 
-            string referenceHash = new String('0', HashResultLen);
+            string referenceHash = new string('0', HashResultLen);
             int zeroStartFrom = 0;
             bool itsDone = false;
             int biggestNumberVal = 0;

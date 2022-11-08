@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿/*
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -10,7 +11,7 @@ using System;
 
 namespace Notus
 {
-    public static class Archive
+    public static class Archive_Yedek
     {
         public static void ClearBlocks(Notus.Globals.Variable.Settings objSettings)
         {
@@ -21,6 +22,14 @@ namespace Notus
             Notus.Variable.Enum.NetworkLayer networkLayer
         )
         {
+            Notus.Print.Log(
+                Notus.Variable.Enum.LogLevel.Info,
+                10,
+                "ClearBlocks",
+                "ClearBlocks",
+                null,
+                null
+            );
             DirectoryInfo d = new DirectoryInfo(
                 Notus.IO.GetFolderName(
                     networkType,
@@ -121,3 +130,5 @@ namespace Notus
     }
 
 }
+
+*/

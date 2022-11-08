@@ -5,21 +5,26 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using NGF = Notus.Variable.Globals.Functions;
+using NVG = Notus.Variable.Globals;
+using NVC = Notus.Variable.Constant;
+using NVE = Notus.Variable.Enum;
+using NVS = Notus.Variable.Struct;
 
 namespace Notus
 {
     public static class Print
     {
         public static void Log(
-            Notus.Variable.Enum.LogLevel logType,
+            NVE.LogLevel logType,
             int logNo,
             string messageText,
             string blockRowNo,
-            Notus.Variable.Common.ClassSetting? objSettings,
+            Notus.Globals.Variable.Settings? objSettings,
             Exception? objException
         )
         {
-            Notus.Variable.Struct.LogStruct logObject = new Notus.Variable.Struct.LogStruct()
+            NVS.LogStruct logObject = new NVS.LogStruct()
             {
                 BlockRowNo = blockRowNo,
                 LogNo = logNo,
@@ -55,72 +60,111 @@ namespace Notus
                 true
             );
         }
-        public static void ReadLine(Notus.Variable.Common.ClassSetting NodeSettings)
+        public static void NodeCount()
+        {
+            Info(NVG.Settings, "Node Count : " + NVG.OnlineNodeCount.ToString() + " / " + NVG.NodeList.Count.ToString());
+        }
+        public static void ReadLine()
+        {
+            ReadLine(NVG.Settings);
+        }
+        public static void ReadLine(Notus.Globals.Variable.Settings NodeSettings)
         {
             Info(NodeSettings, "Press Enter To Continue");
             Console.ReadLine();
         }
-        public static void Info(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Info(string DetailsStr = "", bool PrintAsync = true)
+        {
+            Info(NVG.Settings, DetailsStr, PrintAsync);
+        }
+        public static void Info(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.Cyan, DetailsStr, PrintAsync);
         }
-        public static void Danger(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Danger(string DetailsStr = "", bool PrintAsync = true)
+        {
+            Danger(NVG.Settings, DetailsStr, PrintAsync);
+        }
+        public static void Danger(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.DebugMode, ConsoleColor.Red, DetailsStr, PrintAsync);
         }
-        public static void Warning(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Warning(string DetailsStr = "", bool PrintAsync = true)
+        {
+            Warning(NVG.Settings, DetailsStr, PrintAsync);
+        }
+        public static void Warning(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.Yellow, DetailsStr, PrintAsync);
         }
-        public static void Status(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Status(string DetailsStr = "", bool PrintAsync = true)
         {
-            subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.Blue, DetailsStr, PrintAsync);
+            Status(NVG.Settings, DetailsStr, PrintAsync);
         }
-        public static void Basic(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Status(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        {
+            subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.White, DetailsStr, PrintAsync);
+        }
+        public static void Basic(string DetailsStr = "", bool PrintAsync = true)
+        {
+            Basic(NVG.Settings, DetailsStr, PrintAsync);
+        }
+        public static void Basic(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.Gray, DetailsStr, PrintAsync);
         }
-        public static void Success(Notus.Variable.Common.ClassSetting NodeSettings, string DetailsStr = "", bool PrintAsync = true)
+        public static void Success(string DetailsStr = "", bool PrintAsync = true)
+        {
+            Success(NVG.Settings, DetailsStr, PrintAsync);
+        }
+        public static void Success(Notus.Globals.Variable.Settings NodeSettings, string DetailsStr = "", bool PrintAsync = true)
         {
             subPrint(NodeSettings.Layer, NodeSettings.Network, NodeSettings.InfoMode, ConsoleColor.DarkGreen, DetailsStr, PrintAsync);
         }
         public static void Danger(bool ShowOnScreen, string DetailsStr = "", bool PrintAsync = true)
         {
-            subPrint(Notus.Variable.Enum.NetworkLayer.Unknown, Notus.Variable.Enum.NetworkType.Unknown, ShowOnScreen, ConsoleColor.Red, DetailsStr, PrintAsync);
+            subPrint(NVE.NetworkLayer.Unknown, NVE.NetworkType.Unknown, ShowOnScreen, ConsoleColor.Red, DetailsStr, PrintAsync);
         }
         public static void Basic(bool ShowOnScreen, string DetailsStr = "", bool PrintAsync = true)
         {
-            subPrint(Notus.Variable.Enum.NetworkLayer.Unknown, Notus.Variable.Enum.NetworkType.Unknown, ShowOnScreen, ConsoleColor.Gray, DetailsStr, PrintAsync);
+            subPrint(NVE.NetworkLayer.Unknown, NVE.NetworkType.Unknown, ShowOnScreen, ConsoleColor.Gray, DetailsStr, PrintAsync);
         }
 
         private static void PrintFunction(
-            Notus.Variable.Enum.NetworkLayer tmpLayer,
-            Notus.Variable.Enum.NetworkType tmpType,
+            NVE.NetworkLayer tmpLayer,
+            NVE.NetworkType tmpType,
             ConsoleColor TextColor,
             string DetailsStr
         )
         {
+            DateTime exacTime = DateTime.UtcNow;
+            try
+            {
+                exacTime = NVG.NOW.Obj;
+            }
+            catch { }
+
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write(DateTime.Now.ToString("HH:mm:ss"));
-            if (tmpLayer != Notus.Variable.Enum.NetworkLayer.Unknown && tmpType != Notus.Variable.Enum.NetworkType.Unknown)
+            Console.Write(exacTime.ToString("HH:mm:ss.fff"));
+            if (tmpLayer != NVE.NetworkLayer.Unknown && tmpType != NVE.NetworkType.Unknown)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
-                if (tmpLayer == Variable.Enum.NetworkLayer.Layer1)
+                if (tmpLayer == NVE.NetworkLayer.Layer1)
                     Console.Write(" L1");
-                if (tmpLayer == Variable.Enum.NetworkLayer.Layer2)
+                if (tmpLayer == NVE.NetworkLayer.Layer2)
                     Console.Write(" L2");
-                if (tmpLayer == Variable.Enum.NetworkLayer.Layer3)
+                if (tmpLayer == NVE.NetworkLayer.Layer3)
                     Console.Write(" L3");
-                if (tmpLayer == Variable.Enum.NetworkLayer.Layer4)
+                if (tmpLayer == NVE.NetworkLayer.Layer4)
                     Console.Write(" L4");
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write("-");
                 Console.ForegroundColor = ConsoleColor.Magenta;
-                if (tmpType == Notus.Variable.Enum.NetworkType.DevNet)
+                if (tmpType == NVE.NetworkType.DevNet)
                     Console.Write("Dev ");
-                if (tmpType == Notus.Variable.Enum.NetworkType.MainNet)
+                if (tmpType == NVE.NetworkType.MainNet)
                     Console.Write("Main");
-                if (tmpType == Notus.Variable.Enum.NetworkType.TestNet)
+                if (tmpType == NVE.NetworkType.TestNet)
                     Console.Write("Test");
             }
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -130,8 +174,8 @@ namespace Notus
             Console.WriteLine(DetailsStr);
         }
         private static void subPrint(
-            Notus.Variable.Enum.NetworkLayer tmpLayer,
-            Notus.Variable.Enum.NetworkType tmpType,
+            NVE.NetworkLayer tmpLayer,
+            NVE.NetworkType tmpType,
             bool ShowOnScreen,
             ConsoleColor TextColor,
             string DetailsStr,

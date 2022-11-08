@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using ND = Notus.Date;
+using NVG = Notus.Variable.Globals;
 namespace Notus.Prepare
 {
     public class Token
@@ -34,7 +35,7 @@ namespace Notus.Prepare
                 },
                 Creation = new Notus.Variable.Struct.CreationStruct()
                 {
-                    UID = Notus.Block.Key.Generate(Notus.Time.GetFromNtpServer(),""),
+                    UID = Notus.Block.Key.Generate(ND.NowObj(), ""),
                     PublicKey = PublicKeyHex,
                     Sign = Sign
                 },
@@ -59,7 +60,6 @@ namespace Notus.Prepare
                     }
                     try
                     {
-
                         string fullUrlAddress =
                             Notus.Network.Node.MakeHttpListenerPath(
                                 nodeIpAddress,
@@ -77,16 +77,7 @@ namespace Notus.Prepare
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Log(
-                            Notus.Variable.Enum.LogLevel.Info,
-                            3000325,
-                            err.Message,
-                            "BlockRowNo",
-                            null,
-                            err
-                        );
-
-                        Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                        //Notus.Print.Basic(true, "Error Text [9a5f4g12v3f]: " + err.Message);
                         return new Notus.Variable.Struct.BlockResponseStruct()
                         {
                             UID = "",
@@ -96,7 +87,6 @@ namespace Notus.Prepare
                     }
                 }
             }
-
             return new Notus.Variable.Struct.BlockResponseStruct()
             {
                 UID = "",

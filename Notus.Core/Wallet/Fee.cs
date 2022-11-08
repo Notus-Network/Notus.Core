@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
-
+using NP = Notus.Print;
 namespace Notus.Wallet
 {
     /*
@@ -59,16 +59,7 @@ namespace Notus.Wallet
                     }
                     catch (Exception err)
                     {
-                        Notus.Print.Log(
-                            Notus.Variable.Enum.LogLevel.Info,
-                            798798799,
-                            err.Message,
-                            "BlockRowNo",
-                            null,
-                            err
-                        );
-
-                        Notus.Print.Basic(true, "Error Text [8ae5cf]: " + err.Message);
+                        NP.Basic(true, "Error Text [a32d5gjhnr87]: " + err.Message);
                         return new Notus.Variable.Struct.FeeCalculationStruct()
                         {
                             Fee = 0,
@@ -86,11 +77,14 @@ namespace Notus.Wallet
 
         private static string FeeDataStorageDbName(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
-            return 
-                Notus.IO.GetFolderName(
-                    networkType, 
-                    networkLayer,Notus.Variable.Constant.StorageFolderName.Common
-                ) + "price_data";
+            string tmpFolderName = Notus.IO.GetFolderName(
+                networkType,
+                networkLayer,
+                Notus.Variable.Constant.StorageFolderName.Common
+            );
+            //Console.WriteLine(tmpFolderName);
+            //Console.WriteLine(tmpFolderName);
+            return tmpFolderName + "price_data";
         }
         public static Int64 ReadFeeData(
             Notus.Variable.Enum.Fee FeeConstant, 
@@ -98,7 +92,7 @@ namespace Notus.Wallet
             Notus.Variable.Enum.NetworkLayer networkLayer
         )
         {
-            Notus.Variable.Genesis.GenesisBlockData Obj_Genesis = null;
+            Notus.Variable.Genesis.GenesisBlockData? Obj_Genesis = null;
 
             using (
                 Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(
@@ -113,6 +107,15 @@ namespace Notus.Wallet
                 {
                     Obj_Genesis = JsonSerializer.Deserialize<Notus.Variable.Genesis.GenesisBlockData>(tmpReturnVal);
                 }
+            }
+            if (Obj_Genesis == null)
+            {
+                return 1000000;
+            }
+
+            if (FeeConstant == Notus.Variable.Enum.Fee.CryptoTransfer_MultiSign)
+            {
+                return Obj_Genesis.Fee.Transfer.Common * 2;
             }
 
             if (FeeConstant == Notus.Variable.Enum.Fee.CryptoTransfer)
@@ -147,10 +150,19 @@ namespace Notus.Wallet
         }
         public static void ClearFeeData(Notus.Variable.Enum.NetworkType networkType , Notus.Variable.Enum.NetworkLayer networkLayer)
         {
-            using (Notus.Mempool ObjMp_BlockOrder = new Notus.Mempool(FeeDataStorageDbName(networkType, networkLayer)))
+            try
             {
-                ObjMp_BlockOrder.AsyncActive = false;
-                ObjMp_BlockOrder.Clear();
+                using (Notus.Mempool ObjMp_FeeData = new Notus.Mempool(FeeDataStorageDbName(networkType, networkLayer)))
+                {
+                    ObjMp_FeeData.AsyncActive = false;
+                    ObjMp_FeeData.Clear();
+                }
+            }
+            catch(Exception err)
+            {
+                Console.WriteLine("Fee.Cs -> Line 172");
+                Console.WriteLine(err.Message);
+                Console.WriteLine(err.Message);
             }
         }
         public static void StoreFeeData(string KeyName, string RawData, Notus.Variable.Enum.NetworkType networkType , Notus.Variable.Enum.NetworkLayer networkLayer , bool ClearTable = false)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using NVG = Notus.Variable.Globals;
+using NP = Notus.Print;
 
 namespace Notus.Communication
 {
@@ -49,25 +51,25 @@ namespace Notus.Communication
                     {
                         client.Timeout = (UseTimeoutAsSecond == true ? TimeSpan.FromSeconds(TimeOut * 1000) : TimeSpan.FromMilliseconds(TimeOut));
                     }
+
+                    //bu işlem 0.3 saniye ile 0.6 saniye arasında işlem süresi geciktiriyor...
+                    //bu işlem 0.3 saniye ile 0.6 saniye arasında işlem süresi geciktiriyor...
+                    //bu işlem 0.3 saniye ile 0.6 saniye arasında işlem süresi geciktiriyor...
+                    //bu işlem 0.3 saniye ile 0.6 saniye arasında işlem süresi geciktiriyor...
                     HttpResponseMessage response = client.PostAsync(UrlAddress, formContent).GetAwaiter().GetResult();
                     HttpContent responseContent = response.Content;
                     if (response.IsSuccessStatusCode)
                     {
-                        return (true, responseContent.ReadAsStringAsync().GetAwaiter().GetResult());
+                        string? result =responseContent.ReadAsStringAsync().GetAwaiter().GetResult();
+                        if (result!= null)
+                        {
+                            return (true, result);
+                        }
                     }
                 }
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    4456320,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-
                 Notus.Print.Danger(showOnError, "Notus.Core.Function.PostRequestSync -> Line 606 -> " + err.Message);
             }
             return (false, string.Empty);
@@ -92,14 +94,6 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    774586,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
                 Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 80 -> " + err.Message);
             }
             return string.Empty;
@@ -109,7 +103,7 @@ namespace Notus.Communication
             int TimeOut = 0,
             bool UseTimeoutAsSecond = true,
             bool showOnError = true,
-            Notus.Variable.Common.ClassSetting? objSettings = null
+            Notus.Globals.Variable.Settings? objSettings = null
         )
         {
             try
@@ -130,15 +124,6 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    5532145,
-                    err.Message,
-                    "BlockRowNo",
-                    objSettings,
-                    err
-                );
-
                 if (objSettings == null)
                 {
                     Notus.Print.Danger(showOnError, "Notus.Core.Function.Get -> Line 112 -> " + err.Message);

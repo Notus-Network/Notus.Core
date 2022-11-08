@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus.Network
 {
     public static class Node
@@ -29,15 +29,6 @@ namespace Notus.Network
                         }
                         catch (Exception err)
                         {
-                            Notus.Print.Log(
-                                Notus.Variable.Enum.LogLevel.Info,
-                                600444004,
-                                err.Message,
-                                "BlockRowNo",
-                                null,
-                                err
-                            );
-
                             Console.WriteLine(err.Message);
                             Notus.Date.SleepWithoutBlocking(5, true);
                         }
@@ -148,7 +139,7 @@ namespace Notus.Network
             Notus.Variable.Enum.NetworkType currentNetwork,
             Notus.Variable.Enum.NetworkLayer networkLayer,
             bool showError = true,
-            Notus.Variable.Common.ClassSetting objSettings = null
+            Notus.Globals.Variable.Settings objSettings = null
         )
         {
             string MainResultStr = string.Empty;
@@ -192,7 +183,7 @@ namespace Notus.Network
             Dictionary<string, string> PostData,
             Notus.Variable.Enum.NetworkType currentNetwork,
             Notus.Variable.Enum.NetworkLayer networkLayer,
-            Notus.Variable.Common.ClassSetting objSettings = null
+            Notus.Globals.Variable.Settings objSettings = null
         )
         {
             string MainResultStr = string.Empty;
@@ -233,8 +224,12 @@ namespace Notus.Network
             return MainResultStr;
         }
 
-        public static int GetNetworkPort(Notus.Variable.Common.ClassSetting objSetting)
+        public static int GetNetworkPort(Notus.Globals.Variable.Settings? objSetting=null)
         {
+            if (objSetting == null)
+            {
+                return GetNetworkPort(NVG.Settings.Network, NVG.Settings.Layer);
+            }
             return GetNetworkPort(objSetting.Network, objSetting.Layer);
         }
         public static int GetNetworkPort(Notus.Variable.Enum.NetworkType currentNetwork, Notus.Variable.Enum.NetworkLayer currentLayer)

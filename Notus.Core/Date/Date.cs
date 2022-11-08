@@ -5,11 +5,31 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus
 {
     public static class Date
     {
+        public static DateTime NowObj()
+        {
+            if (NVG.NOW == null)
+            {
+                return DateTime.UtcNow;
+            }
+            if (NVG.NOW.Obj == null)
+            {
+                return DateTime.UtcNow;
+            }
+            return NVG.NOW.Obj;
+        }
+        public static ulong AddMiliseconds(ulong convertTime, int miliseconds)
+        {
+            return AddMiliseconds(convertTime, (ulong)miliseconds);
+        }
+        public static ulong AddMiliseconds(ulong convertTime,ulong miliseconds)
+        {
+            return Notus.Date.ToLong(Notus.Date.ToDateTime(convertTime).AddMilliseconds(miliseconds));
+        }
         public static ulong ToLong(string convertTime)
         {
             return ulong.Parse(convertTime.PadRight(17, '0').Substring(0, 17));
@@ -27,18 +47,14 @@ namespace Notus
             }
             catch(Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    988550000,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
                 return "19810125020000000";
             }
         }
         public static DateTime ToDateTime(ulong ConverTime)
+        {
+            return ToDateTime(ConverTime.ToString().PadRight(17, '0'));
+        }
+        public static DateTime ToDateTime(long ConverTime)
         {
             return ToDateTime(ConverTime.ToString().PadRight(17, '0'));
         }
@@ -50,14 +66,6 @@ namespace Notus
             }
             catch(Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    900000044,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
                 return new DateTime(1981, 01, 25, 2, 00, 00);
             }
         }

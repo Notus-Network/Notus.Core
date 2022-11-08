@@ -1,5 +1,6 @@
 ﻿using System.IO;
-
+using NVG = Notus.Variable.Globals;
+using DirListConst = Notus.Variable.Constant.StorageFolderName;
 namespace Notus
 {
     public static class IO
@@ -21,30 +22,30 @@ namespace Notus
             );
         }
         public static string[] GetFileList(
-            Notus.Variable.Common.ClassSetting objSettings,
+            Notus.Globals.Variable.Settings objSettings,
             string directoryName,
             string extension
         )
         {
-            if (Directory.Exists(Notus.IO.GetFolderName(objSettings.Network, objSettings.Layer,
+            if (Directory.Exists(Notus.IO.GetFolderName(objSettings,
                 directoryName)) == false)
             {
                 return new string[] { };
             }
             return Directory.GetFiles(
-                Notus.IO.GetFolderName(objSettings.Network, objSettings.Layer, directoryName),"*." + extension
+                Notus.IO.GetFolderName(objSettings, directoryName),"*." + extension
             );
         }
         public static string[] GetZipFiles(Notus.Variable.Enum.NetworkType networkType,Notus.Variable.Enum.NetworkLayer networkLayer)
         {
-            return GetFileList(networkType,networkLayer,Notus.Variable.Constant.StorageFolderName.Block,"zip");
+            return GetFileList(networkType,networkLayer, DirListConst.Block,"zip");
         }
-        public static string[] GetZipFiles(Notus.Variable.Common.ClassSetting objSettings)
+        public static string[] GetZipFiles(Notus.Globals.Variable.Settings objSettings)
         {
             return GetZipFiles(objSettings.Network, objSettings.Layer);
         }
 
-        public static string GetFolderName(Notus.Variable.Common.ClassSetting objSettings, string folderName)
+        public static string GetFolderName(Notus.Globals.Variable.Settings objSettings, string folderName)
         {
             return GetFolderName(objSettings.Network, objSettings.Layer, folderName);
         }
@@ -63,15 +64,16 @@ namespace Notus
             if (!Directory.Exists(DirectoryName))
                 Directory.CreateDirectory(DirectoryName);
         }
-        public static void NodeFolderControl(Variable.Enum.NetworkType networkType, Variable.Enum.NetworkLayer networkLayer)
+        public static void NodeFolderControl()
         {
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.TempBlock));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Balance));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Block));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Common));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.File));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Node));
-            CreateDirectory(GetFolderName(networkType, networkLayer, Variable.Constant.StorageFolderName.Pool));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.BlockForTgz));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.TempBlock));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.Balance));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.Block));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.Common));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.File));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.Node));
+            CreateDirectory(GetFolderName(NVG.Settings, DirListConst.Pool));
         }
     }
 }

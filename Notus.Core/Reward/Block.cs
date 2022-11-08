@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.Json;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus.Reward
 {
     public class Block : IDisposable
@@ -18,7 +18,6 @@ namespace Notus.Reward
         private bool TimerIsRunning = false;
         private Notus.Threads.Timer? TimerObj;
         public void Execute(
-            Notus.Variable.Common.ClassSetting objSettings,
             System.Action<Notus.Variable.Struct.EmptyBlockRewardStruct> Func_NewBlockIncome
         )
         {
@@ -53,12 +52,11 @@ namespace Notus.Reward
                                 ulong rewardCount = 0;
                                 Dictionary<long, ulong> blockRowTimeList = new Dictionary<long, ulong>();
                                 Notus.Block.Storage storageObj = new Notus.Block.Storage(false);
-                                storageObj.Network = objSettings.Network;
-                                storageObj.Layer = objSettings.Layer;
                                 bool tmpNullPrinted = false;
                                 bool tmpExitLoop = false;
                                 while (tmpExitLoop == false)
                                 {
+                                    //tgz-exception
                                     Notus.Variable.Class.BlockData? tmpBlockData = storageObj.ReadBlock(LastBlockUid);
                                     if (tmpBlockData != null)
                                     {
@@ -103,17 +101,17 @@ namespace Notus.Reward
                                 }
 
                                 Console.WriteLine("Reward Distribution");
-                                ulong decimalNumber = (ulong)Math.Pow(10, (double)objSettings.Genesis.Reserve.Decimal);
+                                ulong decimalNumber = (ulong)Math.Pow(10, (double)NVG.Settings.Genesis.Reserve.Decimal);
 
                                 // genesisi oluşturulmadan önce bu değerler olmadığı için 
                                 // burada atanıyor...
-                                objSettings.Genesis.Empty.TotalSupply = 550000000;
-                                objSettings.Genesis.Empty.LuckyReward = 50;
-                                objSettings.Genesis.Empty.Reward = 2;
+                                NVG.Settings.Genesis.Empty.TotalSupply = 550000000;
+                                NVG.Settings.Genesis.Empty.LuckyReward = 50;
+                                NVG.Settings.Genesis.Empty.Reward = 2;
 
-                                ulong rewardVolume = (rewardCount * objSettings.Genesis.Empty.Reward) * decimalNumber;
-                                ulong totalSuppply = objSettings.Genesis.Empty.TotalSupply * decimalNumber;
-                                ulong luckyReward = objSettings.Genesis.Empty.LuckyReward * decimalNumber;
+                                ulong rewardVolume = (rewardCount * NVG.Settings.Genesis.Empty.Reward) * decimalNumber;
+                                ulong totalSuppply = NVG.Settings.Genesis.Empty.TotalSupply * decimalNumber;
+                                ulong luckyReward = NVG.Settings.Genesis.Empty.LuckyReward * decimalNumber;
                                 ulong emptyRewardVolume = rewardVolume - luckyReward;
                                 ulong rewardPerBlock = (ulong)Math.Floor((decimal)emptyRewardVolume / rewardCount);
 
@@ -200,46 +198,13 @@ namespace Notus.Reward
                                     998007770,
                                     err.Message,
                                     "BlockRowNo",
-                                    objSettings,
+                                    NVG.Settings,
                                     err
                                 );
                                 Console.WriteLine(err.Message);
                             }
                         }
                     }
-
-                    /*
-                    Console.WriteLine(JsonSerializer.Serialize(RewardList));
-                    //blok zamanı ve utc zamanı çakışıyor
-                    DateTime tmpLastTime = Notus.Date.ToDateTime(
-                        Obj_Settings.LastBlock.info.time
-                    ).AddSeconds(howManySeconds);
-
-                    // get utc time from validatır Queue
-                    DateTime utcTime = ValidatorQueueObj.GetUtcTime();
-                    if (utcTime > tmpLastTime)
-                    {
-                        if (ValidatorQueueObj.MyTurn)
-                        {
-                            if ((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds > 30)
-                            {
-                                //Console.WriteLine((DateTime.Now - EmptyBlockGeneratedTime).TotalSeconds);
-                                EmptyBlockGeneratedTime = DateTime.Now;
-                                Notus.Print.Success(Obj_Settings, "Empty Block Executed");
-                                Obj_BlockQueue.AddEmptyBlock();
-                            }
-                            EmptyBlockNotMyTurnPrinted = false;
-                        }
-                        else
-                        {
-                            if (EmptyBlockNotMyTurnPrinted == false)
-                            {
-                                //Notus.Print.Warning(Obj_Settings, "Not My Turn For Empty Block");
-                                EmptyBlockNotMyTurnPrinted = true;
-                            }
-                        }
-                    }
-                    */
                     TimerIsRunning = false;
                 }
             }, true);

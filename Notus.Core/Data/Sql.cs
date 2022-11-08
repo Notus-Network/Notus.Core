@@ -2,7 +2,6 @@
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-
 namespace Notus.Data
 {
     public class Sql : IDisposable
@@ -50,14 +49,6 @@ namespace Notus.Data
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    90008800,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
                 ErrorStrInsideObj = err.Message;
             }
 
@@ -69,15 +60,6 @@ namespace Notus.Data
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    66550055,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-
                 ErrorStrInsideObj = err.Message;
             }
             return false;
@@ -95,6 +77,7 @@ namespace Notus.Data
                 condCount++;
             }
 
+            //string selectQuery = "SELECT * FROM '" + tableName+"'";
             string selectQuery = "SELECT * FROM " + tableName;
             if (condCount > 0)
             {
@@ -116,33 +99,37 @@ namespace Notus.Data
 
             try
             {
-                SqliteDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    Dictionary<string, string> returnList = new Dictionary<string, string>();
-                    foreach (string fieldName in nameList)
+                using (SqliteDataReader reader = command.ExecuteReader()) {
+                    while (reader.Read())
                     {
-                        string dataValue = reader[fieldName].ToString();
-                        returnList.Add(fieldName, dataValue);
+                        Dictionary<string, string> returnList = new Dictionary<string, string>();
+                        foreach (string fieldName in nameList)
+                        {
+                            string dataValue = reader[fieldName].ToString();
+                            returnList.Add(fieldName, dataValue);
+                        }
+                        incomeAction(returnList);
                     }
-                    incomeAction(returnList);
+                    reader.Close();
                 }
-                reader.Close();
             }
             catch (Exception msg)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    40006544,
-                    msg.Message,
-                    "BlockRowNo",
-                    null,
-                    msg
-                );
                 ErrorStrInsideObj = msg.Message;
             }
         }
 
+        public bool Clear(string tableName)
+        {
+            SqliteCommand command = conObj.CreateCommand();
+            command.CommandText = "DELETE FROM " + tableName;
+            int result=command.ExecuteNonQuery();
+            if (result >= 0)
+            {
+                return true;
+            }
+            return false;
+        }
         // delete işlemi
         public bool Delete(string tableName, Dictionary<string, string> condAndValue)
         {
@@ -259,15 +246,6 @@ namespace Notus.Data
             }
             catch (Exception msg)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    62005410,
-                    msg.Message,
-                    "BlockRowNo",
-                    null,
-                    msg
-                );
-
                 ErrorStrInsideObj = msg.Message;
             }
             DbOpened = false;
@@ -285,14 +263,6 @@ namespace Notus.Data
                 }
                 catch (Exception err)
                 {
-                    Notus.Print.Log(
-                        Notus.Variable.Enum.LogLevel.Info,
-                        70044556,
-                        err.Message,
-                        "BlockRowNo",
-                        null,
-                        err
-                    );
                     ErrorStrInsideObj = err.Message;
                 }
                 DbOpened = false;

@@ -9,7 +9,7 @@ namespace Notus.Validator
             string nodeAdress, 
             Int64 BlockRowNo,
             bool showOnError=true,
-            Notus.Variable.Common.ClassSetting? objSettings = null
+            Notus.Globals.Variable.Settings? objSettings = null
         )
         {
             try
@@ -37,7 +37,7 @@ namespace Notus.Validator
             }
             return (false, null);
         }
-        public static Notus.Variable.Struct.LastBlockInfo? GetLastBlockInfo(string NodeAddress, Notus.Variable.Common.ClassSetting? Obj_Settings=null)
+        public static Notus.Variable.Struct.LastBlockInfo? GetLastBlockInfo(string NodeAddress, Notus.Globals.Variable.Settings? Obj_Settings=null)
         {
             try
             {

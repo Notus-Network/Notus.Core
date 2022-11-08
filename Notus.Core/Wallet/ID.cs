@@ -125,15 +125,6 @@ namespace Notus.Wallet
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    6532653,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-
                 Console.WriteLine("Error Text [8cfe9085] : " + err.Message);
             }
             return verifyResult;

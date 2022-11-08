@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using NP = Notus.Print;
 namespace Notus.Communication
 {
      public class Sender : IDisposable
@@ -101,15 +102,7 @@ namespace Notus.Communication
             }
             catch (Exception err)
             {
-                Notus.Print.Log(
-                    Notus.Variable.Enum.LogLevel.Info,
-                    700088554,
-                    err.Message,
-                    "BlockRowNo",
-                    null,
-                    err
-                );
-                Notus.Print.Basic(DebugModeActive, err.Message);
+                NP.Basic(DebugModeActive, err.Message);
                 ErrorText = err.Message;
             }
             return (false, ErrorText);
@@ -134,16 +127,7 @@ namespace Notus.Communication
                 }
                 catch (Exception err)
                 {
-                    Notus.Print.Log(
-                        Notus.Variable.Enum.LogLevel.Info,
-                        900000004,
-                        err.Message,
-                        "BlockRowNo",
-                        null,
-                        err
-                    );
-
-                    Notus.Print.Basic(DebugModeActive, err.Message);
+                    NP.Basic(DebugModeActive, err.Message);
                     ErrorText = err.Message;
                 }
             }

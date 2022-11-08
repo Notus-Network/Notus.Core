@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-
+//using NVG = Notus.Variable.Globals;
 namespace Notus.Encryption
 {
     public class Toolbox

@@ -4,6 +4,19 @@ using System.Numerics;
 
 namespace Notus.Variable.Enum
 {
+    public static class BlockTypeList
+    {
+        public const int GenesisBlock = 360;
+        public const int EmptyBlock = 300;
+        public const int CryptoTransfer= 120;
+        public const int AirDrop = 125;
+        public const int MultiWalletCryptoTransfer = 100;
+
+        public const int TokenGeneration = 160;
+        public const int LockAccount = 40;
+        public const int MultiWalletContract = 90;
+    }
+
     public enum NetworkNodeType
     {
         All = 2048,
@@ -71,7 +84,7 @@ namespace Notus.Variable.Enum
 
     public enum NetworkLayer
     {
-        Unknown=99999,
+        Unknown = 99999,
         // MainLayer = 1,     // crypto and token transfer & token generation
         Layer1 = 1,     // crypto and token transfer & token generation
 
@@ -129,10 +142,14 @@ namespace Notus.Variable.Enum
         InQueue = 1,
         Completed = 22,
         Rejected = 97,
-        
+
         OldTransaction = 71,
-        NotParticipant=35,
-        RejectedMultiWalletAccess=38,
+        NotParticipant = 35,
+        NotEnoughParticipant = 39,
+        RejectedMultiWalletAccess = 38,
+        UnknownTransaction = 79,
+        NotSupported=65,
+        TooManyRequest=44,
         Unknown = 78
     }
 
@@ -142,13 +159,14 @@ namespace Notus.Variable.Enum
         Receiver = 2,
         Validator = 3
     }
-
     public enum Fee
     {
         CryptoTransfer = 2,             /* para transfer işlemi için genel işlem için */
         CryptoTransfer_Fast = 1,        /* para transfer işlemi için */
         CryptoTransfer_NoName = 3,      /* para transfer işlemi için */
         CryptoTransfer_ByPieces = 4,    /* para transfer işlemi için */
+
+        CryptoTransfer_MultiSign = 10,  /* çoklu para gönderim işlemi için genel işlem için */
 
         TokenGeneration = 5,            /* token oluşturma işlemi için */
         TokenUpdate = 6,                /* token supplye veya diğer güncellemeler için işlem tutarı*/
@@ -160,13 +178,13 @@ namespace Notus.Variable.Enum
     {
         Info = 0,
         Error = 1,
-        Fatal=9,
+        Fatal = 9,
         Warning = 2
     }
     public enum MultiWalletType
     {
         AllRequired = 0,
         MajorityRequired = 1,
-        Unknown=9
+        Unknown = 9
     }
 }

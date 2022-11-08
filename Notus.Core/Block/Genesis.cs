@@ -1,7 +1,7 @@
 ﻿using Notus.Variable.Genesis;
 using System;
 using System.Text.Json;
-
+using NVG = Notus.Variable.Globals;
 namespace Notus.Block
 {
     public class Genesis
@@ -26,7 +26,7 @@ namespace Notus.Block
 
         public static GenesisBlockData GetGenesis_SubFunction(string CreatorWalletKey, bool EncryptKeyPair, Notus.Variable.Enum.NetworkType NetworkType, Notus.Variable.Enum.NetworkLayer NetworkLayer)
         {
-            DateTime generationTime = Notus.Time.GetFromNtpServer();
+            DateTime generationTime = NVG.NOW.Obj;
             string EncKey = generationTime.ToString(Notus.Variable.Constant.DefaultDateTimeFormatText);
             Notus.Variable.Struct.EccKeyPair KeyPair_PreSeed = Notus.Wallet.ID.GenerateKeyPair(SelectedCurveName, NetworkType);
             Notus.Variable.Struct.EccKeyPair KeyPair_Private = Notus.Wallet.ID.GenerateKeyPair(SelectedCurveName, NetworkType);
